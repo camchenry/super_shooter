@@ -8,9 +8,9 @@ function Player:initialize()
     self.velocity = vector(0, 0)
     self.dragFactor = 0.10
     self.acceleration = vector(0, 0)
-    self.accelConstant = 1500
+    self.accelConstant = 1000
     self.heat = 0
-    self.rateOfFire = (1/2) -- 1 / shots per second
+    self.rateOfFire = (1/6) -- 1 / shots per second
     self.health = 100
     self.maxHealth = 100
 

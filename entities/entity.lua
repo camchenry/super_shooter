@@ -3,8 +3,11 @@ Entity = class('Entity')
 function Entity:initialize()
 	-- general properties
 	self.color = {255, 255, 255, 255}
-	self.radius = 15
-	self.sides = 4
+	self.radius = 25
+	self.sides = 250
+	self.lineWidth = 1
+	self.width = self.radius * 2
+	self.height = self.radius * 2
 
 	-- physics
 	self.position = vector(0, 0)
@@ -12,11 +15,10 @@ function Entity:initialize()
 	self.acceleration = vector(0, 0)
 	self.speed = 850
 	self.dragFactor = 0.15
-
-	self.width = self.radius * 2
-	self.height = self.radius * 2
 	self.x, self.y = self.position:unpack()
 	self.prev_x, self.prev_y = self.position:unpack()
+
+	self.destroy = false
 end
 
 function Entity:physicsUpdate(dt)
@@ -36,12 +38,7 @@ function Entity:update(dt)
 end
 
 function Entity:draw()
-	if self.lineWidth then
-		love.graphics.setLineWidth(self.lineWidth)
-	else
-		love.graphics.setLineWidth(1)
-	end
-
+	love.graphics.setLineWidth(self.lineWidth)
 	love.graphics.push()
 	local rgba = {love.graphics.getColor()}
 	love.graphics.setColor(self.color)
@@ -51,4 +48,23 @@ function Entity:draw()
 	love.graphics.setColor(rgba)
 	love.graphics.pop()
 	love.graphics.setLineWidth(1)
+end
+
+function Entity:checkCollision(callback)
+	local collidableObjects = quadtree:getCollidableObjects(self, true)
+    for i, obj in pairs(collidableObjects) do
+
+    	local aabbOverlapping = self.x + self.radius + obj.radius > obj.x 
+			and self.x < obj.x + self.radius + obj.radius
+			and self.y + self.radius + obj.radius > obj.y 
+			and self.y < obj.y + self.radius + obj.radius
+
+    	if (aabbOverlapping) then
+        	callback(self, obj)
+        end
+    end
+end
+
+function Entity:handleCollision(obj)
+
 end

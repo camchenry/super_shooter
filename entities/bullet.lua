@@ -15,8 +15,8 @@ function Bullet:initialize(position, target, velocity)
     self.target = target
     self.source = nil
 
-    self.speed = 150
-    self.life = 2 -- seconds
+    self.speed = 200
+    self.life = 1.5 -- seconds
     self.damage = 0
 
     self.velocity = (self.target - self.position - WINDOW_OFFSET):normalized() * self.speed
@@ -45,10 +45,6 @@ function Bullet:update(dt)
     if self.position.y > love.graphics.getHeight()-WINDOW_OFFSET.y or self.position.y < 0-WINDOW_OFFSET.y then
         self.destroy = true
     end
-
-    if self.destroy then
-        game:removeBullet(self)
-    end
 end
 
 function Bullet:draw()
@@ -57,6 +53,11 @@ end
 
 function Bullet:setLife(life)
     self.life = life
+    return self
+end
+
+function Bullet:setSpeed(speed)
+    self.speed = speed
     return self
 end
 

@@ -13,6 +13,7 @@ require 'states.menu'
 require 'states.game'
 
 -- entities
+require 'entities.entity'
 require 'entities.bullet'
 require 'entities.player'
 require 'entities.enemy'
