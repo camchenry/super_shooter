@@ -8,6 +8,9 @@ function game:addObject(obj, tabl)
     if tabl == nil then
         tabl = objects
     end
+    for i, v in pairs(tabl) do
+        assert(v ~= obj)
+    end
     table.insert(tabl, obj)
     quadtree:addObject(obj)
     return obj
@@ -20,10 +23,10 @@ function game:removeObject(obj, tabl)
     if tabl == nil then
         tabl = objects
     end
-    for i=#tabl,1,-1 do
-        local v = tabl[i]
+    for i, v in pairs(tabl) do
         if v == obj then
             table.remove(tabl, i)
+            break
         end
     end
     quadtree:removeObject(obj, true)
@@ -34,9 +37,11 @@ end
 
 function game:enter()
     love.keyboard.setKeyRepeat(true)
-    love.mouse.setVisible(false)
+    love.mouse.setVisible(true)
 
     cursorImage = love.graphics.newImage("img/cursor.png")
+    cursor = love.mouse.newCursor(cursorImage:getData(), 16, 16)
+    love.mouse.setCursor(cursor)
     local bloom = shine.bloom()
     bloom.parameters = {
         samples = 4,
@@ -45,7 +50,7 @@ function game:enter()
 
     local chroma = shine.separate_chroma()
     chroma.parameters = {
-        radius = 1,
+        radius = -1,
         angle = 5*math.pi/4
     }
 
@@ -58,13 +63,8 @@ function game:enter()
     pause_effect = bloom:chain(blur)
     post_effect = default_effect
 
-    self.particleSystem = love.graphics.newParticleSystem(love.graphics.newImage("img/particle.png"), 256)
-    self.particleSystem:setRadialAcceleration(500, 600)
-    self.particleSystem:setParticleLifetime(1)
-    self.particleSystem:setSpeed(150, 450)
-    self.particleSystem:setSpread(2*math.pi)
-    self.particleSystem:setSizeVariation(1)
-    self.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
+    self.particles = Particles:new()
+    self.screenShake = ScreenShake:new()
 
     quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
     quadtree:subdivide()
@@ -75,11 +75,9 @@ function game:enter()
     self.paused = false
     
     self.time = 0
-    self.screenShakeTimeMax = 3
-    self.screenShakeTime = 0
-    self.screenShakeStrength = 0
-    self.screenShakeVelocity = vector(0, 0)
-    self.screenShakeAngle = 0
+
+    self.startingWave = 0
+    self.timeToNextWave = 4
 
     self:setupWaves()
     self:startWave()
@@ -89,10 +87,6 @@ function game:update(dt)
     if self.paused then return end
 
     self.time = self.time + dt * 0.75
-
-    if self.screenShakeTime > 0 then
-        self.screenShakeTime = math.min(self.screenShakeTimeMax, self.screenShakeTime - dt)
-    end
 
     for i,v in ipairs(objects) do
         v:update(dt)
@@ -120,7 +114,8 @@ function game:update(dt)
         self.waveTimer:update(dt)
     end
 
-    self.particleSystem:update(dt)
+    self.particles:update(dt)
+    self.screenShake:update(dt)
 
     if self.boss then
         if self.boss.health <= 0 then
@@ -129,7 +124,7 @@ function game:update(dt)
     end
 
     if #objects == 1 and not self.waveTimer and self.boss == nil and self.waves[self.wave+1] ~= nil then
-        self.waveTimer = cron.after(3, function() 
+        self.waveTimer = cron.after(self.timeToNextWave, function() 
             self:startWave()
             self.waveTimer = nil
         end)
@@ -179,21 +174,14 @@ function game:draw()
         end
     end
 
-    local dx, dy = 0, 0
-    if self.screenShakeTime > 0 then
-        local dampen = math.sqrt(self.screenShakeTime / self.screenShakeTimeMax)
+    local dx, dy = self.screenShake:getOffset()
 
-        dx = self.screenShakeVelocity.x * dampen * math.cos(self.screenShakeTime * 20 * dampen)
-        dy = self.screenShakeVelocity.y * dampen * math.sin(self.screenShakeTime * 20 * dampen)
-    else
-        dx, dy = 0, 0
-    end
-
+    -- start post effect
     post_effect(function()
 
     love.graphics.translate(love.graphics.getWidth()/2+dx, love.graphics.getHeight()/2+dy)
 
-    love.graphics.draw(self.particleSystem)
+    self.particles:draw()
 
     for i,v in ipairs(objects) do
         v:draw()
@@ -202,13 +190,12 @@ function game:draw()
         v:draw()
     end
 
-    love.graphics.setColor(160, 160, 160, 16*math.abs(math.cos(self.time))+8)
+    love.graphics.setColor(160, 160, 160, 16*math.abs(math.cos(self.time))+12)
     quadtree:draw()
 
     love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
 
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getWidth()/2, love.mouse.getY()-cursorImage:getHeight()/2)
 
     if self.waveText ~= nil and self.wave > 0 then
         self:drawPrimaryText()
@@ -222,9 +209,11 @@ function game:draw()
 
     love.graphics.setFont(font[16])
     love.graphics.print(love.timer.getFPS(), 5, 5)
+    love.graphics.print(#bullets, 5, 20)
+    love.graphics.print(#objects, 5, 35)
 
     love.graphics.setFont(font[48])
-    if self.waveTimer ~= nil and self.waveTimer.time - self.waveTimer.running > 0 and #objects == 1 then
+    if self.waveTimer ~= nil and self.waveTimer.time - self.waveTimer.running <= 3 and #objects == 1 then
         local t = self.waveTimer.time - self.waveTimer.running
         love.graphics.print(math.ceil(t), love.graphics.getWidth()/2 - love.graphics.getFont():getWidth(math.ceil(t))/2, 150)
 
@@ -235,7 +224,7 @@ function game:draw()
         end
 
     end
-    end)
+    end) -- end post effect
 
     if self.paused then
         love.graphics.setColor(0, 0, 0, 80)
@@ -248,16 +237,7 @@ function game:draw()
 end
 
 function game:shakeScreen(time, strength)
-    if self.screenShakeTime > 0 then
-        self.screenShakeTime = self.screenShakeTime + self.screenShakeTime * 0.2
-        self.screenShakeStrength = self.screenShakeStrength + self.screenShakeStrength * 0.2
-    else
-        self.screenShakeTime = time
-        self.screenShakeStrength = strength or 50
-    end
-
-    self.screenShakeAngle = math.random(0, math.pi)
-    self.screenShakeVelocity = vector(math.cos(self.screenShakeAngle), math.sin(self.screenShakeAngle))
+    self.screenShake:shake(time, strength)
 end
 
 function game:drawPlayerHealthBar()
@@ -297,31 +277,40 @@ end
 function game:setupWaves()
     self.waves = {}
     self.waves[1] = {
-        enemies = 10,
+        blobs = 25,
+        sweepers = 2,
     }
     self.waves[2] = {
-        enemies = 15,
+        blobs = 50,
+        sweepers = 2,
     }
     self.waves[3] = {
-        enemies = 20,
+        blobs = 15,
         sweepers = 4,
     }
     self.waves[4] = {
-        enemies = 25,
+        blobs = 25,
         sweepers = 6,
     }
     self.waves[5] = {
+        blobs = 50,
+    }
+    self.waves[6] = {
+        blobs = 25,
+        sweepers = 12,
+    }
+    self.waves[7] = {
         boss = Megabyte,
     }
 end
 
 function game:startWave()
     if self.wave == nil then
-        self.wave = 0
-    elseif self.wave <= 5 then
-        self.wave = self.wave + 1
-    elseif self.wave >= 6 then
+        self.wave = self.startingWave
+    elseif self.waves[self.wave+1] == nil then
         return
+    else
+        self.wave = self.wave + 1
     end
 
     self:setPrimaryText("WAVE "..self.wave)
@@ -334,9 +323,9 @@ end
 function game:spawnEnemies()
     local currentWave = self.waves[self.wave]
 
-    if currentWave.enemies ~= nil then
-        for i=1, self.waves[self.wave].enemies do
-            self:addObject(Enemy:new(
+    if currentWave.blobs ~= nil then
+        for i=1, self.waves[self.wave].blobs do
+            self:addObject(Blob:new(
                 vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
             ))
         end
@@ -346,13 +335,13 @@ function game:spawnEnemies()
         -- number of line enemies to spawn
         local num = self.waves[self.wave].sweepers
         -- margin from the sides of the screen
-        local margin = 100
+        local margin = 25
         local h = (love.graphics.getHeight()-margin)/num
         local w = (love.graphics.getWidth()-margin)
         for i=1, num do
             self:addObject(LineEnemy:new(
-                vector(margin-WINDOW_OFFSET.x, (margin+h*(i-1))-WINDOW_OFFSET.y),
-                vector(w-WINDOW_OFFSET.x-margin, (margin+h*(i-1))-WINDOW_OFFSET.y)
+                vector(margin-WINDOW_OFFSET.x, (margin*2+h*(i-1))-WINDOW_OFFSET.y),
+                vector(w-WINDOW_OFFSET.x-margin, (margin*2+h*(i-1))-WINDOW_OFFSET.y)
             ))
         end
     end

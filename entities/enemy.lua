@@ -2,12 +2,11 @@ Enemy = class('Enemy', Entity)
 
 function Enemy:initialize(position)
     Entity.initialize(self)
-    self.color = {231, 76, 60, 255}
+    self.originalColor = {231, 76, 60, 255}
     self.radius = 15
     self.sides = 4
 
     self.position = position
-    self.moveAwayVector = vector(0, 0)
     self.touchDamage = player.maxHealth/5
 
     self.health = 100
@@ -19,26 +18,25 @@ function Enemy:update(dt)
     self.moveTowardsPlayer = (player.position - self.position):normalized()
 
     -- enemy fades away as it loses health
+    self.color = self.originalColor
     self.color[4] = math.max(32, 255*(self.health/self.maxHealth))
 
     if self.health <= 0 then
         self.destroy = true
-        game.particleSystem:setPosition(self.position.x, self.position.y)
-        game.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
-        game.particleSystem:emit(50)
-        game:shakeScreen(1, 75)
+        signal.emit('enemyDeath', self)
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
     end
 
-    self:checkCollision(self.handleCollision)
-
-    self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
     self:physicsUpdate(dt)
+
+    self:checkCollision(self._handleCollision)
 end
 
-function Enemy:handleCollision(obj)
-    if obj:isInstanceOf(Enemy) and not obj:isInstanceOf(LineEnemy) then
+-- this is a private collision function specifically for common enemy effects that aren't supposed
+-- to be overridden
+function Enemy:_handleCollision(obj)
+    if obj:isInstanceOf(Enemy) then
         if self.position:dist(obj.position) < self.radius + obj.radius then
             v = vector(self.x - obj.x, self.y - obj.y)
             self.moveAway = self.moveAway + v:normalized()
@@ -48,24 +46,44 @@ function Enemy:handleCollision(obj)
     if obj:isInstanceOf(Bullet) then
         if self.position:dist(obj.position) < self.radius + obj.radius then
             self.health = self.health - obj.damage
-            game.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
-            game.particleSystem:setPosition(self.position.x, self.position.y)
-            game.particleSystem:emit(10)
+            signal.emit('enemyHit', self)
             game:removeBullet(obj)
-            game:shakeScreen(1, 25)
+            self.color = {255, 255, 255, 255}
         end
     end
 end
 
-function Enemy:keypressed(key, isrepeat)
+Blob = class('Blob', Enemy)
 
+function Blob:initialize(position)
+    Entity.initialize(self)
+    self.originalColor = {231, 76, 60, 255}
+    self.radius = 15
+    self.sides = 4
+
+    self.position = position
+    self.touchDamage = player.maxHealth/5
+
+    self.health = 100
+    self.maxHealth = 100
 end
 
-LineEnemy = class('LineEnemy', Entity)
+function Blob:update(dt)
+    Enemy.update(self, dt)
+    self.moveTowardsPlayer = (player.position - self.position):normalized()
+
+    self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
+end
+
+function Blob:handleCollision(obj)
+    
+end
+
+LineEnemy = class('LineEnemy', Enemy)
 
 function LineEnemy:initialize(start, finish)
     Entity.initialize(self)
-    self.color = {241, 196, 0}
+    self.originalColor = {241, 196, 0, 255}
     self.radius = 18
     self.sides = 3
 
@@ -73,7 +91,7 @@ function LineEnemy:initialize(start, finish)
     self.start = start
     self.finish = finish
     self.target = finish
-    self.speed = 2500
+    self.speed = 3000
 
     self.touchDamage = player.maxHealth/2
 
@@ -82,14 +100,7 @@ function LineEnemy:initialize(start, finish)
 end
 
 function LineEnemy:update(dt)
-    if self.health <= 0 then
-        self.destroy = true
-        game.particleSystem:setPosition(self.position.x, self.position.y)
-        game.particleSystem:setColors(255, 255, 0, 255, 0, 0, 0, 0)
-        game.particleSystem:emit(50)
-    elseif self.health > self.maxHealth then
-        self.health = self.maxHealth
-    end
+    Enemy.update(self, dt)
 
     if self.position:dist(self.target) < 2 then
         if self.target == self.finish then
@@ -99,20 +110,9 @@ function LineEnemy:update(dt)
         end
     end
 
-    self:checkCollision(self.handleCollision)
-
     self.acceleration = (self.target - self.position):normalized() * self.speed
-    self:physicsUpdate(dt)
 end
 
 function LineEnemy:handleCollision(obj)
-    if obj:isInstanceOf(Bullet) then
-        if self.position:dist(obj.position) < self.radius + obj.radius then
-            self.health = self.health - obj.damage
-            game.particleSystem:setColors(255, 255, 0, 255, 0, 0, 0, 0)
-            game.particleSystem:setPosition(self.position.x, self.position.y)
-            game.particleSystem:emit(10)
-            game:removeBullet(obj)
-        end
-    end
+
 end

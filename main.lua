@@ -5,6 +5,8 @@ state = require 'libs.state'
 tween = require 'libs.tween'
 cron = require 'libs.cron'
 shine = require 'libs.shine'
+beholder = require 'libs.beholder'
+signal = require 'libs.signal'
 QuadTree = require 'libs.quadtree'
 require 'libs.util'
 
@@ -18,6 +20,8 @@ require 'entities.bullet'
 require 'entities.player'
 require 'entities.enemy'
 require 'entities.boss.megabyte'
+require 'entities.fx.particle'
+require 'entities.fx.shake'
 
 function love.load()
 	love.window.setTitle(config.windowTitle)

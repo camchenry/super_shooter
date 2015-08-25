@@ -12,6 +12,7 @@ function Megabyte:initialize(position)
     self.heat = 0
     self.rateOfFire = (1/2) -- 4 shots per second
     self.fireAngle = 3*math.pi/4 + .33
+    self.fireAngleMultiplier = 1
 
     self.touchDamage = 150
     self.health = 500
@@ -70,8 +71,8 @@ function Megabyte:update(dt)
         self.health = self.maxHealth
     end
 
-    for i, m in pairs(self.minions) do
-        if m.health <= 0 then
+    for i=#self.minions, 1, -1 do
+        if self.minions[i].health <= 0 then
             table.remove(self.minions, i)
         end
     end
@@ -80,6 +81,12 @@ function Megabyte:update(dt)
         self:spawnMinions(12, 16)
         self.rateOfFire = 1/5
         self.phase = 2
+    end
+
+    if self.phase == 2 then
+        if math.random() > 0.1 then
+            self.fireAngleMultiplier = self.fireAngleMultiplier * -1
+        end
     end
 
     self.invincible = (#self.minions > 0) or (self.spawnTween ~= nil)
@@ -100,7 +107,7 @@ function Megabyte:update(dt)
         self.heat = self.heat - dt
     end
 
-    self.fireAngle = self.fireAngle + (math.pi/2*math.random()*1.3) * dt
+    self.fireAngle = self.fireAngle + (math.pi/2*math.random()*1.3) * dt * self.fireAngleMultiplier
 
     local collidableObjects = quadtree:getCollidableObjects(self, true)
     for i, obj in pairs(collidableObjects) do
@@ -162,7 +169,8 @@ function MegabyteEnemy:update(dt)
         game:removeObject(self)
         game.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
         game.particleSystem:setPosition(self.position.x, self.position.y)
-        game.particleSystem:emit(50)
+        game.particleSystem:emit(150)
+        game:shakeScreen(2, 150)
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
     end
@@ -178,6 +186,7 @@ function MegabyteEnemy:update(dt)
                     game.particleSystem:setPosition(self.position.x, self.position.y)
                     game.particleSystem:emit(10)
                     game:removeBullet(obj)
+                    game:shakeScreen(1, 35)
                 end
             end
         end

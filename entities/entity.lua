@@ -31,6 +31,10 @@ function Entity:physicsUpdate(dt)
 	self.position = self.position + self.velocity * dt
 
 	self.x, self.y = self.position:unpack()
+
+	if self.handleCollision then
+		self:checkCollision(self.handleCollision)
+	end
 end
 
 function Entity:update(dt)
