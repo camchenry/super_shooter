@@ -105,3 +105,11 @@ function Player:draw()
     love.graphics.circle("line", self.position.x, self.position.y, self.radius)
     love.graphics.setColor(rgba)
 end
+
+function Player:getX()
+    return self.position.x
+end
+
+function Player:getY()
+    return self.position.y
+end

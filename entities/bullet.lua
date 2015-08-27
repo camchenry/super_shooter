@@ -76,3 +76,11 @@ function Bullet:setDamage(damage)
     self.damage = damage
     return self
 end
+
+function Bullet:getX()
+    return self.position.x
+end
+
+function Bullet:getY()
+    return self.position.y
+end

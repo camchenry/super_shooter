@@ -88,6 +88,7 @@ function game:update(dt)
 
     self.time = self.time + dt * 0.75
 
+
     for i,v in ipairs(objects) do
         v:update(dt)
         quadtree:updateObject(v)
@@ -100,6 +101,7 @@ function game:update(dt)
     end
 
     for i,v in ipairs(bullets) do
+        --quadtree:addObject(v)
         v:update(dt)
         quadtree:updateObject(v)
     end
@@ -325,9 +327,10 @@ function game:spawnEnemies()
 
     if currentWave.blobs ~= nil then
         for i=1, self.waves[self.wave].blobs do
-            self:addObject(Blob:new(
+            local b = Blob:new(
                 vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
-            ))
+            )
+            self:addObject(b)
         end
     end
 

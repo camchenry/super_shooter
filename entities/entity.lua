@@ -72,3 +72,11 @@ end
 function Entity:handleCollision(obj)
 
 end
+
+function Entity:getX()
+	return self.position.x
+end
+
+function Entity:getY()
+	return self.position.y
+end

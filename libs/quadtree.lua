@@ -65,7 +65,7 @@ end
 
 -- Add an object to the QuadTree
 function QuadTree:addObject(object)
-  assert(not self.objects[object], "You cannot add the same object twice to a QuadTree")
+  assert(not self.objects[object], "You cannot add the same object twice to a QuadTree"..#self.objects)
 
   if not self.children then
     self.objects[object] = object
@@ -89,6 +89,18 @@ function QuadTree:removeObject(object, usePrevious)
       function(child)
         child:removeObject(object, usePrevious)
       end, x, y)
+  end
+end
+
+function QuadTree:assertEnemyDoesntExist(object)
+  if self.children then
+    for i, child in pairs(self.children) do
+      child:assertEnemyDoesntExist(object)
+    end
+  end
+
+  for i, obj in pairs(self.objects) do
+    assert(i ~= object, 'object exists in the quadtree')
   end
 end
 
@@ -128,13 +140,13 @@ function QuadTree:getCollidableObjects(object, moving)
     -- added by ikroth
     -- this is basically a hack for quadtrees to support large objects by checking some points
     -- around the radius
-    if object.radius ~= nil then
+    --[[if object.radius ~= nil then
       local radius = object.radius
       self:check(object, f, object.x-radius, object.y-radius)
       self:check(object, f, object.x-radius, object.y+radius)
       self:check(object, f, object.x+radius, object.y+radius)
       self:check(object, f, object.x+radius, object.y-radius)
-    end
+    end]]
 
     local near = {}
     for q in pairs(quads) do
