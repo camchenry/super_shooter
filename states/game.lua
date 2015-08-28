@@ -12,7 +12,7 @@ function game:addObject(obj, tabl)
         assert(v ~= obj)
     end
     table.insert(tabl, obj)
-    quadtree:addObject(obj)
+    --quadtree:addObject(obj) -- do not add the object to the quadtree on the first frame to avoid an error where they aren't placed correctly
     return obj
 end
 function game:addBullet(obj)
@@ -23,13 +23,14 @@ function game:removeObject(obj, tabl)
     if tabl == nil then
         tabl = objects
     end
-    for i, v in pairs(tabl) do
+    for i, v in ipairs(tabl) do
         if v == obj then
             table.remove(tabl, i)
             break
         end
     end
     quadtree:removeObject(obj, true)
+    quadtree:removeObject(obj, false) -- this properly deletes enemies when they are on the border between 2 quads. it will check to delete for both the current pos and last pos. this is for a case where an enemy leaves a quad the frame before it dies
 end
 function game:removeBullet(obj)
     self:removeObject(obj, bullets)
@@ -77,7 +78,7 @@ function game:enter()
     self.time = 0
 
     self.startingWave = 0
-    self.timeToNextWave = 4
+    self.timeToNextWave = 2
 
     self:setupWaves()
     self:startWave()
@@ -192,9 +193,9 @@ function game:draw()
         v:draw()
     end
 
-    love.graphics.setColor(160, 160, 160, 16*math.abs(math.cos(self.time))+12)
+	love.graphics.setColor(160, 160, 160, 16*math.abs(math.cos(self.time))+12)
     quadtree:draw()
-
+	
     love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
 
     love.graphics.setColor(255, 255, 255, 255)
@@ -233,7 +234,7 @@ function game:draw()
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
 
         love.graphics.setColor(255, 255, 255)
-        love.graphics.setFont(fontBold[100])
+        love.graphics.setFont(fontBold[20])
         love.graphics.print("PAUSED", love.graphics.getWidth()/2 - love.graphics.getFont():getWidth("PAUSED")/2, love.graphics.getHeight()/2 - love.graphics.getFont():getHeight("PAUSED")/2)
     end
 end
@@ -280,7 +281,7 @@ function game:setupWaves()
     self.waves = {}
     self.waves[1] = {
         blobs = 25,
-        sweepers = 2,
+        sweepers = 0,
     }
     self.waves[2] = {
         blobs = 50,

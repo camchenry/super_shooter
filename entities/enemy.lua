@@ -1,12 +1,13 @@
 Enemy = class('Enemy', Entity)
 
 function Enemy:initialize(position)
-    Entity.initialize(self)
+    Entity.initialize(self, position)
     self.originalColor = {231, 76, 60, 255}
     self.radius = 15
     self.sides = 4
 
     self.position = position
+    self.x, self.y = self.position:unpack()
     self.touchDamage = player.maxHealth/5
 
     self.health = 100
@@ -56,7 +57,7 @@ end
 Blob = class('Blob', Enemy)
 
 function Blob:initialize(position)
-    Entity.initialize(self)
+    Enemy.initialize(self, position)
     self.originalColor = {231, 76, 60, 255}
     self.radius = 15
     self.sides = 4
@@ -82,7 +83,7 @@ end
 LineEnemy = class('LineEnemy', Enemy)
 
 function LineEnemy:initialize(start, finish)
-    Entity.initialize(self)
+    Enemy.initialize(self, start)
     self.originalColor = {241, 196, 0, 255}
     self.radius = 18
     self.sides = 3
