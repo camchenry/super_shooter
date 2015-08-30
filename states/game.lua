@@ -36,32 +36,33 @@ function game:removeBullet(obj)
     self:removeObject(obj, bullets)
 end
 
-function game:enter()
-    love.keyboard.setKeyRepeat(true)
-    love.mouse.setVisible(true)
+function game:init()
+    upgrades:init()
 
-    cursorImage = love.graphics.newImage("img/cursor.png")
-    cursor = love.mouse.newCursor(cursorImage:getData(), 16, 16)
-    love.mouse.setCursor(cursor)
+    shaders = {}
+
     local bloom = shine.bloom()
     bloom.parameters = {
         samples = 4,
         quality = 1,
     }
+    shaders.bloom = bloom
 
     local chroma = shine.separate_chroma()
     chroma.parameters = {
         radius = -1,
         angle = 5*math.pi/4
     }
+    shaders.chroma = chroma
 
     local blur = shine.gaussianblur()
     blur.parameters = {
-        sigma = 3
+        sigma = 4
     }
+    shaders.blur = blur
 
-    default_effect = chroma:chain(bloom)
     pause_effect = bloom:chain(blur)
+    default_effect = bloom
     post_effect = default_effect
 
     self.particles = Particles:new()
@@ -74,8 +75,9 @@ function game:enter()
 
     self.effectsEnabled = true
     self.paused = false
-    
+
     self.time = 0
+    self.deltaTimeMultiplier = 1
 
     self.startingWave = 0
     self.timeToNextWave = 2
@@ -84,11 +86,27 @@ function game:enter()
     self:startWave()
 end
 
+function game:enter(prev)
+    love.keyboard.setKeyRepeat(true)
+    love.mouse.setVisible(true)
+
+    crosshairImage = love.graphics.newImage("img/crosshair.png")
+    cursorImage = love.graphics.newImage("img/cursor.png")
+    crosshair = love.mouse.newCursor(crosshairImage:getData(), 16, 16)
+    cursor = love.mouse.newCursor(cursorImage:getData(), 12, 12)
+    love.mouse.setCursor(crosshair)
+
+    if self.deltaTimeMultiplier < 1 then
+        tween(.75, self, {deltaTimeMultiplier=1}, 'inQuad', function() end)
+    end
+end
+
 function game:update(dt)
     if self.paused then return end
 
-    self.time = self.time + dt * 0.75
+    dt = dt * self.deltaTimeMultiplier
 
+    self.time = self.time + dt * 0.75
 
     for i,v in ipairs(objects) do
         v:update(dt)
@@ -102,7 +120,6 @@ function game:update(dt)
     end
 
     for i,v in ipairs(bullets) do
-        --quadtree:addObject(v)
         v:update(dt)
         quadtree:updateObject(v)
     end
@@ -127,10 +144,16 @@ function game:update(dt)
     end
 
     if #objects == 1 and not self.waveTimer and self.boss == nil and self.waves[self.wave+1] ~= nil then
-        self.waveTimer = cron.after(self.timeToNextWave, function() 
-            self:startWave()
-            self.waveTimer = nil
-        end)
+        if upgrades:areAvailable() then
+            tween(1.5, self, {deltaTimeMultiplier=0}, 'outQuad', function()
+                state.switch(upgrades)
+            end)
+        else
+            self.waveTimer = cron.after(self.timeToNextWave, function() 
+                self:startWave()
+                self.waveTimer = nil
+            end)
+        end
     end
 end
 
@@ -213,7 +236,7 @@ function game:draw()
     love.graphics.setFont(font[16])
     love.graphics.print(love.timer.getFPS(), 5, 5)
     love.graphics.print(#bullets, 5, 20)
-    love.graphics.print(#objects, 5, 35)
+    love.graphics.print(upgrades.bits, 5, 35)
 
     love.graphics.setFont(font[48])
     if self.waveTimer ~= nil and self.waveTimer.time - self.waveTimer.running <= 3 and #objects == 1 then
@@ -280,15 +303,15 @@ end
 function game:setupWaves()
     self.waves = {}
     self.waves[1] = {
-        blobs = 25,
+        blobs = 10,
         sweepers = 0,
     }
     self.waves[2] = {
-        blobs = 50,
+        blobs = 15,
         sweepers = 2,
     }
     self.waves[3] = {
-        blobs = 15,
+        blobs = 20,
         sweepers = 4,
     }
     self.waves[4] = {

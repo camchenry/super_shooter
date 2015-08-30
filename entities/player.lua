@@ -18,22 +18,6 @@ function Player:initialize()
     self.height = self.radius * 2
     self.x, self.y = self.position:unpack()
     self.prev_x, self.prev_y = self.position:unpack()
-
-    self.score = 0
-    self.scoreObserver = signal.register('enemyDeath', function(enemy) self:increaseScore(enemy) end)
-end
-
-function Player:increaseScore(enemy)
-    assert(self ~= nil)
-    assert(enemy ~= nil)
-    assert(self == player)
-    assert(self.score ~= nil)
-
-    if enemy:isInstanceOf(LineEnemy) then
-        self.score = self.score + 10
-    elseif enemy:isInstanceOf(Blob) then
-        self.score = self.score + 5
-    end
 end
 
 function Player:update(dt)
