@@ -48,6 +48,8 @@ function Entity:draw()
 	love.graphics.setColor(self.color)
 
 	love.graphics.circle("line", self.position.x, self.position.y, self.radius, self.sides)
+	--love.graphics.line(self.position.x, self.position.y, self.position.x + self.velocity.x, self.position.y + self.velocity.y)
+	--love.graphics.print(self.speedBurstPercent, self.position.x, self.position.y)
 
 	love.graphics.setColor(rgba)
 	love.graphics.pop()

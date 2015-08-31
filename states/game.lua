@@ -145,9 +145,9 @@ function game:update(dt)
 
     if #objects == 1 and not self.waveTimer and self.boss == nil and self.waves[self.wave+1] ~= nil then
         if upgrades:areAvailable() then
-            tween(1.5, self, {deltaTimeMultiplier=0}, 'outQuad', function()
-                state.switch(upgrades)
-            end)
+           -- tween(1.5, self, {deltaTimeMultiplier=0}, 'outQuad', function()
+           --     state.switch(upgrades)
+           -- end)
         else
             self.waveTimer = cron.after(self.timeToNextWave, function() 
                 self:startWave()
@@ -303,7 +303,7 @@ end
 function game:setupWaves()
     self.waves = {}
     self.waves[1] = {
-        blobs = 10,
+        blobs = 40,
         sweepers = 0,
     }
     self.waves[2] = {
