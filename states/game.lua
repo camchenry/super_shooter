@@ -81,6 +81,8 @@ function game:init()
 
     self.startingWave = 0
     self.timeToNextWave = 2
+    self._postWaveCalled = false
+    self._preWaveCalled = false
 
     self:setupWaves()
     self:startWave()
@@ -99,11 +101,17 @@ function game:enter(prev)
     if self.deltaTimeMultiplier < 1 then
         tween(.75, self, {deltaTimeMultiplier=1}, 'inQuad', function() end)
     end
+
+    if not self._postWaveCalled then
+        self:onWaveEnd()
+    else
+        self:onWaveStart()
+    end
 end
 
 function game:update(dt)
     if self.paused then return end
-
+ 
     dt = dt * self.deltaTimeMultiplier
 
     self.time = self.time + dt * 0.75
@@ -144,17 +152,39 @@ function game:update(dt)
     end
 
     if #objects == 1 and not self.waveTimer and self.boss == nil and self.waves[self.wave+1] ~= nil then
-        if upgrades:areAvailable() then
-            tween(1.5, self, {deltaTimeMultiplier=0}, 'outQuad', function()
-                state.switch(upgrades)
-            end)
-        else
-            self.waveTimer = cron.after(self.timeToNextWave, function() 
-                self:startWave()
-                self.waveTimer = nil
-            end)
+        if not self._postWaveCalled then
+            self:onWaveEnd()
         end
     end
+end
+
+function game:onWaveStart()
+    if self._preWaveCalled then return end
+
+    self:startWave()
+    self.waveTimer = nil
+
+    self._postWaveCalled = false
+    self._preWaveCalled = true
+end
+
+function game:onWaveEnd()
+    if self._postWaveCalled then return end
+
+    if upgrades:areAvailable() then
+        tween(1.5, self, {deltaTimeMultiplier=0}, 'outQuad', function()
+            state.switch(upgrades)
+        end)
+    else
+        self.waveTimer = cron.after(self.timeToNextWave, function()
+            if not self._preWaveCalled then
+                self:onWaveStart()
+            end
+        end)
+    end
+
+    self._postWaveCalled = true
+    self._preWaveCalled = false
 end
 
 function game:keypressed(key, isrepeat)
@@ -331,6 +361,8 @@ function game:setupWaves()
 end
 
 function game:startWave()
+    self.waveTimer = nil
+
     if self.wave == nil then
         self.wave = self.startingWave
     elseif self.waves[self.wave+1] == nil then
