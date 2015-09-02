@@ -14,6 +14,7 @@ require 'libs.util'
 require 'states.menu'
 require 'states.game'
 require 'states.upgrade'
+require 'states.options'
 
 -- entities
 require 'entities.entity'
@@ -23,6 +24,12 @@ require 'entities.enemy'
 require 'entities.boss.megabyte'
 require 'entities.fx.particle'
 require 'entities.fx.shake'
+
+require 'entities.ui.button'
+require 'entities.ui.checkbox'
+require 'entities.ui.input'
+require 'entities.ui.list'
+require 'entities.ui.sidebarButton'
 
 function love.load()
 	love.window.setTitle(config.windowTitle)
