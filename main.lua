@@ -24,6 +24,8 @@ require 'entities.boss.megabyte'
 require 'entities.fx.particle'
 require 'entities.fx.shake'
 
+MOUSE_VALUE = 0
+
 function love.load()
 	love.window.setTitle(config.windowTitle)
     love.window.setIcon(love.image.newImageData(config.windowIcon))
@@ -43,7 +45,11 @@ function love.keypressed(key, code)
 end
 
 function love.mousepressed(x, y, mbutton)
-    
+    if mbutton == "wd" then
+        MOUSE_VALUE = MOUSE_VALUE - 1/1000
+    elseif mbutton == "wu" then
+        MOUSE_VALUE = MOUSE_VALUE + 1/1000
+    end
 end
 
 function love.textinput(text)
