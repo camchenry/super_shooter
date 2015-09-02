@@ -19,19 +19,15 @@ function ScreenShake:update(dt)
 end
 
 function ScreenShake:onEnemyDeath(enemy)
-	if enemy:isInstanceOf(LineEnemy) then
-        self:shake(1, 50)
-    elseif enemy:isInstanceOf(Blob) then
-        self:shake(1, 50)
-    end
+	self:shake(1, 100)
+
+    love.timer.sleep(love.timer.getDelta())
 end
 
 function ScreenShake:onEnemyHit(enemy)
-	if enemy:isInstanceOf(LineEnemy) then
-        self:shake(1, 15)
-    elseif enemy:isInstanceOf(Blob) then
-        self:shake(1, 15)
-    end
+	self:shake(1, 30)
+
+    love.timer.sleep(love.timer.getDelta())
 end
 
 function ScreenShake:shake(time, strength)
