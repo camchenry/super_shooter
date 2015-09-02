@@ -28,7 +28,8 @@ end
 
 function Bullet:update(dt)
     self.prev_x, self.prev_y = self.position:unpack()
-    self.position = self.position + self.velocity * dt
+    local oldVelocity = self.velocity
+    self.position = self.position + (oldVelocity + self.velocity) * 0.5 * dt
     self.x, self.y = self.position:unpack()
     self.width, self.height = self.radius*2, self.radius*2
 
@@ -58,6 +59,7 @@ end
 
 function Bullet:setSpeed(speed)
     self.speed = speed
+    self.velocity = (self.target - self.position - WINDOW_OFFSET):normalized() * self.speed
     return self
 end
 

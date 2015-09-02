@@ -5,10 +5,11 @@ function Player:initialize()
     self.radius = 15
 
     self.position = vector(-100, 100)
+    self.oldVelocity = vector(0, 0)
     self.velocity = vector(0, 0)
-    self.dragFactor = 0.10
+    self.friction = 2
     self.acceleration = vector(0, 0)
-    self.accelConstant = 1000
+    self.speed = 500
     self.heat = 0
     self.rateOfFire = (1/6) -- 1 / shots per second
     self.health = 100
@@ -24,16 +25,18 @@ function Player:update(dt)
     self.width, self.height = self.radius*2, self.radius*2
     self.x, self.y = self.position:unpack()
 
+    self.acceleration = vector(0, 0)
+
     if love.keyboard.isDown("w") then
-        self.acceleration.y = -self.accelConstant
+        self.acceleration.y = -self.speed
     elseif love.keyboard.isDown("s") then
-        self.acceleration.y = self.accelConstant
+        self.acceleration.y = self.speed
     end
 
     if love.keyboard.isDown("a") then
-        self.acceleration.x = -self.accelConstant
+        self.acceleration.x = -self.speed
     elseif love.keyboard.isDown("d") then
-        self.acceleration.x = self.accelConstant
+        self.acceleration.x = self.speed
     end
 
     if love.mouse.isDown('l') then
@@ -72,10 +75,11 @@ function Player:update(dt)
     end
 
     self.prev_x, self.prev_y = self.position:unpack()
-    self.acceleration = self.acceleration - (self.acceleration * self.dragFactor)
-    self.velocity = self.velocity - (self.velocity * self.dragFactor)
-    self.velocity = self.velocity + self.acceleration * dt
-    self.position = self.position + self.velocity * dt
+    -- verlet integration, much more accurate than euler integration for constant acceleration and variable timesteps
+    self.oldVelocity = self.velocity
+    self.velocity = self.velocity + (self.acceleration - self.friction*self.velocity) * dt
+    self.position = self.position + (self.oldVelocity + self.velocity) * 0.5 * dt
+
     self.x, self.y = self.position:unpack()
 end
 

@@ -62,6 +62,8 @@ function Blob:initialize(position)
     self.radius = 15
     self.sides = 4
 
+    self.speed = 400
+
     self.position = position
     self.touchDamage = player.maxHealth/5
 
@@ -92,7 +94,8 @@ function LineEnemy:initialize(start, finish)
     self.start = start
     self.finish = finish
     self.target = finish
-    self.speed = 3000
+    self.speed = 2500
+    self.friction = 3
 
     self.touchDamage = player.maxHealth/2
 
@@ -103,7 +106,7 @@ end
 function LineEnemy:update(dt)
     Enemy.update(self, dt)
 
-    if self.position:dist(self.target) < 2 then
+    if self.position:dist(self.target) < 10 then
         if self.target == self.finish then
             self.target = self.start
         else

@@ -12,9 +12,10 @@ function Entity:initialize()
 	-- physics
 	self.position = vector(0, 0)
 	self.velocity = vector(0, 0)
+	self.oldVelocity = vector(0, 0)
 	self.acceleration = vector(0, 0)
-	self.speed = 850
-	self.dragFactor = 0.15
+	self.speed = 250
+	self.friction = 2
 	self.x, self.y = self.position:unpack()
 	self.prev_x, self.prev_y = self.position:unpack()
 
@@ -25,12 +26,15 @@ function Entity:physicsUpdate(dt)
 	self.width, self.height = self.radius*2, self.radius * 2
 
 	self.prev_x, self.prev_y = self.position:unpack()
-	self.acceleration = self.acceleration - (self.acceleration * self.dragFactor)
-	self.velocity = self.velocity - (self.velocity * self.dragFactor)
-	self.velocity = self.velocity + self.acceleration * dt
-	self.position = self.position + self.velocity * dt
+
+	-- verlet integration, much more accurate than euler integration for constant acceleration and variable timesteps
+    self.oldVelocity = self.velocity
+    self.velocity = self.velocity + (self.acceleration - self.friction*self.velocity) * dt
+    self.position = self.position + (self.oldVelocity + self.velocity) * 0.5 * dt
 
 	self.x, self.y = self.position:unpack()
+
+	--self.acceleration = vector(0, 0)
 
 	if self.handleCollision then
 		self:checkCollision(self.handleCollision)
