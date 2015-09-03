@@ -77,6 +77,7 @@ function game:init()
     self.paused = false
 
     self.time = 0
+    self.ptime = 0
     self.deltaTimeMultiplier = 1
 
     self.startingWave = 0
@@ -111,6 +112,10 @@ end
 
 function game:update(dt)
     if self.paused then return end
+    if self.ptime > 0 then
+        self.ptime = self.ptime - dt
+        return
+    end
  
     dt = dt * self.deltaTimeMultiplier
 
@@ -265,7 +270,7 @@ function game:draw()
 
     love.graphics.setFont(font[16])
     love.graphics.print(love.timer.getFPS(), 5, 5)
-    love.graphics.print(#bullets, 5, 20)
+    love.graphics.print(MOUSE_VALUE*1000 .. "ms", 5, 20)
     love.graphics.print(upgrades.bits, 5, 35)
 
     love.graphics.setFont(font[48])

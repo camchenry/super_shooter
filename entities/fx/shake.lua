@@ -20,14 +20,12 @@ end
 
 function ScreenShake:onEnemyDeath(enemy)
 	self:shake(1, 100)
-
-    love.timer.sleep(love.timer.getDelta())
 end
 
 function ScreenShake:onEnemyHit(enemy)
 	self:shake(1, 30)
 
-    love.timer.sleep(love.timer.getDelta())
+    game.ptime = MOUSE_VALUE
 end
 
 function ScreenShake:shake(time, strength)
