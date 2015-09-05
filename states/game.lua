@@ -116,6 +116,12 @@ function game:update(dt)
         self.ptime = self.ptime - dt
         return
     end
+
+    if quadtree.width ~= love.graphics.getWidth() or quadtree.height ~= love.graphics.getHeight() then
+        quadtree.width = love.graphics.getWidth()
+        quadtree.height = love.graphics.getHeight()
+    end
+
  
     dt = dt * self.deltaTimeMultiplier
 
@@ -414,4 +420,16 @@ function game:spawnEnemies()
         local b = currentWave.boss:new()
         self.boss = self:addObject(b)
     end
+end
+
+function game:addAllObjectsToQuadtree()
+    for i, o in ipairs(objects) do
+        quadtree:addObject(o)
+    end
+
+    for i, o in ipairs(bullets) do
+        quadtree:addObject(o)
+    end
+
+    quadtree:addObject(player)
 end

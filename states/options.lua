@@ -28,14 +28,14 @@ function options:enter()
 	-- sort resolutions from smallest to biggest
 	table.sort(resolutions, function(a, b) return a[1]*a[2] < b[1]*b[2] end)
 	
-	self.resolution = List:new('RESOLUTION: ', resolutions, 25, 170, 275)
+	self.resolution = List:new('RESOLUTION: ', resolutions, 25, 170, 400)
 	self.resolution.listType = 'resolution'
 	self.resolution:selectTable({width, height})
 	self.resolution:setText('{1}x{2}')
 	
 	
 	local fsaaOptions = {0, 2, 4, 8, 16}
-	self.fsaa = List:new('ANTIALIASING: ', fsaaOptions, 25, 210, 275)
+	self.fsaa = List:new('ANTIALIASING: ', fsaaOptions, 25, 210, 400)
 	self.fsaa:selectValue(flags.fsaa)
 	self.fsaa:setText('{}x')
 	
@@ -45,20 +45,16 @@ function options:enter()
 		state.pop() -- options can be accessed from multiple places in the game
 	end
 
-	self.apply = Button:new('APPLY', 170, love.window.getHeight()-80)
+	self.apply = Button:new('APPLY CHANGES', 190, love.window.getHeight()-80)
 	self.apply.activated = function ()
 		self:applyChanges()
-		--if self:applyChanges() then
-		--	fx.text(3.5, "CHANGES APPLIED", 25, love.graphics.getHeight()-120, {127, 127, 127})
-		--end
-
 		self.back.y = love.window.getHeight()-80
 		self.apply.y = love.window.getHeight()-80
 	end
 end
 
 function options:leave()
-	--fx.reset()
+
 end
 
 function options:applyChanges()
@@ -75,7 +71,6 @@ function options:applyChanges()
 	
 	local width, height, flags = love.window.getMode()
 	if fsaa ~= flags.fsaa then -- Notifies the player if the fsaa value is invalid
-		--fx.text(5, 'fsaa value not supported', 25, love.window.getHeight()-120, {255, 0, 0})
 		fsaa = 0 -- If the selected fsaa value is not supported, then it will store the value as 0
 	end
 	

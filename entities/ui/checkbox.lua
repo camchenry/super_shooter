@@ -36,15 +36,15 @@ function Checkbox:draw()
 	
 	local x = self.x
 	local y = self.y - self.height/2
-
-	love.graphics.setLineWidth(3)
-
-	-- diagonal check line
-	love.graphics.line(x, y, x+self.width, y+self.height)
 	
 	love.graphics.setColor(255, 255, 255)
 	love.graphics.rectangle("line", x, y, self.width, self.height)
-	
+
+	if self.selected then
+		local margin = 5
+		love.graphics.rectangle("fill", self.x+margin, y+margin, self.width-margin*2, self.height-margin*2)
+	end
+
 	local textWidth = self.font:getWidth(self.text)
 	local textX = x + self.width + 10
 	local textY = self.y - self.textHeight/2
