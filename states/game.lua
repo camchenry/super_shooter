@@ -117,12 +117,15 @@ function game:update(dt)
         return
     end
 
-    if quadtree.width ~= love.graphics.getWidth() or quadtree.height ~= love.graphics.getHeight() then
-        quadtree.width = love.graphics.getWidth()
-        quadtree.height = love.graphics.getHeight()
-    end
+    -- this triggers when the game resolution changes
+    if WINDOW_OFFSET.x ~= love.graphics.getWidth()/2 or WINDOW_OFFSET.y ~= love.graphics.getHeight()/2 then
+        local dx = WINDOW_OFFSET.x*2 - love.graphics.getWidth()
+        local dy = WINDOW_OFFSET.y*2 - love.graphics.getHeight()
+        quadtree:resize(dx, dy, love.graphics.getWidth(), love.graphics.getHeight())
 
- 
+        WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
+    end
+    
     dt = dt * self.deltaTimeMultiplier
 
     self.time = self.time + dt * 0.75

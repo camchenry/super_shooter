@@ -10,13 +10,24 @@ local QuadTree = class('QuadTree')
   Create and return a new instance of the QuadTree class with
   the given position and size.
 ]]
-function QuadTree:initialize(_left, _top, _width, _height)
+function QuadTree:initialize(_left, _top, _width, _height, parent)
   self.left   = _left
   self.top    = _top
   self.width  = _width
   self.height = _height
   self.children = nil
   self.objects = {}
+end
+
+function QuadTree:resize(dx, dy, width, height)
+  if self.children then
+    for i, child in pairs(self.children) do
+      child:resize(dx, dy, math.floor(width/2), math.floor(height/2))
+    end
+  end
+
+  self.left = self.left + dx/2
+  self.top = self.top + dy/2
 end
 
 -- Subdivide (split) the QuadTree into four sub QuadTrees
@@ -32,7 +43,7 @@ function QuadTree:subdivide()
     local h = math.floor(self.height / 2)
     -- Note: This only works for even width/height
     --   for odd the size of the far quadrant needs to be
-    --    (self.width - w, wself.height - h)
+    --    (self.width - w, self.height - h)
     self.children = {
       QuadTree:new(x    , y    , w, h),
       QuadTree:new(x + w, y    , w, h),
@@ -41,7 +52,6 @@ function QuadTree:subdivide()
     }
   end
 end
-
 
 function QuadTree:check(object, func, x, y)
   local oleft   = x or object.x
@@ -89,18 +99,6 @@ function QuadTree:removeObject(object, usePrevious)
       function(child)
         child:removeObject(object, usePrevious)
       end, x, y)
-  end
-end
-
-function QuadTree:assertEnemyDoesntExist(object)
-  if self.children then
-    for i, child in pairs(self.children) do
-      child:assertEnemyDoesntExist(object)
-    end
-  end
-
-  for i, obj in pairs(self.objects) do
-    assert(i ~= object, 'object exists in the quadtree')
   end
 end
 
