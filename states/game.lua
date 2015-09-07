@@ -363,6 +363,8 @@ function game:setupWaves()
     self.waves[1] = {
         blobs = 10,
         sweepers = 0,
+		healers = 3,
+		tanks = 4,
     }
     self.waves[2] = {
         blobs = 15,
@@ -430,6 +432,24 @@ function game:spawnEnemies()
                 vector(margin-WINDOW_OFFSET.x, (margin*2+h*(i-1))-WINDOW_OFFSET.y),
                 vector(w-WINDOW_OFFSET.x-margin, (margin*2+h*(i-1))-WINDOW_OFFSET.y)
             ))
+        end
+    end
+	
+	if currentWave.healers ~= nil then
+        for i=1, self.waves[self.wave].healers do
+            local b = Healer:new(
+                vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            )
+            self:addObject(b)
+        end
+    end
+	
+	if currentWave.tanks ~= nil then
+        for i=1, self.waves[self.wave].tanks do
+            local b = Tank:new(
+                vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            )
+            self:addObject(b)
         end
     end
 
