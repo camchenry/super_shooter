@@ -120,3 +120,67 @@ end
 function LineEnemy:handleCollision(obj)
 
 end
+
+Healer = class('Healer', Enemy)
+
+function Healer:initialize(position)
+    Enemy.initialize(self, position)
+    self.originalColor = {77, 214, 79, 255}
+    self.radius = 11
+    self.sides = 5
+
+    self.speed = 300
+
+    self.position = position
+    self.touchDamage = player.maxHealth/10
+
+    self.maxHealth = 70
+    self.health = self.maxHealth
+	
+	self.healRate = 30
+end
+
+function Healer:update(dt)
+    Enemy.update(self, dt)
+    self.moveTowardsPlayer = (player.position - self.position):normalized()
+
+    self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
+end
+
+function Healer:handleCollision(obj)
+    if obj:isInstanceOf(Enemy) then
+        local dt = love.timer.getDelta()
+		obj.health = obj.health + self.healRate*dt
+		if obj.health > obj.maxHealth then
+			obj.health = obj.maxHealth
+		end
+    end
+end
+
+Tank = class('Tank', Enemy)
+
+function Tank:initialize(position)
+    Enemy.initialize(self, position)
+    self.originalColor = {122, 214, 210, 255}
+    self.radius = 20
+    self.sides = 6
+
+    self.speed = 600
+
+    self.position = position
+    self.touchDamage = player.maxHealth/2
+
+    self.maxHealth = 250
+    self.health = self.maxHealth
+end
+
+function Tank:update(dt)
+    Enemy.update(self, dt)
+    self.moveTowardsPlayer = (player.position - self.position):normalized()
+
+    self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
+end
+
+function Tank:handleCollision(obj)
+
+end
