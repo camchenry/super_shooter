@@ -8,6 +8,7 @@ shine = require 'libs.shine'
 beholder = require 'libs.beholder'
 signal = require 'libs.signal'
 QuadTree = require 'libs.quadtree'
+serialize = require 'libs.ser'
 require 'libs.util'
 
 -- gamestates
@@ -43,6 +44,10 @@ function love.load()
     state.switch(menu)
 
     math.randomseed(os.time()/10)
+
+    if love.filesystem.exists("config.txt") then
+        options:load()
+    end
 end
 
 function love.keypressed(key, code)

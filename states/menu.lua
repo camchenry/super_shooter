@@ -4,9 +4,7 @@ menu.items = {
     {
         title = "NEW GAME",
         action = function()
-            --fx.fade(.75, {0, 0, 0}, "outQuad", function()
-                state.switch(game)
-            --end)
+            state.switch(game)
         end,
     },
 
@@ -29,7 +27,7 @@ menu.buttons = {}
 
 function menu:init()
     for i, item in pairs(self.items) do
-        table.insert(self.buttons, Button:new(item.title, 100, 50*(i-1) + 250, nil, nil, font[32], item.action))
+        table.insert(self.buttons, Button:new(item.title, 75, 50*(i-1) + 250, nil, nil, font[30], item.action))
     end
 end
 
@@ -52,12 +50,14 @@ function menu:mousepressed(x, y, mbutton)
 end
 
 function menu:draw()
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 120+55)
+
     love.graphics.setFont(fontBold[72])
-    love.graphics.print('VOYAGER', 100, 70)
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.print('SUPER SHOOTER', 75, 70)
 
     for i, button in pairs(self.buttons) do
         button:draw()
     end
-
-    --fx.draw()
 end

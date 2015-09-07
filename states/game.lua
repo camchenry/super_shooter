@@ -73,8 +73,14 @@ function game:init()
     quadtree:subdivide()
     player = self:addObject(Player:new())
 
-    self.effectsEnabled = true
     self.paused = false
+
+    if self.effectsEnabled == nil then
+        self.effectsEnabled = false
+        self:toggleEffects()
+    else
+        self:toggleEffects()
+    end
 
     self.time = 0
     self.ptime = 0
@@ -116,7 +122,16 @@ function game:update(dt)
         self.ptime = self.ptime - dt
         return
     end
- 
+
+    -- this triggers when the game resolution changes
+    if WINDOW_OFFSET.x ~= love.graphics.getWidth()/2 or WINDOW_OFFSET.y ~= love.graphics.getHeight()/2 then
+        local dx = WINDOW_OFFSET.x*2 - love.graphics.getWidth()
+        local dy = WINDOW_OFFSET.y*2 - love.graphics.getHeight()
+        quadtree:resize(dx, dy)
+
+        WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
+    end
+    
     dt = dt * self.deltaTimeMultiplier
 
     self.time = self.time + dt * 0.75
@@ -147,7 +162,9 @@ function game:update(dt)
         self.waveTimer:update(dt)
     end
 
-    self.particles:update(dt)
+    if self.particlesEnabled then
+        self.particles:update(dt)
+    end
     self.screenShake:update(dt)
 
     if self.boss then
@@ -192,6 +209,19 @@ function game:onWaveEnd()
     self._preWaveCalled = false
 end
 
+function game:toggleEffects()
+    if not self.effectsEnabled then
+        old_post_effect = post_effect
+        post_effect = function(func)
+            func()
+        end
+    else
+        if old_post_effect then
+            post_effect = old_post_effect
+        end
+    end
+end
+
 function game:keypressed(key, isrepeat)
     for i,v in ipairs(objects) do
         if v.keypressed then
@@ -202,16 +232,7 @@ function game:keypressed(key, isrepeat)
     if key == "b" then
         self.effectsEnabled = not self.effectsEnabled
 
-        if not self.effectsEnabled then
-            old_post_effect = post_effect
-            post_effect = function(func)
-                func()
-            end
-        else
-            if old_post_effect then
-                post_effect = old_post_effect
-            end
-        end
+        self:toggleEffects()
     end
 
     if key == "p" then
@@ -242,7 +263,9 @@ function game:draw()
 
     love.graphics.translate(love.graphics.getWidth()/2+dx, love.graphics.getHeight()/2+dy)
 
-    self.particles:draw()
+    if self.particlesEnabled then
+        self.particles:draw()
+    end
 
     for i,v in ipairs(objects) do
         v:draw()
@@ -434,4 +457,16 @@ function game:spawnEnemies()
         local b = currentWave.boss:new()
         self.boss = self:addObject(b)
     end
+end
+
+function game:addAllObjectsToQuadtree()
+    for i, o in ipairs(objects) do
+        quadtree:addObject(o)
+    end
+
+    for i, o in ipairs(bullets) do
+        quadtree:addObject(o)
+    end
+
+    quadtree:addObject(player)
 end
