@@ -19,10 +19,10 @@ function QuadTree:initialize(_left, _top, _width, _height, parent)
   self.objects = {}
 end
 
-function QuadTree:resize(dx, dy, width, height)
+function QuadTree:resize(dx, dy)
   if self.children then
     for i, child in pairs(self.children) do
-      child:resize(dx, dy, math.floor(width/2), math.floor(height/2))
+      child:resize(dx, dy)
     end
   end
 

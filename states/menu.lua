@@ -51,7 +51,7 @@ end
 
 function menu:draw()
     love.graphics.setColor(255, 255, 255)
-    love.graphics.rectangle("fill", 0, 55, love.graphics.getWidth(), 120)
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 120+55)
 
     love.graphics.setFont(fontBold[72])
     love.graphics.setColor(0, 0, 0)
