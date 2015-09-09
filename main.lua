@@ -14,7 +14,6 @@ require 'libs.util'
 -- gamestates
 require 'states.menu'
 require 'states.game'
-require 'states.upgrade'
 require 'states.options'
 
 -- entities

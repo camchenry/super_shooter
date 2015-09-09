@@ -37,8 +37,6 @@ function game:removeBullet(obj)
 end
 
 function game:init()
-    upgrades:init()
-
     shaders = {}
 
     local bloom = shine.bloom()
@@ -193,17 +191,11 @@ end
 function game:onWaveEnd()
     if self._postWaveCalled then return end
 
-    if upgrades:areAvailable() then
-        tween(1.5, self, {deltaTimeMultiplier=0}, 'outQuad', function()
-            state.switch(upgrades)
-        end)
-    else
-        self.waveTimer = cron.after(self.timeToNextWave, function()
-            if not self._preWaveCalled then
-                self:onWaveStart()
-            end
-        end)
-    end
+    self.waveTimer = cron.after(self.timeToNextWave, function()
+        if not self._preWaveCalled then
+            self:onWaveStart()
+        end
+    end)
 
     self._postWaveCalled = true
     self._preWaveCalled = false
@@ -294,7 +286,6 @@ function game:draw()
     love.graphics.setFont(font[16])
     love.graphics.print(love.timer.getFPS(), 5, 5)
     love.graphics.print(MOUSE_VALUE*1000 .. "ms", 5, 20)
-    love.graphics.print(upgrades.bits, 5, 35)
 
     love.graphics.setFont(font[48])
     if self.waveTimer ~= nil and self.waveTimer.time - self.waveTimer.running <= 3 and #objects == 1 then
