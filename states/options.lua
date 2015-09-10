@@ -73,6 +73,8 @@ function options:applyChanges()
     self:save()
     self:load()
 
+    game:resized()
+
 	return true
 end
 

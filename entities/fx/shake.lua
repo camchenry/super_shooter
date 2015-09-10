@@ -24,8 +24,6 @@ end
 
 function ScreenShake:onEnemyHit(enemy)
 	self:shake(1, 30)
-
-    game.ptime = MOUSE_VALUE
 end
 
 function ScreenShake:shake(time, strength)

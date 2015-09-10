@@ -12,6 +12,8 @@ function Enemy:initialize(position)
 
     self.health = 100
     self.maxHealth = 100
+
+    self.flashTime = 0
 end
 
 function Enemy:update(dt)
@@ -22,8 +24,14 @@ function Enemy:update(dt)
     self.color = self.originalColor
     self.color[4] = math.max(32, 255*(self.health/self.maxHealth))
 
+    if self.flashTime > 0 then
+        self.color = {255, 255, 255, 255}
+        self.flashTime = self.flashTime - dt
+    end
+
     if self.health <= 0 then
         self.destroy = true
+        self.color = self.originalColor
         signal.emit('enemyDeath', self)
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
@@ -45,11 +53,13 @@ function Enemy:_handleCollision(obj)
     end
 
     if obj:isInstanceOf(Bullet) then
+        if obj.source ~= nil and obj.source:isInstanceOf(self.class) then return end
+
         if self.position:dist(obj.position) < self.radius + obj.radius then
             self.health = self.health - obj.damage
             signal.emit('enemyHit', self)
             game:removeBullet(obj)
-            self.color = {255, 255, 255, 255}
+            self.flashTime = 20/1000
         end
     end
 end
@@ -165,12 +175,12 @@ function Tank:initialize(position)
     self.radius = 20
     self.sides = 6
 
-    self.speed = 500
+    self.speed = 200
 
     self.position = position
     self.touchDamage = player.maxHealth/2
 
-    self.maxHealth = 250
+    self.maxHealth = 750
     self.health = self.maxHealth
 end
 
@@ -182,5 +192,18 @@ function Tank:update(dt)
 end
 
 function Tank:handleCollision(obj)
+    if obj:isInstanceOf(Bullet) then
+        if obj.source == self then return end
+        if obj.source:isInstanceOf(Tank) then return end
+        if obj.alreadyCollided then return end
 
+        local randOffset = vector(math.random(-100, 100), math.random(-100, 100))
+
+        game:addBullet(Bullet:new(
+            self.position,
+            player.position + vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + randOffset,
+            self.velocity)
+        ):setSource(self):setDamage(obj.damage*0.25):setSpeed(obj.velocity:len()*1.5)
+        obj.alreadyCollided = true
+    end
 end

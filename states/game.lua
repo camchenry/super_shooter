@@ -71,8 +71,6 @@ function game:init()
     quadtree:subdivide()
     player = self:addObject(Player:new())
 
-    self.paused = false
-
     if self.effectsEnabled == nil then
         self.effectsEnabled = false
         self:toggleEffects()
@@ -81,7 +79,6 @@ function game:init()
     end
 
     self.time = 0
-    self.ptime = 0
     self.deltaTimeMultiplier = 1
 
     self.startingWave = 0
@@ -93,14 +90,32 @@ function game:init()
     self:startWave()
 end
 
+function game:reset()
+    quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
+    quadtree:subdivide()
+    quadtree:subdivide()
+    player = self:addObject(Player:new())
+
+    if self.effectsEnabled == nil then
+        self.effectsEnabled = false
+        self:toggleEffects()
+    else
+        self:toggleEffects()
+    end
+
+    self.time = 0
+    self.deltaTimeMultiplier = 1
+
+    self.startingWave = 0
+    self.timeToNextWave = 2
+
+    self:startWave()
+end
+
 function game:enter(prev)
     love.keyboard.setKeyRepeat(true)
     love.mouse.setVisible(true)
 
-    crosshairImage = love.graphics.newImage("img/crosshair.png")
-    cursorImage = love.graphics.newImage("img/cursor.png")
-    crosshair = love.mouse.newCursor(crosshairImage:getData(), 16, 16)
-    cursor = love.mouse.newCursor(cursorImage:getData(), 12, 12)
     love.mouse.setCursor(crosshair)
 
     if self.deltaTimeMultiplier < 1 then
@@ -114,20 +129,18 @@ function game:enter(prev)
     end
 end
 
-function game:update(dt)
-    if self.paused then return end
-    if self.ptime > 0 then
-        self.ptime = self.ptime - dt
-        return
-    end
+function game:resized()
+    local dx = WINDOW_OFFSET.x*2 - love.graphics.getWidth()
+    local dy = WINDOW_OFFSET.y*2 - love.graphics.getHeight()
+    quadtree:resize(dx, dy)
 
+    WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
+end
+
+function game:update(dt)
     -- this triggers when the game resolution changes
     if WINDOW_OFFSET.x ~= love.graphics.getWidth()/2 or WINDOW_OFFSET.y ~= love.graphics.getHeight()/2 then
-        local dx = WINDOW_OFFSET.x*2 - love.graphics.getWidth()
-        local dy = WINDOW_OFFSET.y*2 - love.graphics.getHeight()
-        quadtree:resize(dx, dy)
-
-        WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
+        self:resized()
     end
     
     dt = dt * self.deltaTimeMultiplier
@@ -228,7 +241,7 @@ function game:keypressed(key, isrepeat)
     end
 
     if key == "p" then
-        self.paused = not self.paused
+        state.switch(pause)
     end
 end
 
@@ -240,19 +253,16 @@ function game:draw()
     love.graphics.setColor(255, 255, 255)
     love.graphics.setLineWidth(1)
 
-    if self.effectsEnabled then
-        if self.paused then
-            post_effect = pause_effect
-        else
-            post_effect = default_effect
-        end
+    if state.current() == pause then
+        post_effect = pause_effect
+    else
+        post_effect = default_effect
     end
-
-    local dx, dy = self.screenShake:getOffset()
 
     -- start post effect
     post_effect(function()
 
+    local dx, dy = self.screenShake:getOffset()
     love.graphics.translate(love.graphics.getWidth()/2+dx, love.graphics.getHeight()/2+dy)
 
     if self.particlesEnabled then
@@ -271,8 +281,6 @@ function game:draw()
 	
     love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
 
-    love.graphics.setColor(255, 255, 255, 255)
-
     if self.waveText ~= nil and self.wave > 0 then
         self:drawPrimaryText()
     end
@@ -282,11 +290,15 @@ function game:draw()
     end 
 
     self:drawPlayerHealthBar()
+    self:drawBossIncoming()
 
     love.graphics.setFont(font[16])
     love.graphics.print(love.timer.getFPS(), 5, 5)
-    love.graphics.print(MOUSE_VALUE*1000 .. "ms", 5, 20)
 
+    end) -- end post effect
+end
+
+function game:drawBossIncoming()
     love.graphics.setFont(font[48])
     if self.waveTimer ~= nil and self.waveTimer.time - self.waveTimer.running <= 3 and #objects == 1 then
         local t = self.waveTimer.time - self.waveTimer.running
@@ -299,20 +311,6 @@ function game:draw()
         end
 
     end
-    end) -- end post effect
-
-    if self.paused then
-        love.graphics.setColor(0, 0, 0, 80)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-
-        love.graphics.setColor(255, 255, 255)
-        love.graphics.setFont(fontBold[20])
-        love.graphics.print("PAUSED", love.graphics.getWidth()/2 - love.graphics.getFont():getWidth("PAUSED")/2, love.graphics.getHeight()/2 - love.graphics.getFont():getHeight("PAUSED")/2)
-    end
-end
-
-function game:shakeScreen(time, strength)
-    self.screenShake:shake(time, strength)
 end
 
 function game:drawPlayerHealthBar()
@@ -343,6 +341,7 @@ function game:drawPrimaryText()
     if self.waveTextTime <= 0 then return end
     self.waveTextTime = self.waveTextTime - love.timer.getDelta()
 
+    love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(font[48])
     local r, g, b, a = love.graphics.getColor()
     love.graphics.setColor(r, g, b)
@@ -354,8 +353,8 @@ function game:setupWaves()
     self.waves[1] = {
         blobs = 10,
         sweepers = 0,
-		healers = 3,
-		tanks = 4,
+		healers = 0,
+		tanks = 3,
     }
     self.waves[2] = {
         blobs = 15,

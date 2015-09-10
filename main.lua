@@ -5,7 +5,6 @@ state = require 'libs.state'
 tween = require 'libs.tween'
 cron = require 'libs.cron'
 shine = require 'libs.shine'
-beholder = require 'libs.beholder'
 signal = require 'libs.signal'
 QuadTree = require 'libs.quadtree'
 serialize = require 'libs.ser'
@@ -15,6 +14,7 @@ require 'libs.util'
 require 'states.menu'
 require 'states.game'
 require 'states.options'
+require 'states.pause'
 
 -- entities
 require 'entities.entity'
@@ -31,8 +31,6 @@ require 'entities.ui.input'
 require 'entities.ui.list'
 require 'entities.ui.sidebarButton'
 
-MOUSE_VALUE = 0
-
 function love.load()
 	love.window.setTitle(config.windowTitle)
     love.window.setIcon(love.image.newImageData(config.windowIcon))
@@ -41,8 +39,13 @@ function love.load()
 
     state.registerEvents()
     state.switch(menu)
-
     math.randomseed(os.time()/10)
+
+    crosshairImage = love.graphics.newImage("img/crosshair.png")
+    cursorImage = love.graphics.newImage("img/cursor.png")
+    crosshair = love.mouse.newCursor(crosshairImage:getData(), 16, 16)
+    cursor = love.mouse.newCursor(cursorImage:getData(), 0, 0)
+    love.mouse.setCursor(cursor)
 
     if love.filesystem.exists("config.txt") then
         options:load()
@@ -56,11 +59,7 @@ function love.keypressed(key, code)
 end
 
 function love.mousepressed(x, y, mbutton)
-    if mbutton == "wd" then
-        MOUSE_VALUE = MOUSE_VALUE - 1/1000
-    elseif mbutton == "wu" then
-        MOUSE_VALUE = MOUSE_VALUE + 1/1000
-    end
+
 end
 
 function love.textinput(text)

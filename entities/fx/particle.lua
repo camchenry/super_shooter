@@ -23,11 +23,7 @@ function Particles:update(dt)
 end
 
 function Particles:onEnemyDeath(enemy)
-	if enemy:isInstanceOf(LineEnemy) then
-        self.particleSystem:setColors(255, 255, 0, 255, 0, 0, 0, 0)
-	elseif enemy:isInstanceOf(Blob) then
-        self.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
-	end
+	self.particleSystem:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 255, 0, 0, 0, 0)
 
 	self.particleSystem:setSpeed(300, 550)
 	self.particleSystem:setSizes(2, 1)
@@ -36,11 +32,7 @@ function Particles:onEnemyDeath(enemy)
 end
 
 function Particles:onEnemyHit(enemy)
-	if enemy:isInstanceOf(LineEnemy) then
-        self.particleSystem:setColors(255, 255, 0, 255, 0, 0, 0, 0)
-	elseif enemy:isInstanceOf(Blob) then
-        self.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
-	end
+	self.particleSystem:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 255, 0, 0, 0, 0)
 
 	self.particleSystem:setSpeed(50, 250)
 	self.particleSystem:setPosition(enemy.position.x, enemy.position.y)
