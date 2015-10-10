@@ -22,7 +22,7 @@ function Enemy:update(dt)
 
     -- enemy fades away as it loses health
     self.color = self.originalColor
-    self.color[4] = math.max(32, 255*(self.health/self.maxHealth))
+    self.color[4] = math.max(64, 255*(self.health/self.maxHealth))
 
     if self.flashTime > 0 then
         self.color = {255, 255, 255, 255}
@@ -54,6 +54,9 @@ function Enemy:_handleCollision(obj)
 
     if obj:isInstanceOf(Bullet) then
         if obj.source ~= nil and obj.source:isInstanceOf(self.class) then return end
+        if self.boss ~= nil then
+            if obj.source == self.boss then return end
+        end
 
         if self.position:dist(obj.position) < self.radius + obj.radius then
             self.health = self.health - obj.damage
@@ -144,10 +147,11 @@ function Healer:initialize(position)
     self.position = position
     self.touchDamage = player.maxHealth/10
 
-    self.maxHealth = 70
+    self.maxHealth = 100
     self.health = self.maxHealth
 	
-	self.healRate = 30
+	self.healRate = 20
+    self.healRadius = 100
 end
 
 function Healer:update(dt)
@@ -155,16 +159,26 @@ function Healer:update(dt)
     self.moveTowardsPlayer = (player.position - self.position):normalized()
 
     self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
+
+    for i, o in pairs(quadtree:getCollidableObjects(self, true)) do
+        if o:isInstanceOf(Enemy) then
+            if o.position:dist(self.position) <= self.healRadius then
+                if o.health >= 0 then
+                    o.health = o.health + self.healRate * dt
+                end
+            end
+        end
+    end
 end
 
 function Healer:handleCollision(obj)
     if obj:isInstanceOf(Enemy) then
-        local dt = love.timer.getDelta()
-		obj.health = obj.health + self.healRate*dt
-		if obj.health > obj.maxHealth then
-			obj.health = obj.maxHealth
-		end
+
     end
+end
+
+function Healer:draw()
+    Enemy.draw(self)
 end
 
 Tank = class('Tank', Enemy)
@@ -197,13 +211,15 @@ function Tank:handleCollision(obj)
         if obj.source:isInstanceOf(Tank) then return end
         if obj.alreadyCollided then return end
 
+        if math.random() > .75 then return end
+
         local randOffset = vector(math.random(-100, 100), math.random(-100, 100))
 
         game:addBullet(Bullet:new(
-            self.position,
+            obj.position,
             player.position + vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + randOffset,
             self.velocity)
-        ):setSource(self):setDamage(obj.damage*0.25):setSpeed(obj.velocity:len()*1.5)
+        ):setSource(self):setDamage(obj.damage*0.25):setSpeed(obj.velocity:len()*1.25)
         obj.alreadyCollided = true
     end
 end

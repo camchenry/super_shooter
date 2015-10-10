@@ -23,13 +23,22 @@ end
 function Button:mousepressed(x, y, mbutton)
     if self:hover() and mbutton == "l" then
         self.activated()
+        signal.emit('uiClick')
+    end
+end
+
+function Button:update(dt)
+    if self:hover() and not self.alreadyHovering then
+        signal.emit('uiHover')
+        self.alreadyHovering = true
+    elseif not self:hover() then
+        self.alreadyHovering = false
     end
 end
 
 function Button:draw()
     local r, g, b, a = love.graphics.getColor()
     local oldColor = {r, g, b, a}
-
 
     love.graphics.setColor(self.bg)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)

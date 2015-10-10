@@ -46,6 +46,19 @@ function game:init()
     }
     shaders.bloom = bloom
 
+    local boxblur = shine.boxblur()
+    boxblur.parameters = {
+        radius = 0
+    }
+    shaders.boxblur = boxblur
+
+    local glow = shine.glowsimple()
+    glow.parameters = {
+        sigma = -1,
+        min_luma = 0
+    }
+    shaders.glow = glow
+
     local chroma = shine.separate_chroma()
     chroma.parameters = {
         radius = -1,
@@ -81,7 +94,7 @@ function game:init()
     self.time = 0
     self.deltaTimeMultiplier = 1
 
-    self.startingWave = 0
+    self.startingWave = 8
     self.timeToNextWave = 2
     self._postWaveCalled = false
     self._preWaveCalled = false
@@ -184,9 +197,11 @@ function game:update(dt)
         end
     end
 
-    if #objects == 1 and not self.waveTimer and self.boss == nil and self.waves[self.wave+1] ~= nil then
-        if not self._postWaveCalled then
-            self:onWaveEnd()
+    if self._postWaveCalled and not self._preWaveCalled then
+        if #objects == 1 and not self.waveTimer and self.boss == nil and self.waves[self.wave+1] ~= nil then
+            if not self._postWaveCalled then
+                self:onWaveEnd()
+            end
         end
     end
 end
@@ -341,6 +356,7 @@ function game:drawPrimaryText()
     if self.waveTextTime <= 0 then return end
     self.waveTextTime = self.waveTextTime - love.timer.getDelta()
 
+    love.graphics.setLineWidth(1)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(font[48])
     local r, g, b, a = love.graphics.getColor()
@@ -354,28 +370,46 @@ function game:setupWaves()
         blobs = 10,
         sweepers = 0,
 		healers = 0,
-		tanks = 3,
+		tanks = 0,
     }
     self.waves[2] = {
         blobs = 15,
-        sweepers = 2,
+        sweepers = 0,
     }
     self.waves[3] = {
         blobs = 20,
-        sweepers = 4,
+        sweepers = 0,
+        tanks = 1,
     }
     self.waves[4] = {
         blobs = 25,
-        sweepers = 6,
+        sweepers = 0,
+        healers = 2,
     }
     self.waves[5] = {
-        blobs = 50,
+        blobs = 25,
+        tanks = 3,
+        healers = 2,
     }
     self.waves[6] = {
-        blobs = 25,
-        sweepers = 12,
+        blobs = 40,
     }
     self.waves[7] = {
+        tanks = 5,
+        healers = 2,
+    }
+    self.waves[8] = {
+        blobs = 35,
+        healers = 3,
+        tanks = 5,
+    }
+    self.waves[9] = {
+        blobs = 25,
+        healers = 5,
+        tanks = 3,
+        sweepers = 10,
+    }
+    self.waves[10] = {
         boss = Megabyte,
     }
 end

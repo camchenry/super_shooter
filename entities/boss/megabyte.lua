@@ -64,9 +64,6 @@ function Megabyte:update(dt)
 
     if self.health <= 0 then
         game:removeObject(self)
-        game.particleSystem:setColors(25, 159, 219, 255, 0, 0, 0, 0)
-        game.particleSystem:setPosition(self.position.x, self.position.y)
-        game.particleSystem:emit(300)
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
     end
@@ -84,7 +81,7 @@ function Megabyte:update(dt)
     end
 
     if self.phase == 2 then
-        if math.random() > 0.1 then
+        if math.random() > 0.01 then
             self.fireAngleMultiplier = self.fireAngleMultiplier * -1
         end
     end
@@ -134,9 +131,10 @@ function Megabyte:update(dt)
     self.x, self.y = self.position:unpack()
 end
 
-MegabyteEnemy = class('Enemy', Enemy)
+MegabyteEnemy = class('MegabyteEnemy', Enemy)
 
 function MegabyteEnemy:initialize(offset, angle, angleIncrease, boss)
+    Enemy.initialize(self, vector(0, 0))
     self.color = {231, 76, 60}
     self.radius = 15
     self.sides = 4
@@ -149,66 +147,19 @@ function MegabyteEnemy:initialize(offset, angle, angleIncrease, boss)
     self.angle = angle
     self.angleIncrease = angleIncrease
     self.boss = boss
-
-    self.position = position or vector(0, 0)
-    self.velocity = vector(0, 0)
-    self.dragFactor = 0.15
-    self.acceleration = vector(0, 0)
-    self.accelConstant = 850
-
-    self.width = self.radius * 2
-    self.height = self.radius * 2
-    self.x, self.y = self.position:unpack()
-    self.prev_x, self.prev_y = self.position:unpack()
 end
 
 function MegabyteEnemy:update(dt)
-    self.width, self.height = self.radius*2, self.radius*2
-
-    if self.health <= 0 then
-        game:removeObject(self)
-        game.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
-        game.particleSystem:setPosition(self.position.x, self.position.y)
-        game.particleSystem:emit(150)
-        game:shakeScreen(2, 150)
-    elseif self.health > self.maxHealth then
-        self.health = self.maxHealth
-    end
-
-    local collidableObjects = quadtree:getCollidableObjects(self, true)
-    for i, obj in pairs(collidableObjects) do
-
-        if obj:isInstanceOf(Bullet) then
-            if obj.source ~= nil and not obj.source:isInstanceOf(Megabyte) then
-                if self.position:dist(obj.position) < self.radius + obj.radius then
-                    self.health = self.health - obj.damage
-                    game.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
-                    game.particleSystem:setPosition(self.position.x, self.position.y)
-                    game.particleSystem:emit(10)
-                    game:removeBullet(obj)
-                    game:shakeScreen(1, 35)
-                end
-            end
-        end
-    end
-
+    Enemy.update(self, dt)
     self.angle = self.angle + self.angleIncrease * dt
-
-    self.prev_x, self.prev_y = self.position:unpack()
     self.position = vector(self.boss.x + math.cos(self.angle)*(self.boss.radius+self.radius+self.offset),
                            self.boss.y + math.sin(self.angle)*(self.boss.radius+self.radius+self.offset))
-    self.x, self.y = self.position:unpack()
 end
 
 function MegabyteEnemy:keypressed(key, isrepeat)
 
 end
 
-function MegabyteEnemy:draw()
-    love.graphics.push()
-    local rgba = {love.graphics.getColor()}
-    love.graphics.setColor(self.color)
-    love.graphics.circle("line", self.position.x, self.position.y, self.radius, self.sides)
-    love.graphics.setColor(rgba)
-    love.graphics.pop()
+function MegabyteEnemy:handleCollision(obj)
+
 end

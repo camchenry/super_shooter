@@ -25,11 +25,13 @@ require 'entities.boss.megabyte'
 require 'entities.fx.particle'
 require 'entities.fx.shake'
 
+require 'entities.sound.sound'
+
 require 'entities.ui.button'
 require 'entities.ui.checkbox'
 require 'entities.ui.input'
 require 'entities.ui.list'
-require 'entities.ui.sidebarButton'
+require 'entities.ui.slider'
 
 function love.load()
 	love.window.setTitle(config.windowTitle)
@@ -37,8 +39,6 @@ function love.load()
 	love.graphics.setDefaultFilter(config.filterModeMin, config.filterModeMax, config.anisotropy)
     love.graphics.setFont(font[16])
 
-    state.registerEvents()
-    state.switch(menu)
     math.randomseed(os.time()/10)
 
     crosshairImage = love.graphics.newImage("img/crosshair.png")
@@ -47,9 +47,14 @@ function love.load()
     cursor = love.mouse.newCursor(cursorImage:getData(), 0, 0)
     love.mouse.setCursor(cursor)
 
+    soundControl = Sound:new()
+
     if love.filesystem.exists("config.txt") then
         options:load()
     end
+
+    state.registerEvents()
+    state.switch(menu)
 end
 
 function love.keypressed(key, code)
@@ -71,6 +76,7 @@ end
 
 function love.update(dt)
     tween.update(dt)
+    soundControl:update(dt)
 end
 
 function love.draw()

@@ -21,6 +21,10 @@ function Checkbox:initialize(text, x, y, w, h, fontSize, activated, deactivated)
 	self.deactivated = deactivated or function() end
 end
 
+function Checkbox:update(dt)
+
+end
+
 function Checkbox:draw()
 	local r, g, b, a = love.graphics.getColor()
     local oldColor = {r, g, b, a}
@@ -56,7 +60,9 @@ function Checkbox:draw()
 	love.graphics.setFont(oldFont)
 end
 
-function Checkbox:hovering(x, y)
+function Checkbox:hover(x, y)
+	if x == nil then x = love.mouse.getX() end
+	if y == nil then y = love.mouse.getY() end
 	local xBoundMax = self.x + self.width + 10 + self.font:getWidth(self.text)
 	local xBoundMin = self.x
 	local yBoundMax = self.y + self.height/2
@@ -66,7 +72,7 @@ function Checkbox:hovering(x, y)
 end
 
 function Checkbox:mousepressed(x, y)
-	if self:hovering(x, y) then
+	if self:hover(x, y) then
 		-- toggle selected state
 		self.selected = not self.selected
 
@@ -75,5 +81,7 @@ function Checkbox:mousepressed(x, y)
 		else
 			self.deactivated()
 		end
+
+		signal.emit('uiClick')
 	end
 end

@@ -32,11 +32,13 @@ function menu:init()
 end
 
 function menu:enter()
-
+    signal.emit('menuEntered')
 end
 
 function menu:update(dt)
-
+    for i, button in pairs(self.buttons) do
+        button:update(dt)
+    end
 end
 
 function menu:keyreleased(key, code)

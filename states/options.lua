@@ -50,6 +50,11 @@ function options:enter()
 	self.fsaa = List:new('ANTIALIASING: ', fsaaOptions, self.leftAlign, 90+175, 400)
 	self.fsaa:selectValue(config.display.flags.fsaa)
 	self.fsaa:setText('{}x')
+
+	self.musicVolume = Slider:new("MUSIC VOLUME: %d", 0, 100, config.audio.musicVolume, self.leftAlign+450, 50+175, 275, 50, font[24])
+	self.musicVolume.changed = function() signal.emit('musicChanged', self.musicVolume.ratio) end
+	self.soundVolume = Slider:new("SOUND VOLUME: %d",0, 100, config.audio.soundVolume, self.leftAlign+450, 150+175, 275, 50, font[24])
+	self.soundVolume.changed = function() signal.emit('soundChanged', self.soundVolume.ratio) end
 	
 	-- applies current config settings
 	self.back = Button:new("< BACK", self.leftAlign, love.window.getHeight()-80)
@@ -66,7 +71,10 @@ function options:enter()
 end
 
 function options:leave()
+	config = self:getConfig()
 
+	signal.emit('soundChanged', config.audio.soundVolume/100)
+	signal.emit('musicChanged', config.audio.musicVolume/100)
 end
 
 function options:applyChanges()
@@ -84,6 +92,9 @@ function options:mousepressed(x, y, button)
 		self.shaderEffects:mousepressed(x, y)
 		self.particles:mousepressed(x, y)
 	end
+
+	self.musicVolume:mousepressed(x, y, button)
+	self.soundVolume:mousepressed(x, y, button)
 	
 	self.resolution:mousepressed(x, y, button)
 	self.fsaa:mousepressed(x, y, button)
@@ -96,6 +107,23 @@ function options:keypressed(key)
 	if key == "escape" then
 		state.pop()
 	end
+end
+
+function options:update(dt)
+	self.vsync:update(dt)
+	self.fullscreen:update(dt)
+	self.borderless:update(dt)
+	self.shaderEffects:update(dt)
+	self.particles:update(dt)
+
+	self.musicVolume:update(dt)
+	self.soundVolume:update(dt)
+
+	self.resolution:update(dt)
+	self.fsaa:update(dt)
+
+	self.apply:update(dt)
+	self.back:update(dt)
 end
 
 function options:draw()
@@ -111,6 +139,9 @@ function options:draw()
 	self.borderless:draw()
 	self.shaderEffects:draw()
 	self.particles:draw()
+
+	self.musicVolume:draw()
+	self.soundVolume:draw()
 
 	self.resolution:draw()
 	self.fsaa:draw()
@@ -137,6 +168,10 @@ function options:getDefaultConfig()
 			shaderEffects = true,
 			particles = true,
 		},
+		audio = {
+			soundVolume = 1.0,
+			musicVolume = 0.8,
+		},
 	}
 	return o
 end
@@ -159,6 +194,10 @@ function options:save()
 			shaderEffects = self.shaderEffects.selected,
 			particles = self.particles.selected,
 		},
+		audio = {
+			soundVolume = self.soundVolume.value,
+			musicVolume = self.musicVolume.value,
+		},
 	}
 	love.filesystem.write(self.file, serialize(o))
 end
@@ -170,6 +209,9 @@ function options:load()
 
 	game.effectsEnabled = config.graphics.shaderEffects
 	game.particlesEnabled = config.graphics.particles
+
+	soundControl.soundVolume = config.audio.soundVolume/100
+	soundControl.musicVolume = config.audio.musicVolume/100
 
 	return true
 end

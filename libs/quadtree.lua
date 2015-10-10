@@ -138,7 +138,13 @@ function QuadTree:getCollidableObjects(object, moving)
     -- added by ikroth
     -- this is basically a hack for quadtrees to support large objects by checking some points
     -- around the radius
-    if object.radius ~= nil then
+    if object.healRadius ~= nil then
+      local radius = object.healRadius
+      self:check(object, f, object.position.x-radius, object.position.y-radius)
+      self:check(object, f, object.position.x-radius, object.position.y+radius)
+      self:check(object, f, object.position.x+radius, object.position.y+radius)
+      self:check(object, f, object.position.x+radius, object.position.y-radius)
+    elseif object.radius ~= nil then
       local radius = object.radius
       self:check(object, f, object.position.x-radius, object.position.y-radius)
       self:check(object, f, object.position.x-radius, object.position.y+radius)

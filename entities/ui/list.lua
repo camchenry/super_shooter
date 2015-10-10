@@ -28,6 +28,11 @@ function List:initialize(label, options, x, y, w, h)
 	end
 end
 
+function List:update(dt)
+	self.leftButton:update(dt)
+	self.rightButton:update(dt)
+end
+
 function List:draw()
 	love.graphics.setFont(self.font)
 
