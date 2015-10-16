@@ -23,16 +23,16 @@ function ScreenShake:onEnemyDeath(enemy)
 end
 
 function ScreenShake:onEnemyHit(enemy)
-	self:shake(1, 30)
+	self:shake(1, 50)
 end
 
 function ScreenShake:shake(time, strength)
 	self.time = time
 
-    if self.time > 0 then
-        self.strength = self.strength + self.strength * 0.4
-    else
-        self.strength = strength or 50
+    if strength > self.strength then
+        self.strength = strength
+    elseif time <= 0 then
+        self.strength = strength
     end
 
     self.angle = math.random(0, math.pi)
@@ -44,8 +44,8 @@ function ScreenShake:getOffset()
     if self.time > 0 then
         local dampen = math.sqrt(self.time / self.timeMax)
 
-        dx = self.velocity.x * dampen * math.cos(self.time * 20 * dampen)
-        dy = self.velocity.y * dampen * math.sin(self.time * 20 * dampen)
+        dx = self.velocity.x * dampen * math.cos(self.time * self.strength * dampen)
+        dy = self.velocity.y * dampen * math.sin(self.time * self.strength * dampen)
     end
 
     return dx, dy

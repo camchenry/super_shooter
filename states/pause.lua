@@ -7,12 +7,6 @@ pause.items = {
             state.switch(game)
         end,
     },
-    {
-        title = "QUIT TO MENU",
-        action = function()
-            state.switch(menu)
-        end,
-    },
 
     {
         title = "QUIT TO DESKTOP",
