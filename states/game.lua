@@ -46,19 +46,6 @@ function game:init()
     }
     shaders.bloom = bloom
 
-    local boxblur = shine.boxblur()
-    boxblur.parameters = {
-        radius = 0
-    }
-    shaders.boxblur = boxblur
-
-    local glow = shine.glowsimple()
-    glow.parameters = {
-        sigma = -1,
-        min_luma = 0
-    }
-    shaders.glow = glow
-
     local chroma = shine.separate_chroma()
     chroma.parameters = {
         radius = -1,
@@ -94,7 +81,7 @@ function game:init()
     self.time = 0
     self.deltaTimeMultiplier = 1
 
-    self.startingWave = 8
+    self.startingWave = 0
     self.timeToNextWave = 2
     self._postWaveCalled = false
     self._preWaveCalled = false
@@ -197,11 +184,9 @@ function game:update(dt)
         end
     end
 
-    if self._postWaveCalled and not self._preWaveCalled then
-        if #objects == 1 and not self.waveTimer and self.boss == nil and self.waves[self.wave+1] ~= nil then
-            if not self._postWaveCalled then
-                self:onWaveEnd()
-            end
+    if #objects == 1 and not self.waveTimer and self.boss == nil and self.waves[self.wave+1] ~= nil then
+        if not self._postWaveCalled then
+            self:onWaveEnd()
         end
     end
 end
@@ -437,9 +422,10 @@ function game:spawnEnemies()
 
     if currentWave.blobs ~= nil then
         for i=1, self.waves[self.wave].blobs do
-            local b = Blob:new(
-                vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
-            )
+            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
+                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            p = p + (p - player.position):normalized()*150
+            local b = Blob:new(p)
             self:addObject(b)
         end
     end
@@ -461,18 +447,20 @@ function game:spawnEnemies()
 	
 	if currentWave.healers ~= nil then
         for i=1, self.waves[self.wave].healers do
-            local b = Healer:new(
-                vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
-            )
+            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
+                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            p = p + (p - player.position):normalized()*150
+            local b = Healer:new(p)
             self:addObject(b)
         end
     end
 	
 	if currentWave.tanks ~= nil then
         for i=1, self.waves[self.wave].tanks do
-            local b = Tank:new(
-                vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
-            )
+            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
+                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            p = p + (p - player.position):normalized()*150
+            local b = Tank:new(p)
             self:addObject(b)
         end
     end
