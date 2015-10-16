@@ -59,7 +59,7 @@ function options:enter()
 	-- applies current config settings
 	self.back = Button:new("< BACK", self.leftAlign, love.window.getHeight()-80)
 	self.back.activated = function()
-		state.pop() -- options can be accessed from multiple places in the game
+		state.switch(menu) -- options can be accessed from multiple places in the game
 	end
 
 	self.apply = Button:new('APPLY CHANGES', self.leftAlign+170, love.window.getHeight()-80)
@@ -68,6 +68,8 @@ function options:enter()
 		self.back.y = love.window.getHeight()-80
 		self.apply.y = love.window.getHeight()-80
 	end
+
+	self:save()
 end
 
 function options:leave()
@@ -169,8 +171,8 @@ function options:getDefaultConfig()
 			particles = true,
 		},
 		audio = {
-			soundVolume = 1.0,
-			musicVolume = 0.8,
+			soundVolume = 100,
+			musicVolume = 80,
 		},
 	}
 	return o
