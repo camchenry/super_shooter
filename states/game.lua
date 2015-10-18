@@ -415,7 +415,7 @@ function game:startWave()
 
     self:setPrimaryText("WAVE "..self.wave)
 
-    if self.waves[self.wave] ~= nil then
+    if self.waves[self.wave] ~= nil and self.wave ~= self.startingWave then
         self:spawnEnemies()
     end
 end

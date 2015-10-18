@@ -42,6 +42,7 @@ function Player:update(dt)
 
     if love.mouse.isDown('l') then
         if self.heat <= 0 then
+            signal.emit('playerShot')
             game:addBullet(Bullet:new(
                 self.position,
                 vector(love.mouse.getX(), love.mouse.getY()),

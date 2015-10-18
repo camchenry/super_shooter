@@ -21,21 +21,21 @@ function Enemy:update(dt)
     self.moveAway = vector(0, 0)
     self.moveTowardsPlayer = (player.position - self.position):normalized()
 
-    -- enemy fades away as it loses health
-    self.color = self.originalColor
-    self.color[4] = math.max(64, 255*(self.health/self.maxHealth))
-
-    if self.flashTime > 0 then
-        self.color = {255, 255, 255, 255}
-        self.flashTime = self.flashTime - dt
-    end
-
     if self.health <= 0 then
         self.destroy = true
         self.color = self.originalColor
         signal.emit('enemyDeath', self)
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
+    end
+
+    -- enemy fades away as it loses health
+    self.color = self.originalColor
+    self.color[4] = math.floor(math.max(64, 255*(self.health/self.maxHealth)))
+
+    if self.flashTime > 0 then
+        self.color = {255, 255, 255, 255}
+        self.flashTime = self.flashTime - dt
     end
 
     self:physicsUpdate(dt)

@@ -16,11 +16,16 @@ function Sound:initialize()
 	}
 	self.sounds = {
 		uiClick = "sound/click4-2.wav",
-		uiHover = "sound/rollover5-2.wav"
+		uiHover = "sound/rollover5-2.wav",
+		shoot = "sound/shoot.wav",
+		hit = "sound/hit.wav",
+		hitTank = "sound/hit_tank.wav",
+		death = "sound/death2.wav",
 	}
 	for i, sound in pairs(self.music) do
 		self.music[i] = love.audio.newSource(sound)
 		self.music[i]:setVolume(self.musicVolume)
+		self.music[i]:setLooping(true)
 	end
 	for i, sound in pairs(self.sounds) do
 		self.sounds[i] = love.audio.newSource(sound)
@@ -29,6 +34,7 @@ function Sound:initialize()
 
     self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
     self.enemyHitObserver = signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
+    self.playerShootObserver = signal.register('playerShot', function() self:onPlayerShoot() end)
     self.uiClick = signal.register('uiClick', function() self:onUiClick() end)
     self.uiHover = signal.register('uiHover', function() self:onUiHover() end)
     self.soundChangeObserver = signal.register('soundChanged', function(v) self:onSoundVolumeChanged(v) end)
@@ -52,12 +58,20 @@ function Sound:onMusicVolumeChanged(volume)
 	end
 end
 
-function Sound:onEnemyDeath(enemy)
+function Sound:onPlayerShoot()
+	self.sounds.shoot:play()
+end
 
+function Sound:onEnemyDeath(enemy)
+	self.sounds.death:play()
 end
 
 function Sound:onEnemyHit(enemy)
-
+	if enemy:isInstanceOf(Tank) then
+		self.sounds.hitTank:play()
+	else
+		self.sounds.hit:play()
+	end
 end
 
 function Sound:onUiClick(enemy)
@@ -69,7 +83,8 @@ function Sound:onUiHover(enemy)
 end
 
 function Sound:onMenuEnter()
-	self.music.menuMusic:play()
+	self.currentMusic = self.music.menuMusic
+	self.currentMusic:play()
 end
 
 function Sound:draw()
