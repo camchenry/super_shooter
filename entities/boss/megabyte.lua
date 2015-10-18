@@ -109,7 +109,7 @@ function Megabyte:update(dt)
     local collidableObjects = quadtree:getCollidableObjects(self, true)
     for i, obj in pairs(collidableObjects) do
         if obj:isInstanceOf(Bullet) then
-            if obj.source ~= self or not obj.source:isInstanceOf(Enemy) then
+            if obj.source ~= self and not obj.source:isInstanceOf(Enemy) then
                 if self.position:dist(obj.position) < self.radius + obj.radius then
                     if not self.invincible then
                         self.health = self.health - obj.damage

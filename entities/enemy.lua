@@ -12,6 +12,7 @@ function Enemy:initialize(position)
 
     self.health = 100
     self.maxHealth = 100
+	self.invincible = false
 
     self.flashTime = 0
 end
@@ -58,11 +59,14 @@ function Enemy:_handleCollision(obj)
             if obj.source == self.boss then return end
         end
 
+		-- check for proximity and invincible
         if self.position:dist(obj.position) < self.radius + obj.radius then
-            self.health = self.health - obj.damage
-            signal.emit('enemyHit', self)
-            game:removeBullet(obj)
-            self.flashTime = 20/1000
+			if not self.invincible
+				self.health = self.health - obj.damage
+				signal.emit('enemyHit', self)
+				game:removeBullet(obj)
+				self.flashTime = 20/1000
+			end
         end
     end
 end

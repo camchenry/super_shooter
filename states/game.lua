@@ -397,6 +397,9 @@ function game:setupWaves()
     self.waves[10] = {
         boss = Megabyte,
     }
+	self.waves[11] = {
+		boss = Arena,
+	}
 end
 
 function game:startWave()

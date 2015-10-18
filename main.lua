@@ -22,6 +22,7 @@ require 'entities.bullet'
 require 'entities.player'
 require 'entities.enemy'
 require 'entities.boss.megabyte'
+require 'entities.boss.arena'
 require 'entities.fx.particle'
 require 'entities.fx.shake'
 
