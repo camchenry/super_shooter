@@ -215,6 +215,7 @@ function Tank:handleCollision(obj)
         if obj.source:isInstanceOf(Tank) then return end
         if obj.alreadyCollided then return end
 
+		-- bullets have ~1/4 chance of not bouncing
         if math.random() > .75 then return end
 
         local randOffset = vector(math.random(-100, 100), math.random(-100, 100))
@@ -225,5 +226,6 @@ function Tank:handleCollision(obj)
             self.velocity)
         ):setSource(self):setDamage(obj.damage*0.25):setSpeed(obj.velocity:len()*1.25)
         obj.alreadyCollided = true
+		obj.life = 0
     end
 end
