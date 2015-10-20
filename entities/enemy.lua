@@ -61,7 +61,7 @@ function Enemy:_handleCollision(obj)
 
 		-- check for proximity and invincible
         if self.position:dist(obj.position) < self.radius + obj.radius then
-			if not self.invincible
+			if not self.invincible then
 				self.health = self.health - obj.damage
 				signal.emit('enemyHit', self)
 				game:removeBullet(obj)
