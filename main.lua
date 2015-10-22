@@ -15,6 +15,8 @@ require 'states.menu'
 require 'states.game'
 require 'states.options'
 require 'states.pause'
+require 'states.gameover'
+require 'states.restart'
 
 -- entities
 require 'entities.entity'
@@ -59,9 +61,7 @@ function love.load()
 end
 
 function love.keypressed(key, code)
-    if key == "escape" then
-        love.event.quit()
-    end
+
 end
 
 function love.mousepressed(x, y, mbutton)

@@ -10,9 +10,11 @@ function Sound:initialize()
 
 	self.musicVolume = config.audio.musicVolume/100
 	self.soundVolume = config.audio.soundVolume/100
+	self.currentMusicVolume = self.musicVolume
 
 	self.music = {
-		menuMusic = "sound/music/menu_music.mp3"
+		menuMusic = "sound/music/menu_music.mp3",
+		bossMusic = "sound/music/boss_music.mp3",
 	}
 	self.sounds = {
 		uiClick = "sound/click4-2.wav",
@@ -21,6 +23,7 @@ function Sound:initialize()
 		hit = "sound/hit.wav",
 		hitTank = "sound/hit_tank.wav",
 		death = "sound/death2.wav",
+		bossIncoming = "sound/bossIncoming.wav",
 	}
 	for i, sound in pairs(self.music) do
 		self.music[i] = love.audio.newSource(sound)
@@ -40,10 +43,16 @@ function Sound:initialize()
     self.soundChangeObserver = signal.register('soundChanged', function(v) self:onSoundVolumeChanged(v) end)
     self.musicChangeObserver = signal.register('musicChanged', function(v) self:onMusicVolumeChanged(v) end)
     self.menuObserver = signal.register('menuEntered', function() self:onMenuEnter() end)
+    self.bossIncoming = signal.register('bossIncoming', function() self:onBossIncoming() end)
+    self.bossSpawn = signal.register('bossSpawned', function() self:onBossSpawn() end)
 end
 
 function Sound:update(dt)
-	
+	if self.musicTween then
+		self.currentMusic:setVolume(self.currentMusicVolume)
+	else
+		self.currentMusic:setVolume(self.musicVolume)
+	end
 end
 
 function Sound:onSoundVolumeChanged(volume)
@@ -83,8 +92,24 @@ function Sound:onUiHover(enemy)
 end
 
 function Sound:onMenuEnter()
-	self.currentMusic = self.music.menuMusic
-	self.currentMusic:play()
+	if self.currentMusic == nil then
+		self.currentMusic = self.music.menuMusic:clone()
+		self.currentMusic:play()
+	end
+end
+
+function Sound:onBossSpawn()
+	
+end
+
+function Sound:onBossIncoming()
+	self.musicTween = tween(1, self, {currentMusicVolume=0}, nil, function()
+		self.currentMusic:stop()
+		self.currentMusic = self.music.bossMusic:clone()
+		self.currentMusic:play()
+		self.musicTween = nil
+	end)
+	self.sounds.bossIncoming:play()
 end
 
 function Sound:draw()

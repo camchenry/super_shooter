@@ -66,31 +66,13 @@ function game:init()
     self.particles = Particles:new()
     self.screenShake = ScreenShake:new()
 
-    quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
-    quadtree:subdivide()
-    quadtree:subdivide()
-    player = self:addObject(Player:new())
-
-    if self.effectsEnabled == nil then
-        self.effectsEnabled = false
-        self:toggleEffects()
-    else
-        self:toggleEffects()
-    end
-
-    self.time = 0
-    self.deltaTimeMultiplier = 1
-
-    self.startingWave = 0
-    self.timeToNextWave = 2
-    self._postWaveCalled = false
-    self._preWaveCalled = false
-
-    self:setupWaves()
-    self:startWave()
+    self:reset()
+    signal.emit('waveEnded')
 end
 
 function game:reset()
+    objects = {}
+    bullets = {}
     quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
     quadtree:subdivide()
     quadtree:subdivide()
@@ -98,18 +80,24 @@ function game:reset()
 
     if self.effectsEnabled == nil then
         self.effectsEnabled = false
-        self:toggleEffects()
-    else
-        self:toggleEffects()
     end
+
+    self:toggleEffects()
 
     self.time = 0
     self.deltaTimeMultiplier = 1
 
+    self.firstWave = true
     self.startingWave = 0
+    self.wave = self.startingWave
     self.timeToNextWave = 2
+    self._postWaveCalled = false
+    self._preWaveCalled = false
+    self.boss = nil
 
-    self:startWave()
+    self.waveTimer = nil
+
+    self:setupWaves()
 end
 
 function game:enter(prev)
@@ -122,10 +110,8 @@ function game:enter(prev)
         tween(.75, self, {deltaTimeMultiplier=1}, 'inQuad', function() end)
     end
 
-    if not self._postWaveCalled then
-        self:onWaveEnd()
-    else
-        self:onWaveStart()
+    if prev == restart then
+        self:reset()
     end
 end
 
@@ -143,6 +129,10 @@ function game:update(dt)
         self:resized()
     end
     
+    if player.health <= 0 then
+        state.switch(restart)
+    end
+
     dt = dt * self.deltaTimeMultiplier
 
     self.time = self.time + dt * 0.75
@@ -194,8 +184,20 @@ end
 function game:onWaveStart()
     if self._preWaveCalled then return end
 
+    self.firstWave = false
+
+    if self.waves[self.wave+1] ~= nil then
+        if self.waves[self.wave+1].enemies ~= nil then
+            Enemy.speed = Enemy.speed + 50
+        end
+    end
+
     self:startWave()
     self.waveTimer = nil
+
+    if self.boss ~= nil then
+        signal.emit('bossSpawn')
+    end
 
     self._postWaveCalled = false
     self._preWaveCalled = true
@@ -203,6 +205,12 @@ end
 
 function game:onWaveEnd()
     if self._postWaveCalled then return end
+
+    if self.waves[self.wave+1] ~= nil then
+        if self.waves[self.wave+1].boss ~= nil then
+            signal.emit('bossIncoming')
+        end
+    end
 
     self.waveTimer = cron.after(self.timeToNextWave, function()
         if not self._preWaveCalled then
@@ -234,13 +242,7 @@ function game:keypressed(key, isrepeat)
         end
     end
 
-    if key == "b" then
-        self.effectsEnabled = not self.effectsEnabled
-
-        self:toggleEffects()
-    end
-
-    if key == "p" then
+    if key == "p" or key == "escape" then
         state.switch(pause)
     end
 end
@@ -253,11 +255,13 @@ function game:draw()
     love.graphics.setColor(255, 255, 255)
     love.graphics.setLineWidth(1)
 
-    if state.current() == pause then
+    if state.current() ~= game then
         post_effect = pause_effect
     else
         post_effect = default_effect
     end
+
+    self:toggleEffects()
 
     -- start post effect
     post_effect(function()
@@ -338,7 +342,7 @@ function game:setPrimaryText(text)
 end
 
 function game:drawPrimaryText()
-    if self.waveTextTime <= 0 then return end
+    if self.waveTextTime <= 0 or self.firstWave then return end
     self.waveTextTime = self.waveTextTime - love.timer.getDelta()
 
     love.graphics.setLineWidth(1)
@@ -397,9 +401,6 @@ function game:setupWaves()
     self.waves[10] = {
         boss = Megabyte,
     }
-	self.waves[11] = {
-		boss = Arena,
-	}
 end
 
 function game:startWave()
@@ -408,7 +409,7 @@ function game:startWave()
     if self.wave == nil then
         self.wave = self.startingWave
     elseif self.waves[self.wave+1] == nil then
-        return
+        state.switch(gameover)
     else
         self.wave = self.wave + 1
     end
