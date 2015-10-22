@@ -101,7 +101,7 @@ function Arena:update(dt)
 			end
 		end
 		
-		if self.health <= self.maxHealth/2  then
+		if self.health <= self.maxHealth/2  then -- move into phase 2
 			if not self.invincible then
 				self.touchDamage = 0
 				self.invincible = true
@@ -112,8 +112,7 @@ function Arena:update(dt)
 					minion.deathTween = tween(3, minion, {radius = 0, offset = 0}, "inOutCubic", function()
 						self.deathTween = nil
 						minion.health = 0
-						--self.maxHealth = 100
-						--self.health = self.maxHealth/2
+						minion.touchDamage = 0
 						self:spawnMinions(3, 2) 
 						self.phase = 2
 					end)

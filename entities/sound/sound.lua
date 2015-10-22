@@ -22,8 +22,8 @@ function Sound:initialize()
 		shoot = "sound/shoot.wav",
 		hit = "sound/hit.wav",
 		hitTank = "sound/hit_tank.wav",
-		death = "sound/death2.wav",
 		bossIncoming = "sound/bossIncoming.wav",
+		death = "sound/Randomize125.wav",
 	}
 	for i, sound in pairs(self.music) do
 		self.music[i] = love.audio.newSource(sound)
