@@ -28,15 +28,15 @@ function Player:update(dt)
 
     self.acceleration = vector(0, 0)
 
-    if love.keyboard.isDown("w") then
+    if love.keyboard.isDown("w", "up") then
         self.acceleration.y = -self.speed
-    elseif love.keyboard.isDown("s") then
+    elseif love.keyboard.isDown("s", "down") then
         self.acceleration.y = self.speed
     end
 
-    if love.keyboard.isDown("a") then
+    if love.keyboard.isDown("a", "left") then
         self.acceleration.x = -self.speed
-    elseif love.keyboard.isDown("d") then
+    elseif love.keyboard.isDown("d", "right") then
         self.acceleration.x = self.speed
     end
 
