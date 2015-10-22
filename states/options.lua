@@ -29,6 +29,9 @@ function options:enter()
 	self.particles = Checkbox:new('PARTICLES', self.leftAlign, 350+175)
 	self.particles.selected = config.graphics.particles
 	
+	self.displayFPS = Checkbox:new('SHOW FPS', self.leftAlign, 390+175)
+	self.displayFPS.selected = config.graphics.displayFPS
+	
 	-- Takes all available resolutions
 	local resTable = love.window.getFullscreenModes(1)
 	local resolutions = {}
@@ -93,6 +96,7 @@ function options:mousepressed(x, y, button)
 		self.borderless:mousepressed(x, y)
 		self.shaderEffects:mousepressed(x, y)
 		self.particles:mousepressed(x, y)
+		self.displayFPS:mousepressed(x, y)
 	end
 
 	self.musicVolume:mousepressed(x, y, button)
@@ -117,6 +121,7 @@ function options:update(dt)
 	self.borderless:update(dt)
 	self.shaderEffects:update(dt)
 	self.particles:update(dt)
+	self.displayFPS:update(dt)
 
 	self.musicVolume:update(dt)
 	self.soundVolume:update(dt)
@@ -141,6 +146,7 @@ function options:draw()
 	self.borderless:draw()
 	self.shaderEffects:draw()
 	self.particles:draw()
+	self.displayFPS:draw()
 
 	self.musicVolume:draw()
 	self.soundVolume:draw()
@@ -155,8 +161,8 @@ end
 function options:getDefaultConfig()
 	local o = {
 		display = {
-			width = 1280,
-			height = 720,
+			width = 1024,
+			height = 768,
 
 			-- these are the standard flags for love.window.setMode
 			flags = {
@@ -169,6 +175,7 @@ function options:getDefaultConfig()
 		graphics = {
 			shaderEffects = true,
 			particles = true,
+			displayFPS = false,
 		},
 		audio = {
 			soundVolume = 100,
@@ -195,6 +202,7 @@ function options:save()
 		graphics = {
 			shaderEffects = self.shaderEffects.selected,
 			particles = self.particles.selected,
+			displayFPS = self.displayFPS.selected,
 		},
 		audio = {
 			soundVolume = self.soundVolume.value,
@@ -211,6 +219,7 @@ function options:load()
 
 	game.effectsEnabled = config.graphics.shaderEffects
 	game.particlesEnabled = config.graphics.particles
+	game.displayFPS = config.graphics.displayFPS
 
 	soundControl.soundVolume = config.audio.soundVolume/100
 	soundControl.musicVolume = config.audio.musicVolume/100

@@ -198,7 +198,7 @@ function Tank:initialize(position)
     self.position = position
     self.touchDamage = player.maxHealth/2
 
-    self.maxHealth = 750
+    self.maxHealth = 500
     self.health = self.maxHealth
 end
 

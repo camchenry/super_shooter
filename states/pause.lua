@@ -8,6 +8,14 @@ pause.items = {
         end,
     },
 
+	{
+        title = "QUIT TO MENU",
+        action = function()
+            state.switch(menu)
+			game:reset()
+        end,
+    },
+	
     {
         title = "QUIT TO DESKTOP",
         action = function()
@@ -31,7 +39,7 @@ function pause:enter(prev)
 end
 
 function pause:keypressed(key, isrepeat)
-	if key == "p" then
+	if key == "p" or key == "escape" then
 		state.switch(game)
 	end
 end

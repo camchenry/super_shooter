@@ -81,6 +81,10 @@ function game:reset()
     if self.effectsEnabled == nil then
         self.effectsEnabled = false
     end
+	
+	if self.displayFPS == nil then
+		self.displayFPS = false
+	end
 
     self:toggleEffects()
 
@@ -297,7 +301,9 @@ function game:draw()
     self:drawBossIncoming()
 
     love.graphics.setFont(font[16])
-    love.graphics.print(love.timer.getFPS(), 5, 5)
+	if self.displayFPS then
+		love.graphics.print(love.timer.getFPS() .. " FPS", 5, 5)
+	end
 
     end) -- end post effect
 end
