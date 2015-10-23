@@ -36,7 +36,7 @@ function options:enter()
 	local resTable = love.window.getFullscreenModes(1)
 	local resolutions = {}
 	for k, res in pairs(resTable) do
-		if res.width > 800 then -- cuts off any resolutions with a with under 800
+		if res.width > 800 then -- cuts off any resolutions with a width under 800
 			table.insert(resolutions, {res.width, res.height})
 		end
 	end
@@ -105,8 +105,8 @@ function options:mousepressed(x, y, button)
 	self.resolution:mousepressed(x, y, button)
 	self.fsaa:mousepressed(x, y, button)
 	
-	self.apply:mousepressed(x, y, button)
 	self.back:mousepressed(x, y, button)
+	self.apply:mousepressed(x, y, button)
 end
 
 function options:keypressed(key)
@@ -129,8 +129,13 @@ function options:update(dt)
 	self.resolution:update(dt)
 	self.fsaa:update(dt)
 
-	self.apply:update(dt)
 	self.back:update(dt)
+	self.apply:update(dt)
+	
+	
+	-- update volumes without applying changes
+	soundControl.musicVolume = self.musicVolume.ratio
+	soundControl.soundVolume = self.soundVolume.ratio
 end
 
 function options:draw()
@@ -154,8 +159,8 @@ function options:draw()
 	self.resolution:draw()
 	self.fsaa:draw()
 
-	self.apply:draw()
 	self.back:draw()
+	self.apply:draw()
 end
 
 function options:getDefaultConfig()
@@ -205,8 +210,8 @@ function options:save()
 			displayFPS = self.displayFPS.selected,
 		},
 		audio = {
-			soundVolume = self.soundVolume.value,
 			musicVolume = self.musicVolume.value,
+			soundVolume = self.soundVolume.value,
 		},
 	}
 	love.filesystem.write(self.file, serialize(o))
@@ -215,7 +220,24 @@ end
 function options:load()
 	local config = self:getConfig()
 	
-	love.window.setMode(config.display.width, config.display.height, config.display.flags)
+	-- detects if any window settings are changed
+	local reload = false
+	local width, height, flags = love.window.getMode()
+	if width ~= config.display.width or height ~= config.display.height then
+		reload = true
+	elseif flags.fullscreen ~= config.display.flags.fullscreen then
+		reload = true
+	elseif flags.vsync ~= config.display.flags.vsync then
+		reload = true
+	elseif flags.fsaa ~= config.display.flags.fsaa then
+		reload = true
+	elseif flags.borderless ~= config.display.flags.borderless then
+		reload = true
+	end
+	
+	if reload then -- only reloads the window if needed
+		love.window.setMode(config.display.width, config.display.height, config.display.flags)
+	end
 
 	game.effectsEnabled = config.graphics.shaderEffects
 	game.particlesEnabled = config.graphics.particles

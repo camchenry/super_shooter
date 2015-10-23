@@ -16,11 +16,17 @@ function Slider:initialize(text, min, max, value, x, y, w, h, fontSize)
     self.active = {127, 127, 127}
     self.bg = {255, 255, 255, 0}
     self.fg = {255, 255, 255, 255}
+	
+	self.sliderWidth = 8
 
     self.translateX = 0
 
     self.click = Slider.click
     self.selected = false
+	
+	-- lines up the box based on the width of the slider
+	self.x = self.x - self.sliderWidth/2+1
+	self.width = self.width + self.sliderWidth-2
 
     self.activated = activated or function() end
 end
@@ -28,6 +34,7 @@ end
 function Slider:mousepressed(x, y, mbutton)
     if self:hover() then
         self.ratio = (x-self.x)/(self.width)
+		signal.emit('uiClick')
 
         if self.changed then
             self:changed()
@@ -67,6 +74,8 @@ function Slider:draw()
     local r, g, b, a = love.graphics.getColor()
     local oldColor = {r, g, b, a}
 
+	local sliderWidth = self.sliderWidth
+	
     love.graphics.setColor(self.bg)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 
@@ -79,9 +88,13 @@ function Slider:draw()
         love.graphics.setColor(200, 200, 200)
     end
 
-    love.graphics.setLineWidth(8)
-    love.graphics.line(self.x+self.width*self.ratio, self.y, 
-                       self.x+self.width*self.ratio, self.y+self.height)
+	-- negate earlier changes to width and height
+	local x = self.x + self.sliderWidth/2-1
+	local width = self.width - self.sliderWidth+2
+	
+    love.graphics.setLineWidth(sliderWidth)
+    love.graphics.line(x+width*self.ratio, self.y+1, 
+                       x+width*self.ratio, self.y+self.height-1)
     love.graphics.setLineWidth(1)
 
     love.graphics.setColor(self.fg)

@@ -43,16 +43,18 @@ function Player:update(dt)
     end
 
     if love.mouse.isDown('l') then
-        if self.heat <= 0 then
-            signal.emit('playerShot')
-            game:addBullet(Bullet:new(
-                self.position,
-                vector(love.mouse.getX(), love.mouse.getY()),
-                self.velocity)
-            ):setSource(self):setDamage(self.bulletDamage):setSpeed(self.bulletVelocity)
-            self.heat = self.rateOfFire
-        end
-    end
+		if game.time > .25 then -- prevents a bullet from being shot when the game starts
+			if self.heat <= 0 then
+				signal.emit('playerShot')
+				game:addBullet(Bullet:new(
+					self.position,
+					vector(love.mouse.getX(), love.mouse.getY()),
+					self.velocity)
+				):setSource(self):setDamage(self.bulletDamage):setSpeed(self.bulletVelocity)
+				self.heat = self.rateOfFire
+			end
+		end
+	end
 
     if self.heat > 0 then
         self.heat = self.heat - dt
