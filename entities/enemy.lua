@@ -146,7 +146,7 @@ function Healer:initialize(position)
     self.radius = 11
     self.sides = 5
 
-    self.speed = 325
+    self.speed = 345
 
     self.position = position
     self.touchDamage = player.maxHealth/10
@@ -174,7 +174,7 @@ function Healer:update(dt)
         end
     end
 
-    self.acceleration = (self.moveTowardsPlayer + self.moveAway + self.moveTowardsEnemy*0.5):normalized() * self.speed
+    self.acceleration = (self.moveTowardsPlayer + self.moveAway + self.moveTowardsEnemy*0.01):normalized() * self.speed
 end
 
 function Healer:handleCollision(obj)
