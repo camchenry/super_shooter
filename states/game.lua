@@ -37,6 +37,66 @@ function game:removeBullet(obj)
 end
 
 function game:init()
+    self:compileShaders()
+    self.particles = Particles:new()
+    self.screenShake = ScreenShake:new()
+
+    self:reset()
+    signal.emit('waveEnded')
+end
+
+function game:reset()
+    objects = {}
+    bullets = {}
+    quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
+    quadtree:subdivide()
+    quadtree:subdivide()
+    player = self:addObject(Player:new())
+
+    if self.effectsEnabled == nil then
+        self.effectsEnabled = false
+    end
+
+    self:compileShaders()
+	
+	if self.displayFPS == nil then
+		self.displayFPS = false
+	end
+
+    self:toggleEffects()
+
+    self.time = 0
+    self.deltaTimeMultiplier = 1
+
+    self.firstWave = true
+    self.startingWave = 3
+    self.wave = self.startingWave
+    self.timeToNextWave = 2
+    self._postWaveCalled = false
+    self._preWaveCalled = false
+    self.boss = nil
+
+    self.waveTimer = nil
+    self:setupWaves()
+end
+
+function game:enter(prev)
+    love.keyboard.setKeyRepeat(true)
+    love.mouse.setVisible(true)
+    love.mouse.setCursor(crosshair)
+
+    self:compileShaders()
+
+    if self.deltaTimeMultiplier < 1 then
+        tween(.75, self, {deltaTimeMultiplier=1}, 'inQuad', function() end)
+    end
+
+    if prev == restart or prev == menu then
+        self:reset()
+    end
+end
+
+function game:compileShaders()
     shaders = {}
 
     local bloom = shine.bloom()
@@ -62,61 +122,6 @@ function game:init()
     pause_effect = bloom:chain(blur)
     default_effect = bloom
     post_effect = default_effect
-
-    self.particles = Particles:new()
-    self.screenShake = ScreenShake:new()
-
-    self:reset()
-    signal.emit('waveEnded')
-end
-
-function game:reset()
-    objects = {}
-    bullets = {}
-    quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
-    quadtree:subdivide()
-    quadtree:subdivide()
-    player = self:addObject(Player:new())
-
-    if self.effectsEnabled == nil then
-        self.effectsEnabled = false
-    end
-	
-	if self.displayFPS == nil then
-		self.displayFPS = false
-	end
-
-    self:toggleEffects()
-
-    self.time = 0
-    self.deltaTimeMultiplier = 1
-
-    self.firstWave = true
-    self.startingWave = 0
-    self.wave = self.startingWave
-    self.timeToNextWave = 2
-    self._postWaveCalled = false
-    self._preWaveCalled = false
-    self.boss = nil
-
-    self.waveTimer = nil
-
-    self:setupWaves()
-end
-
-function game:enter(prev)
-    love.keyboard.setKeyRepeat(true)
-    love.mouse.setVisible(true)
-
-    love.mouse.setCursor(crosshair)
-
-    if self.deltaTimeMultiplier < 1 then
-        tween(.75, self, {deltaTimeMultiplier=1}, 'inQuad', function() end)
-    end
-
-    if prev == restart then
-        self:reset()
-    end
 end
 
 function game:resized()
@@ -129,7 +134,8 @@ end
 
 function game:update(dt)
     -- this triggers when the game resolution changes
-    if WINDOW_OFFSET.x ~= love.graphics.getWidth()/2 or WINDOW_OFFSET.y ~= love.graphics.getHeight()/2 then
+    if WINDOW_OFFSET.x ~= love.graphics.getWidth()/2 or WINDOW_OFFSET.y ~= love.graphics.getHeight()/2 or
+    quadtree.width ~= love.graphics.getWidth()+50 or quadtree.height ~= love.graphics.getHeight()+50 then
         self:resized()
     end
     
@@ -178,7 +184,11 @@ function game:update(dt)
         end
     end
 
-    if #objects == 1 and not self.waveTimer and self.boss == nil and self.waves[self.wave+1] ~= nil then
+    if #objects == 1 and self.waves[self.wave+1] == nil and not (player.health <= 0) then
+        state.switch(gameover)
+    end
+
+    if #objects == 1 and not self.waveTimer and self.boss == nil then
         if not self._postWaveCalled then
             self:onWaveEnd()
         end
@@ -189,12 +199,6 @@ function game:onWaveStart()
     if self._preWaveCalled then return end
 
     self.firstWave = false
-
-    if self.waves[self.wave+1] ~= nil then
-        if self.waves[self.wave+1].enemies ~= nil then
-            Enemy.speed = Enemy.speed + 50
-        end
-    end
 
     self:startWave()
     self.waveTimer = nil
@@ -427,11 +431,17 @@ function game:startWave()
     end
 end
 
-function game:spawnEnemies()
-    local currentWave = self.waves[self.wave]
+function game:spawnEnemies(w)
+    local wave = nil
+    if w ~= nil then
+        wave = w
+    else
+        wave = self.wave
+    end
+    local currentWave = self.waves[wave]
 
     if currentWave.blobs ~= nil then
-        for i=1, self.waves[self.wave].blobs do
+        for i=1, currentWave.blobs do
             local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
                              math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
             p = p + (p - player.position):normalized()*150
@@ -442,7 +452,7 @@ function game:spawnEnemies()
 
     if currentWave.sweepers ~= nil then
         -- number of line enemies to spawn
-        local num = self.waves[self.wave].sweepers
+        local num = currentWave.sweepers
         -- margin from the sides of the screen
         local margin = 25
         local h = (love.graphics.getHeight()-margin)/num
@@ -456,7 +466,7 @@ function game:spawnEnemies()
     end
 	
 	if currentWave.healers ~= nil then
-        for i=1, self.waves[self.wave].healers do
+        for i=1, currentWave.healers do
             local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
                              math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
             p = p + (p - player.position):normalized()*150
@@ -466,7 +476,7 @@ function game:spawnEnemies()
     end
 	
 	if currentWave.tanks ~= nil then
-        for i=1, self.waves[self.wave].tanks do
+        for i=1, currentWave.tanks do
             local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
                              math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
             p = p + (p - player.position):normalized()*150

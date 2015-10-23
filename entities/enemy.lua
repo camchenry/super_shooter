@@ -61,10 +61,10 @@ function Enemy:_handleCollision(obj)
 
 		-- check for proximity and invincible
         if self.position:dist(obj.position) < self.radius + obj.radius then
+            game:removeBullet(obj)
 			if not self.invincible then
 				self.health = self.health - obj.damage
 				signal.emit('enemyHit', self)
-				game:removeBullet(obj)
 				self.flashTime = 20/1000
 			end
         end
@@ -79,7 +79,7 @@ function Blob:initialize(position)
     self.radius = 15
     self.sides = 4
 
-    self.speed = 400
+    self.speed = 425
 
     self.position = position
     self.touchDamage = player.maxHealth/5
@@ -146,23 +146,22 @@ function Healer:initialize(position)
     self.radius = 11
     self.sides = 5
 
-    self.speed = 300
+    self.speed = 325
 
     self.position = position
     self.touchDamage = player.maxHealth/10
 
-    self.maxHealth = 100
+    self.maxHealth = 75
     self.health = self.maxHealth
 	
 	self.healRate = 20
-    self.healRadius = 100
+    self.healRadius = 130
 end
 
 function Healer:update(dt)
     Enemy.update(self, dt)
     self.moveTowardsPlayer = (player.position - self.position):normalized()
-
-    self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
+    self.moveTowardsEnemy = vector(0, 0)
 
     for i, o in pairs(quadtree:getCollidableObjects(self, true)) do
         if o:isInstanceOf(Enemy) then
@@ -171,8 +170,11 @@ function Healer:update(dt)
                     o.health = o.health + self.healRate * dt
                 end
             end
+            self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)
         end
     end
+
+    self.acceleration = (self.moveTowardsPlayer + self.moveAway + self.moveTowardsEnemy*0.5):normalized() * self.speed
 end
 
 function Healer:handleCollision(obj)
@@ -198,7 +200,7 @@ function Tank:initialize(position)
     self.position = position
     self.touchDamage = player.maxHealth/2
 
-    self.maxHealth = 500
+    self.maxHealth = 750
     self.health = self.maxHealth
 end
 
@@ -226,6 +228,5 @@ function Tank:handleCollision(obj)
             self.velocity)
         ):setSource(self):setDamage(obj.damage*0.25):setSpeed(obj.velocity:len()*1.25)
         obj.alreadyCollided = true
-		obj.life = 0
     end
 end

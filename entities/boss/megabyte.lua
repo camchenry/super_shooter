@@ -1,38 +1,29 @@
 Megabyte = class('Megabyte', Enemy)
 
 function Megabyte:initialize(position)
+    Enemy.initialize(self, vector(0, 0))
     self.name = "Megabyte"
-    self.color = {52, 152, 219}
+    self.originalColor = {52, 152, 219}
     self.radius = 0
     self.sides = 6
 
-    self.position = vector(love.graphics.getWidth()/2-WINDOW_OFFSET.x+1, love.graphics.getHeight()/2-WINDOW_OFFSET.y+1)
-    self.velocity = vector(0, 0)
-    self.dragFactor = 0.15
     self.heat = 0
-    self.rateOfFire = (1/2) -- 4 shots per second
+    self.rateOfFire = (1/4) -- 4 shots per second
     self.fireAngle = 3*math.pi/4 + .33
     self.fireAngleMultiplier = 1
 
     self.touchDamage = 150
-    self.health = 500
-    self.maxHealth = 500
+    self.health = 1000
+    self.maxHealth = 1000
     self.invincible = true
     self.phase = 1
 
-    self.lineWidth = 3
+    self.lineWidth = 1
 
-    self.spawnTimer = cron.after(3, function()
+    self.spawnTimer = cron.after(2.5, function()
         self:spawnMinions(4, 8)
     end)
-    assert(tween ~= nil)
-    self.spawnTween = tween(3, self, {radius = 80}, "inOutCubic", function() self.spawnTween = nil end)
-    assert(self.spawnTween ~= nil)
-
-    self.width = self.radius * 2
-    self.height = self.radius * 2
-    self.x, self.y = self.position:unpack()
-    self.prev_x, self.prev_y = self.position:unpack()
+    self.spawnTween = tween(2.5, self, {radius = 70}, "inOutCubic", function() self.spawnTween = nil end)
 
     self.minions = {}
 end
@@ -56,16 +47,12 @@ function Megabyte:spawnMinions(inner, outer)
 end
 
 function Megabyte:update(dt)
-    self.width, self.height = self.radius*2, self.radius*2
+    Enemy.update(self, dt)
+
+    self.invincible = (#self.minions > 0) or (self.spawnTween ~= nil)
 
     if self.spawnTimer then
         self.spawnTimer:update(dt)
-    end
-
-    if self.health <= 0 then
-        game:removeObject(self)
-    elseif self.health > self.maxHealth then
-        self.health = self.maxHealth
     end
 
     for i=#self.minions, 1, -1 do
@@ -76,28 +63,33 @@ function Megabyte:update(dt)
 
     if self.health <= self.maxHealth/2 and self.phase == 1 then
         self:spawnMinions(12, 16)
-        self.rateOfFire = 1/5
+        self.rateOfFire = 1/8
         self.phase = 2
+        self.fireAngleMultiplier = 1.75
     end
 
     if self.phase == 2 then
-        if math.random() > 0.01 then
-            self.fireAngleMultiplier = self.fireAngleMultiplier * -1
-        end
+        self.acceleration = vector(math.cos(self.fireAngle/2)*250, math.sin(self.fireAngle/2)*250)
     end
-
-    self.invincible = (#self.minions > 0) or (self.spawnTween ~= nil)
 
     if self.heat <= 0 then
         game:addBullet(Bullet:new(
             self.position,
-            vector(math.cos(self.fireAngle)*250, math.sin(self.fireAngle)*250) + WINDOW_OFFSET
-        ):setLife(5):setSource(self):setDamage(15))
+            vector(self.x+math.cos(self.fireAngle)*250, self.y+math.sin(self.fireAngle)*250) + WINDOW_OFFSET
+        ):setLife(5):setSource(self):setDamage(10):setSpeed(350))
         game:addBullet(Bullet:new(
             self.position,
-            vector(math.cos(self.fireAngle-math.pi)*250, math.sin(self.fireAngle-math.pi)*250) + WINDOW_OFFSET
-        ):setLife(5):setSource(self):setDamage(15))
+            vector(self.x+math.cos(self.fireAngle-math.pi)*250, self.y+math.sin(self.fireAngle-math.pi)*250) + WINDOW_OFFSET
+        ):setLife(5):setSource(self):setDamage(10):setSpeed(350))
         self.heat = self.rateOfFire
+
+        -- bullet shot straight at the player
+        if math.random() > .9 then
+            game:addBullet(Bullet:new(
+                self.position,
+                player.position + (player.velocity*player.position:dist(self.position)/350) + WINDOW_OFFSET
+            ):setLife(6):setSource(self):setDamage(15):setSpeed(350))
+        end
     end
 
     if self.heat > 0 then
@@ -105,30 +97,19 @@ function Megabyte:update(dt)
     end
 
     self.fireAngle = self.fireAngle + (math.pi/2*math.random()*1.3) * dt * self.fireAngleMultiplier
+end
 
-    local collidableObjects = quadtree:getCollidableObjects(self, true)
-    for i, obj in pairs(collidableObjects) do
-        if obj:isInstanceOf(Bullet) then
-            if obj.source ~= self and not obj.source:isInstanceOf(Enemy) then
-                if self.position:dist(obj.position) < self.radius + obj.radius then
-                    if not self.invincible then
-                        self.health = self.health - obj.damage
-                    end
-                    game:removeBullet(obj)
-                end
-            end
-        end
+function Megabyte:handleCollision(obj)
+
+end
+
+function Megabyte:draw()
+    Enemy.draw(self)
+
+    love.graphics.setColor(255, 255, 255)
+    if self.invincible then
+        love.graphics.circle("line", self.x, self.y, self.radius+10, self.sides)
     end
-
-    self.prev_x, self.prev_y = self.position:unpack()
-    --self.acceleration = (self.moveTowardsPoint + self.moveAway):normalized() * self.accelConstant
-    --self.acceleration = self.acceleration - (self.acceleration * self.dragFactor)
-    --self.velocity = self.velocity - (self.velocity * self.dragFactor)
-    --self.velocity = self.velocity + self.acceleration * dt
-    self.velocity = vector(0, 0)
-
-    self.position = self.position + self.velocity * dt
-    self.x, self.y = self.position:unpack()
 end
 
 MegabyteEnemy = class('MegabyteEnemy', Enemy)

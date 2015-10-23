@@ -13,7 +13,6 @@ function restart:mousepressed(x, y, mbutton)
 end
 
 function restart:draw()
-	paused = true
 	game:draw()
 	love.graphics.setColor(255, 255, 255)
 	local text = [[

@@ -13,6 +13,7 @@ function Player:initialize()
     self.heat = 0
     self.rateOfFire = (1/4) -- 1 / shots per second
     self.bulletVelocity = 300
+    self.bulletDamage = 50
     self.health = 100
     self.maxHealth = 100
 
@@ -47,7 +48,7 @@ function Player:update(dt)
                 self.position,
                 vector(love.mouse.getX(), love.mouse.getY()),
                 self.velocity)
-            ):setSource(self):setDamage(50):setSpeed(self.bulletVelocity)
+            ):setSource(self):setDamage(self.bulletDamage):setSpeed(self.bulletVelocity)
             self.heat = self.rateOfFire
         end
     end
