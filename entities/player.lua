@@ -16,7 +16,7 @@ function Player:initialize()
     self.bulletDamage = 50
     self.health = 100
     self.maxHealth = 100
-	self.offScreenDamage = self.maxHealth/1000
+	self.offScreenDamage = self.maxHealth/20
 
     self.width = self.radius * 2
     self.height = self.radius * 2
@@ -59,7 +59,7 @@ function Player:update(dt)
     end
 
 	if math.abs(self.x) >= WINDOW_OFFSET.x or math.abs(self.y) >= WINDOW_OFFSET.y then
-		self.health = self.health - self.offScreenDamage
+		self.health = self.health - self.offScreenDamage * dt
 	end
 	
     if self.health <= 0 then

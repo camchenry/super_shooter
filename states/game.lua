@@ -374,16 +374,16 @@ function game:setupWaves()
     self.waves[2] = {
         blobs = 15,
         sweepers = 0,
+		tanks = 1,
     }
     self.waves[3] = {
-        blobs = 20,
-        sweepers = 0,
-        tanks = 1,
+        blobs = 18,
+        sweepers = 4,
     }
     self.waves[4] = {
         blobs = 25,
         sweepers = 0,
-        healers = 2,
+        healers = 3,
     }
     self.waves[5] = {
         blobs = 25,
@@ -392,13 +392,14 @@ function game:setupWaves()
     }
     self.waves[6] = {
         blobs = 40,
+		sweepers = 7,
     }
     self.waves[7] = {
         tanks = 5,
-        healers = 2,
+        healers = 3,
     }
     self.waves[8] = {
-        blobs = 35,
+        blobs = 32,
         healers = 3,
         tanks = 5,
     }
