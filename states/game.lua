@@ -69,7 +69,7 @@ function game:reset()
     self.deltaTimeMultiplier = 1
 
     self.firstWave = true
-    self.startingWave = 3
+    self.startingWave = 0
     self.wave = self.startingWave
     self.timeToNextWave = 2
     self._postWaveCalled = false

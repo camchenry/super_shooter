@@ -9,7 +9,7 @@ function gameover:update(dt)
 end
 
 function gameover:mousepressed(x, y, mbutton)
-	state.switch(game)
+	state.switch(menu)
 end
 
 function gameover:draw()
