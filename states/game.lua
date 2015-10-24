@@ -78,6 +78,10 @@ function game:reset()
 
     self.waveTimer = nil
     self:setupWaves()
+
+    if self.prevState ~= menu then
+        signal.emit('newGame')
+    end
 end
 
 function game:enter(prev)
@@ -90,6 +94,8 @@ function game:enter(prev)
     if self.deltaTimeMultiplier < 1 then
         tween(.75, self, {deltaTimeMultiplier=1}, 'inQuad', function() end)
     end
+
+    self.prevState = prev
 
     if prev == restart or prev == menu then
         self:reset()
@@ -195,6 +201,7 @@ function game:update(dt)
     end
 end
 
+
 function game:onWaveStart()
     if self._preWaveCalled then return end
 
@@ -213,6 +220,8 @@ end
 
 function game:onWaveEnd()
     if self._postWaveCalled then return end
+
+    player.health = player.health + player.health * 0.1 + 1
 
     if self.waves[self.wave+1] ~= nil then
         if self.waves[self.wave+1].boss ~= nil then

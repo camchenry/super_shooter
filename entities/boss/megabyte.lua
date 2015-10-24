@@ -11,6 +11,7 @@ function Megabyte:initialize(position)
     self.rateOfFire = (1/4) -- 4 shots per second
     self.fireAngle = 3*math.pi/4 + .33
     self.fireAngleMultiplier = 1
+    self.speed = 200
 
     self.touchDamage = 150
     self.health = 1000
@@ -69,10 +70,11 @@ function Megabyte:update(dt)
     end
 
     if self.phase == 2 then
-        self.acceleration = vector(math.cos(self.fireAngle/2)*250, math.sin(self.fireAngle/2)*250)
+        local p = vector(math.cos(self.fireAngle/2)*250, math.sin(self.fireAngle/2)*250)
+        self.acceleration = (p - self.position):normalized() * self.speed
     end
 
-    if self.heat <= 0 then
+    if self.heat <= 0 and not (self.spawnTimer.running < 2.5) then
         game:addBullet(Bullet:new(
             self.position,
             vector(self.x+math.cos(self.fireAngle)*250, self.y+math.sin(self.fireAngle)*250) + WINDOW_OFFSET

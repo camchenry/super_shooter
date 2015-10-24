@@ -45,6 +45,8 @@ function Sound:initialize()
     self.menuObserver = signal.register('menuEntered', function() self:onMenuEnter() end)
     self.bossIncoming = signal.register('bossIncoming', function() self:onBossIncoming() end)
     self.bossSpawn = signal.register('bossSpawned', function() self:onBossSpawn() end)
+    self.newGame = signal.register('newGame', function() self:onNewGame() end)
+
 end
 
 function Sound:update(dt)
@@ -91,9 +93,20 @@ function Sound:onUiHover(enemy)
 	self.sounds.uiHover:play()
 end
 
+function Sound:onNewGame()
+	if self.currentMusic == self.music.menuMusic then return end
+
+	self.musicTween = tween(1, self, {currentMusicVolume=0}, nil, function()
+		self.currentMusic:stop()
+		self.currentMusic = self.music.menuMusic
+		self.currentMusic:play()
+		self.musicTween = nil
+	end)
+end
+
 function Sound:onMenuEnter()
 	if self.currentMusic == nil then
-		self.currentMusic = self.music.menuMusic:clone()
+		self.currentMusic = self.music.menuMusic
 		self.currentMusic:play()
 	end
 end
@@ -105,7 +118,7 @@ end
 function Sound:onBossIncoming()
 	self.musicTween = tween(1, self, {currentMusicVolume=0}, nil, function()
 		self.currentMusic:stop()
-		self.currentMusic = self.music.bossMusic:clone()
+		self.currentMusic = self.music.bossMusic
 		self.currentMusic:play()
 		self.musicTween = nil
 	end)
