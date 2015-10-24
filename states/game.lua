@@ -79,9 +79,7 @@ function game:reset()
     self.waveTimer = nil
     self:setupWaves()
 
-    if self.prevState ~= menu then
-        signal.emit('newGame')
-    end
+    signal.emit('newGame')
 end
 
 function game:enter(prev)
@@ -94,8 +92,6 @@ function game:enter(prev)
     if self.deltaTimeMultiplier < 1 then
         tween(.75, self, {deltaTimeMultiplier=1}, 'inQuad', function() end)
     end
-
-    self.prevState = prev
 
     if prev == restart or prev == menu then
         self:reset()

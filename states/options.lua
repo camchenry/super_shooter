@@ -76,10 +76,7 @@ function options:enter()
 end
 
 function options:leave()
-	local config = self:getConfig()
-
-	signal.emit('soundChanged', config.audio.soundVolume/100)
-	signal.emit('musicChanged', config.audio.musicVolume/100)
+	self:load()
 end
 
 function options:applyChanges()

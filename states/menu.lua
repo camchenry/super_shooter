@@ -32,7 +32,7 @@ function menu:init()
 	
 	-- reveal the menu on game launch
 	self.headerTweenAmount = love.graphics.getHeight() - (120+55)
-	self.headerTween = tween(2.5, self, {headerTweenAmount = 0}, "outQuad", function() end)
+	self.headerTween = tween(2, self, {headerTweenAmount = 0}, "outBack", function() end)
 end
 
 function menu:enter()
