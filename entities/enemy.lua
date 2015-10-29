@@ -218,13 +218,19 @@ function Tank:handleCollision(obj)
         if obj.alreadyCollided then return end
 
 		-- bullets have ~1/4 chance of not bouncing
-        if math.random() > .75 then return end
-
-        local randOffset = vector(math.random(-100, 100), math.random(-100, 100))
+        --if math.random() > .75 then return end
+		
+		local d = -1 * obj.velocity -- incoming vector
+		local n = obj.position - self.position -- vector to reflect off of
+		local r = d:mirrorOn(n) -- result vector
+		
+		self.d = d
+		self.n = n
+		self.r = r
 
         game:addBullet(Bullet:new(
             obj.position,
-            player.position + vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + randOffset,
+            player.position + vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + r,
             self.velocity)
         ):setSource(self):setDamage(obj.damage*0.25):setSpeed(obj.velocity:len()*1.25)
         obj.alreadyCollided = true

@@ -32,7 +32,7 @@ function Slider:initialize(text, min, max, value, x, y, w, h, fontSize)
 end
 
 function Slider:mousepressed(x, y, mbutton)
-    if self:hover() then
+    if self:hover() and mbutton == 'l' then
         self.ratio = (x-self.x)/(self.width)
 		signal.emit('uiClick')
 
