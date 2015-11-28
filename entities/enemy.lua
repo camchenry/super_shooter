@@ -17,6 +17,20 @@ function Enemy:initialize(position)
     self.flashTime = 0
 end
 
+function Enemy:randomizeAppearance(color, radius)
+    local colorVariance = color or 0.1
+    self.originalColor[1] = self.originalColor[1] + math.random(0, self.originalColor[1]*colorVariance) * math.random(-1, 1)
+    self.originalColor[2] = self.originalColor[2] + math.random(0, self.originalColor[2]*colorVariance) * math.random(-1, 1)
+    self.originalColor[3] = self.originalColor[3] + math.random(0, self.originalColor[3]*colorVariance) * math.random(-1, 1)
+    
+    self.originalColor[1] = math.min(self.originalColor[1], 255) 
+    self.originalColor[2] = math.min(self.originalColor[2], 255)
+    self.originalColor[3] = math.min(self.originalColor[3], 255)
+    
+    local radiusVariance = radius or 0.1
+    self.radius = self.radius + math.random(-self.radius*radiusVariance, self.radius*radiusVariance)
+end
+
 function Enemy:update(dt)
     self.moveAway = vector(0, 0)
     self.moveTowardsPlayer = (player.position - self.position):normalized()
@@ -76,8 +90,10 @@ Blob = class('Blob', Enemy)
 function Blob:initialize(position)
     Enemy.initialize(self, position)
     self.originalColor = {231, 76, 60, 255}
-    self.radius = 15
+    self.radius = 15 + math.random(-2, 2)
     self.sides = 4
+
+    self:randomizeAppearance(0.3, 0.1)
 
     self.speed = 425
 
@@ -106,6 +122,7 @@ function LineEnemy:initialize(start, finish)
     self.originalColor = {241, 196, 0, 255}
     self.radius = 18
     self.sides = 3
+    self:randomizeAppearance()
 
     self.position = start
     self.start = start
@@ -145,6 +162,7 @@ function Healer:initialize(position)
     self.originalColor = {77, 214, 79, 255}
     self.radius = 11
     self.sides = 5
+    self:randomizeAppearance()
 
     self.speed = 345
 
@@ -194,6 +212,7 @@ function Tank:initialize(position)
     self.originalColor = {122, 214, 210, 255}
     self.radius = 20
     self.sides = 6
+    self:randomizeAppearance()
 
     self.speed = 200
 

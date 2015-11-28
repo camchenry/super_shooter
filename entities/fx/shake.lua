@@ -19,11 +19,11 @@ function ScreenShake:update(dt)
 end
 
 function ScreenShake:onEnemyDeath(enemy)
-	self:shake(1, 100)
+	self:shake(1, 90)
 end
 
 function ScreenShake:onEnemyHit(enemy)
-	self:shake(1, 50)
+	self:shake(1, 35)
 end
 
 function ScreenShake:shake(time, strength)

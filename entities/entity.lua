@@ -50,7 +50,7 @@ function Entity:draw()
 	love.graphics.push()
 	local rgba = {love.graphics.getColor()}
 	love.graphics.setColor(self.color)
-
+	
 	love.graphics.circle("line", self.position.x, self.position.y, self.radius, self.sides)
 
 	love.graphics.setColor(rgba)

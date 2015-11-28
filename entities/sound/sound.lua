@@ -80,8 +80,10 @@ end
 function Sound:onEnemyHit(enemy)
 	if enemy:isInstanceOf(Tank) then
 		self.sounds.hitTank:play()
+		self.sounds.hitTank:setPitch(1.0 + math.random(-25, 25)/100)
 	else
 		self.sounds.hit:play()
+		self.sounds.hit:setPitch(1.0 + math.random(-25, 25)/100)
 	end
 end
 
