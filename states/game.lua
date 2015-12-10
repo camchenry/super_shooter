@@ -371,15 +371,15 @@ end
 function game:setupWaves()
     self.waves = {}
     self.waves[1] = {
-        blobs = 10,
-        sweepers = 0,
-		healers = 0,
-		tanks = 0,
-    }
-    self.waves[2] = {
         blobs = 15,
         sweepers = 0,
-		tanks = 1,
+		healers = 0,
+		tanks = 5,
+    }
+    self.waves[2] = {
+        blobs = 25,
+        sweepers = 0,
+		tanks = 5,
     }
     self.waves[3] = {
         blobs = 18,

@@ -95,7 +95,7 @@ function Blob:initialize(position)
 
     self:randomizeAppearance(0.3, 0.1)
 
-    self.speed = 425
+    self.speed = 600
 
     self.position = position
     self.touchDamage = player.maxHealth/5
@@ -169,7 +169,7 @@ function Healer:initialize(position)
     self.position = position
     self.touchDamage = player.maxHealth/10
 
-    self.maxHealth = 75
+    self.maxHealth = 125
     self.health = self.maxHealth
 	
 	self.healRate = 20
@@ -214,7 +214,7 @@ function Tank:initialize(position)
     self.sides = 6
     self:randomizeAppearance()
 
-    self.speed = 200
+    self.speed = 350
 
     self.position = position
     self.touchDamage = player.maxHealth/2
@@ -238,20 +238,26 @@ function Tank:handleCollision(obj)
 
 		-- bullets have ~1/4 chance of not bouncing
         --if math.random() > .75 then return end
-		
-		local d = -1 * obj.velocity -- incoming vector
-		local n = obj.position - self.position -- vector to reflect off of
-		local r = d:mirrorOn(n) -- result vector
-		
-		self.d = d
-		self.n = n
-		self.r = r
 
-        game:addBullet(Bullet:new(
-            obj.position,
-            player.position + vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + r,
-            self.velocity)
-        ):setSource(self):setDamage(obj.damage*0.25):setSpeed(obj.velocity:len()*1.25)
-        obj.alreadyCollided = true
+        local num = math.random(2, 4)
+        for i=1, num do
+            local d = -1 * obj.velocity -- incoming vector
+            local n = obj.position - self.position -- vector to reflect off of
+            local r = d:mirrorOn(n) -- result vector
+            r:rotate_inplace(math.rad(math.random(-50, 50)))
+
+            local offset = vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + r
+
+            local b = game:addBullet(Bullet:new(
+                obj.position,
+                player.position + offset,
+                self.velocity)
+            )
+            b:setSource(self)
+            b:setDamage(obj.damage*0.08)
+            b:setSpeed(obj.velocity:len()*1.35)
+            b:setRadius(math.random(3, 4))
+            obj.alreadyCollided = true
+        end
     end
 end

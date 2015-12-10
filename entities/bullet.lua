@@ -52,6 +52,11 @@ function Bullet:draw()
     love.graphics.circle("fill", self.position.x, self.position.y, self.radius)
 end
 
+function Bullet:setRadius(radius)
+    self.radius = math.abs(radius)
+    return self
+end
+
 function Bullet:setLife(life)
     self.life = life
     return self
