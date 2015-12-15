@@ -293,6 +293,7 @@ function game:draw()
         v:draw()
     end
 
+    love.graphics.setLineWidth(1)
 	love.graphics.setColor(160, 160, 160, 16*math.abs(math.cos(self.time))+12)
     quadtree:draw()
 	
@@ -309,7 +310,7 @@ function game:draw()
     self:drawPlayerHealthBar()
     self:drawBossIncoming()
 
-    love.graphics.setFont(font[16])
+        love.graphics.setFont(font[16])
 	if self.displayFPS then
 		love.graphics.print(love.timer.getFPS() .. " FPS", 5, 5)
 	end
@@ -487,6 +488,16 @@ function game:spawnEnemies(w)
                              math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
             p = p + (p - player.position):normalized()*150
             local b = Tank:new(p)
+            self:addObject(b)
+        end
+    end
+
+    if currentWave.ninjas ~= nil then
+        for i=1, currentWave.ninjas do
+            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
+                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            p = p + (p - player.position):normalized()*150
+            local b = Ninja:new(p)
             self:addObject(b)
         end
     end

@@ -35,6 +35,8 @@ function Enemy:update(dt)
     self.moveAway = vector(0, 0)
     self.moveTowardsPlayer = (player.position - self.position):normalized()
 
+    Entity.physicsUpdate(self, dt)
+
     if self.health <= 0 then
         self.destroy = true
         self.color = self.originalColor
@@ -52,9 +54,8 @@ function Enemy:update(dt)
         self.flashTime = self.flashTime - dt
     end
 
-    self:physicsUpdate(dt)
-
     self:checkCollision(self._handleCollision)
+
 end
 
 -- this is a private collision function specifically for common enemy effects that aren't supposed
@@ -244,7 +245,7 @@ function Tank:handleCollision(obj)
             local d = -1 * obj.velocity -- incoming vector
             local n = obj.position - self.position -- vector to reflect off of
             local r = d:mirrorOn(n) -- result vector
-            r:rotate_inplace(math.rad(math.random(-50, 50)))
+            r:rotate_inplace(math.rad(math.random(-90, 90)))
 
             local offset = vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + r
 
@@ -255,9 +256,73 @@ function Tank:handleCollision(obj)
             )
             b:setSource(self)
             b:setDamage(obj.damage*0.08)
-            b:setSpeed(obj.velocity:len()*1.35)
+            b:setSpeed(obj.velocity:len()*1.4)
             b:setRadius(math.random(3, 4))
             obj.alreadyCollided = true
         end
+    end
+end
+
+Ninja = class('Ninja', Enemy)
+
+function Ninja:initialize(position)
+    Enemy.initialize(self, position)
+    self.originalColor = {127, 127, 127, 127}
+    self.radius = 15 + math.random(-2, 2)
+    self.sides = 4
+
+    self:randomizeAppearance(0.05, 0.1)
+    self.speed = 750
+    self.doTeleport = false
+
+    self.position = position
+    self.touchDamage = player.maxHealth/5
+
+    self.health = 100
+    self.maxHealth = 100
+end
+
+function Ninja:update(dt)
+    Enemy.update(self, dt)
+    if self.doTeleport then
+        local teleport = vector(math.random(-200, 200),
+                                math.random(-200, 200))
+        self.position = self.position + teleport
+        self.position = self.position + (self.position - player.position):normalized()*250
+        self.doTeleport = false
+    end
+
+    self.moveTowardsPlayer = (player.position - self.position):normalized()
+
+    self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
+end
+
+function Ninja:handleCollision(obj)
+    if obj:isInstanceOf(Bullet) then
+        if obj.source ~= nil and obj.source:isInstanceOf(self.class) then return end
+        if self.boss ~= nil then
+            if obj.source == self.boss then return end
+        end
+
+        -- check for proximity and invincible
+        if self.position:dist(obj.position) < self.radius + obj.radius then
+            if not self.invincible then
+                self.doTeleport = true
+                self.drawTeleportLine = true
+                self.drawTeleportLineTime = 0.5
+                self.oldPosition = self.position
+            end
+        end
+    end
+end
+
+function Ninja:draw()
+    Enemy.draw(self)
+
+    if self.drawTeleportLine then
+        love.graphics.setLineWidth(3)
+        love.graphics.setColor(self.originalColor)
+        love.graphics.line(self.oldPosition.x, self.oldPosition.y, self.position.x, self.position.y)
+        self.drawTeleportLine = false
     end
 end

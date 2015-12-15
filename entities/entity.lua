@@ -34,8 +34,6 @@ function Entity:physicsUpdate(dt)
 
 	self.x, self.y = self.position:unpack()
 
-	--self.acceleration = vector(0, 0)
-
 	if self.handleCollision then
 		self:checkCollision(self.handleCollision)
 	end

@@ -108,6 +108,7 @@ end
 ]]
 function QuadTree:updateObject(object)
   self:removeObject(object, true)
+  self:removeObject(object, false) 
   self:addObject(object)
 end
 
