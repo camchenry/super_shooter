@@ -77,9 +77,11 @@ function Player:update(dt)
                 if obj.source ~= self then
                     self.health = self.health - obj.damage
                     game:removeBullet(obj)
+                    signal.emit('playerHurt')
                 end
             elseif obj:isInstanceOf(Enemy) then
                 self.health = self.health - obj.touchDamage*dt
+                signal.emit('playerHurt')
             end
         end
     end

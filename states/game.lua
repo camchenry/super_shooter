@@ -40,6 +40,7 @@ function game:init()
     self:compileShaders()
     self.particles = Particles:new()
     self.screenShake = ScreenShake:new()
+    self.hurt = Hurt:new()
 
     self:reset()
     signal.emit('waveEnded')
@@ -179,6 +180,7 @@ function game:update(dt)
         self.particles:update(dt)
     end
     self.screenShake:update(dt)
+    self.hurt:update(dt)
 
     if self.boss then
         if self.boss.health <= 0 then
@@ -299,6 +301,8 @@ function game:draw()
 	
     love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
 
+    self.hurt:draw()
+
     if self.waveText ~= nil and self.wave > 0 then
         self:drawPrimaryText()
     end
@@ -334,11 +338,15 @@ function game:drawBossIncoming()
 end
 
 function game:drawPlayerHealthBar()
-    local height = 8
-    local multiplier = player.health / player.maxHealth
+    if state.current() ~= game then return end
 
-    love.graphics.setColor(204, 15, 10, 128)
-    love.graphics.rectangle("fill", 0, love.graphics.getHeight()-height, love.graphics.getWidth()*multiplier, height)
+    local height = 10
+    local multiplier = player.health / player.maxHealth
+    local width = love.graphics.getWidth() * multiplier
+
+    love.graphics.setColor(204, 15, 10, 255)
+    love.graphics.rectangle("fill", love.graphics.getWidth()/2 - width/2, love.graphics.getHeight()-height, width/2, height)
+    love.graphics.rectangle("fill", love.graphics.getWidth()/2, love.graphics.getHeight()-height, width/2, height)
     love.graphics.setColor(255, 255, 255)
 end
 
@@ -362,10 +370,8 @@ function game:drawPrimaryText()
     self.waveTextTime = self.waveTextTime - love.timer.getDelta()
 
     love.graphics.setLineWidth(1)
-    love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(font[48])
-    local r, g, b, a = love.graphics.getColor()
-    love.graphics.setColor(r, g, b)
+    love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print(self.waveText, love.graphics.getWidth()/2 - love.graphics.getFont():getWidth(self.waveText)/2, 100)
 end
 

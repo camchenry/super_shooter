@@ -27,6 +27,7 @@ require 'entities.boss.megabyte'
 require 'entities.boss.arena'
 require 'entities.fx.particle'
 require 'entities.fx.shake'
+require 'entities.fx.hurt'
 
 require 'entities.sound.sound'
 
