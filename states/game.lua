@@ -66,7 +66,8 @@ function game:reset()
 
     self:toggleEffects()
 
-    self.time = 0
+    -- time is used mostly for time-based effects like the background
+    self.time = math.random(0, 10)
     self.deltaTimeMultiplier = 1
 
     self.firstWave = true
@@ -296,8 +297,13 @@ function game:draw()
     end
 
     love.graphics.setLineWidth(1)
-	love.graphics.setColor(160, 160, 160, 16*math.abs(math.cos(self.time))+12)
+	love.graphics.setColor(255*math.abs(math.cos(self.time*0.125)), 255*math.abs(math.cos(self.time*.792)), 255*math.abs(math.sin(self.time*.349)), 16*math.abs(math.cos(self.time))+12)
+    local p = math.abs(math.cos(self.time))*(1/2) + 1.75
+    love.graphics.scale(p)
+    love.graphics.rotate(math.sin(self.time/4))
     quadtree:draw()
+    love.graphics.rotate(-math.sin(self.time/4))
+    love.graphics.scale(1/p)
 	
     love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
 
