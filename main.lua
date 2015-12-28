@@ -18,6 +18,7 @@ require 'states.options'
 require 'states.pause'
 require 'states.gameover'
 require 'states.restart'
+require 'states.upgrades'
 
 -- entities
 require 'entities.entity'
@@ -32,6 +33,7 @@ require 'entities.fx.particle'
 require 'entities.fx.shake'
 require 'entities.fx.hurt'
 require 'entities.fx.background'
+require 'entities.fx.floating'
 -- sound effects
 require 'entities.sound.sound'
 -- ui elements

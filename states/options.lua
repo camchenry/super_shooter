@@ -31,6 +31,9 @@ function options:enter()
 	
 	self.displayFPS = Checkbox:new('SHOW FPS', self.leftAlign, 390+175)
 	self.displayFPS.selected = config.graphics.displayFPS
+
+	self.trackpad = Checkbox:new('TRACKPAD MODE', self.leftAlign, 430+175)
+	self.trackpad.selected = config.input.trackpadMode
 	
 	-- Takes all available resolutions
 	local resTable = love.window.getFullscreenModes(1)
@@ -94,6 +97,7 @@ function options:mousepressed(x, y, button)
 		self.shaderEffects:mousepressed(x, y)
 		self.particles:mousepressed(x, y)
 		self.displayFPS:mousepressed(x, y)
+		self.trackpad:mousepressed(x, y)
 	end
 
 	self.musicVolume:mousepressed(x, y, button)
@@ -119,6 +123,7 @@ function options:update(dt)
 	self.shaderEffects:update(dt)
 	self.particles:update(dt)
 	self.displayFPS:update(dt)
+	self.trackpad:update(dt)
 
 	self.musicVolume:update(dt)
 	self.soundVolume:update(dt)
@@ -149,6 +154,7 @@ function options:draw()
 	self.shaderEffects:draw()
 	self.particles:draw()
 	self.displayFPS:draw()
+	self.trackpad:draw()
 
 	self.musicVolume:draw()
 	self.soundVolume:draw()
@@ -183,6 +189,9 @@ function options:getDefaultConfig()
 			soundVolume = 100,
 			musicVolume = 80,
 		},
+		input = {
+			trackpadMode = false,
+		},
 	}
 	return o
 end
@@ -209,6 +218,9 @@ function options:save()
 		audio = {
 			musicVolume = self.musicVolume.value,
 			soundVolume = self.soundVolume.value,
+		},
+		input = {
+			trackpadMode = self.trackpad.selected,
 		},
 	}
 	love.filesystem.write(self.file, serialize(o))
@@ -239,6 +251,8 @@ function options:load()
 	game.effectsEnabled = config.graphics.shaderEffects
 	game.particlesEnabled = config.graphics.particles
 	game.displayFPS = config.graphics.displayFPS
+
+	game.trackpadMode = config.input.trackpadMode
 
 	soundControl.soundVolume = config.audio.soundVolume/100
 	soundControl.musicVolume = config.audio.musicVolume/100

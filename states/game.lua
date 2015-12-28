@@ -41,6 +41,7 @@ function game:init()
     self.particles = Particles:new()
     self.screenShake = ScreenShake:new()
     self.hurt = Hurt:new()
+    self.floatingMessages = FloatingMessages:new()
 
     self:reset()
     signal.emit('waveEnded')
@@ -56,6 +57,10 @@ function game:reset()
 
     if self.effectsEnabled == nil then
         self.effectsEnabled = false
+    end
+
+    if self.trackpadMode == nil then
+        self.trackpadMode = false
     end
 
     self:compileShaders()
@@ -182,6 +187,7 @@ function game:update(dt)
     self.screenShake:update(dt)
     self.hurt:update(dt)
     self.background:update(dt)
+    self.floatingMessages:update(dt)
 
     if self.boss then
         if self.boss.health <= 0 then
@@ -219,6 +225,10 @@ end
 
 function game:onWaveEnd()
     if self._postWaveCalled then return end
+
+    if (self.wave+1)%2 == 0 then
+        state.push(upgrades)
+    end
 
     player.health = player.health + player.health * 0.1 + 1
 
@@ -301,6 +311,7 @@ function game:draw()
     love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
 
     self.hurt:draw()
+    self.floatingMessages:draw()
 
     if self.waveText ~= nil and self.wave > 0 then
         self:drawPrimaryText()
@@ -313,7 +324,7 @@ function game:draw()
     self:drawPlayerHealthBar()
     self:drawBossIncoming()
 
-        love.graphics.setFont(font[16])
+    love.graphics.setFont(font[16])
 	if self.displayFPS then
 		love.graphics.print(love.timer.getFPS() .. " FPS", 5, 5)
 	end
@@ -385,7 +396,7 @@ function game:setupWaves()
     self.waves[2] = {
         blobs = 25,
         sweepers = 0,
-		tanks = 3,
+		tanks = 1,
     }
     self.waves[3] = {
         blobs = 18,
