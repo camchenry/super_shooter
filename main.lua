@@ -17,6 +17,7 @@ require 'states.options'
 require 'states.pause'
 require 'states.gameover'
 require 'states.restart'
+require 'states.upgrades'
 
 -- entities
 require 'entities.entity'
@@ -28,6 +29,7 @@ require 'entities.boss.arena'
 require 'entities.fx.particle'
 require 'entities.fx.shake'
 require 'entities.fx.hurt'
+require 'entities.fx.floating'
 
 require 'entities.sound.sound'
 

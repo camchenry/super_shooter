@@ -14,9 +14,22 @@ function Player:initialize()
     self.rateOfFire = (1/4) -- 1 / shots per second
     self.bulletVelocity = 300
     self.bulletDamage = 50
+    self.damageMultiplier = 1.0
+    self.bulletLife = 1.5
+    self.bulletRadius = 5
+    self.healthRegen = 0
     self.health = 100
     self.maxHealth = 100
+    self.damageResistance = 0.0
+    self.criticalChance = 0.01
+    self.criticalMultiplier = 2.0
+
 	self.offScreenDamage = self.maxHealth/20
+    self.regenWaitAfterHurt = 5
+    self.regenTimer = 0
+    signal.register('playerHurt', function()
+        self.regenTimer = self.regenWaitAfterHurt
+    end)
 
     self.width = self.radius * 2
     self.height = self.radius * 2
@@ -53,7 +66,6 @@ function Player:update(dt)
             closest = enemy
         end
     end
-
     self.closestEnemy = closest
 
     if love.mouse.isDown('l') then
@@ -61,20 +73,29 @@ function Player:update(dt)
 			if self.heat <= 0 then
 				signal.emit('playerShot')
 
+                local target = nil
                 -- trackpad shooting mode
                 if game.trackpadMode and self.closestEnemy ~= player and self.closestEnemy ~= nil then
-                    game:addBullet(Bullet:new(
-                        self.position,
-                        self.closestEnemy.position + vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + vector(math.random(-35, 35), math.random(-35, 35)),
-                        self.velocity)
-                    ):setSource(self):setDamage(self.bulletDamage):setSpeed(self.bulletVelocity)
+                    target = self.closestEnemy.position + vector(math.random(-35, 35), math.random(-35, 35))
                 else
-                    game:addBullet(Bullet:new(
-                        self.position,
-                        vector(love.mouse.getX(), love.mouse.getY()),
-                        self.velocity)
-                    ):setSource(self):setDamage(self.bulletDamage):setSpeed(self.bulletVelocity)
+                    target = vector(love.mouse.getX(), love.mouse.getY())
                 end
+                local bullet = game:addBullet(Bullet:new(
+                    self.position,
+                    target + vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y),
+                    self.velocity
+                ))
+                bullet:setSource(self)
+                -- critical hits
+                if math.random() <= self.criticalChance then
+                    bullet:setDamage(self.bulletDamage * self.damageMultiplier * self.criticalMultiplier)
+                else
+                    bullet:setDamage(self.bulletDamage * self.damageMultiplier)
+                end 
+                bullet:setSpeed(self.bulletVelocity)
+                bullet:setRadius(self.bulletRadius)
+                bullet:setLife(self.bulletLife)
+
 				self.heat = self.rateOfFire
 			end
 		end
@@ -87,24 +108,31 @@ function Player:update(dt)
 	if math.abs(self.x) >= WINDOW_OFFSET.x or math.abs(self.y) >= WINDOW_OFFSET.y then
 		self.health = self.health - self.offScreenDamage * dt
 	end
-	
+
+    self.regenTimer = self.regenTimer - dt
+    if self.regenTimer <= 0 then
+        self.health = self.health + self.healthRegen * dt
+	end
+
     if self.health <= 0 then
         game:removeObject(self)
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
     end
 
+    self.maxHealth = math.max(1, self.maxHealth)
+
     local collidableObjects = quadtree:getCollidableObjects(self, true)
     for i, obj in pairs(collidableObjects) do
         if self.position:dist(obj.position) < self.radius + obj.radius then
             if obj:isInstanceOf(Bullet) then
                 if obj.source ~= self then
-                    self.health = self.health - obj.damage
+                    self.health = self.health - obj.damage * (1 - self.damageResistance)
                     game:removeBullet(obj)
                     signal.emit('playerHurt')
                 end
             elseif obj:isInstanceOf(Enemy) then
-                self.health = self.health - obj.touchDamage*dt
+                self.health = self.health - obj.touchDamage * dt * (1 - self.damageResistance)
                 signal.emit('playerHurt')
             end
         end
