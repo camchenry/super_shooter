@@ -8,6 +8,7 @@ shine = require 'libs.shine'
 signal = require 'libs.signal'
 QuadTree = require 'libs.quadtree'
 serialize = require 'libs.ser'
+husl = require 'libs.husl'
 require 'libs.util'
 
 -- gamestates
@@ -23,14 +24,17 @@ require 'entities.entity'
 require 'entities.bullet'
 require 'entities.player'
 require 'entities.enemy'
+-- bosses
 require 'entities.boss.megabyte'
 require 'entities.boss.arena'
+-- visual effects
 require 'entities.fx.particle'
 require 'entities.fx.shake'
 require 'entities.fx.hurt'
-
+require 'entities.fx.background'
+-- sound effects
 require 'entities.sound.sound'
-
+-- ui elements
 require 'entities.ui.button'
 require 'entities.ui.checkbox'
 require 'entities.ui.input'

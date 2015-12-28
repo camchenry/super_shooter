@@ -118,3 +118,13 @@ function dump (source, ignore)
         return ''
     end
 end
+
+
+-- color functions
+function HSLtoRGB(hue, saturation, lightness)
+
+end
+
+function RGBtoHSL(red, green, blue)
+
+end

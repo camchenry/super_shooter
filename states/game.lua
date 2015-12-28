@@ -66,10 +66,10 @@ function game:reset()
 
     self:toggleEffects()
 
-    -- time is used mostly for time-based effects like the background
-    self.time = math.random(0, 10)
-    self.deltaTimeMultiplier = 1
+    self.background = GridBackground:new()
 
+    self.time = 0
+    self.deltaTimeMultiplier = 1
     self.firstWave = true
     self.startingWave = 0
     self.wave = self.startingWave
@@ -149,8 +149,6 @@ function game:update(dt)
 
     dt = dt * self.deltaTimeMultiplier
 
-    self.time = self.time + dt * 0.75
-
     for i,v in ipairs(objects) do
         v:update(dt)
         quadtree:updateObject(v)
@@ -173,6 +171,7 @@ function game:update(dt)
         end
     end
 
+    self.time = self.time + dt
     if self.waveTimer then
         self.waveTimer:update(dt)
     end
@@ -182,6 +181,7 @@ function game:update(dt)
     end
     self.screenShake:update(dt)
     self.hurt:update(dt)
+    self.background:update(dt)
 
     if self.boss then
         if self.boss.health <= 0 then
@@ -285,6 +285,8 @@ function game:draw()
     local dx, dy = self.screenShake:getOffset()
     love.graphics.translate(love.graphics.getWidth()/2+dx, love.graphics.getHeight()/2+dy)
 
+    self.background:draw()
+
     if self.particlesEnabled then
         self.particles:draw()
     end
@@ -296,15 +298,6 @@ function game:draw()
         v:draw()
     end
 
-    love.graphics.setLineWidth(1)
-	love.graphics.setColor(255*math.abs(math.cos(self.time*0.125)), 255*math.abs(math.cos(self.time*.792)), 255*math.abs(math.sin(self.time*.349)), 16*math.abs(math.cos(self.time))+12)
-    local p = math.abs(math.cos(self.time))*(1/2) + 1.75
-    love.graphics.scale(p)
-    love.graphics.rotate(math.sin(self.time/4))
-    quadtree:draw()
-    love.graphics.rotate(-math.sin(self.time/4))
-    love.graphics.scale(1/p)
-	
     love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
 
     self.hurt:draw()
@@ -387,12 +380,12 @@ function game:setupWaves()
         blobs = 15,
         sweepers = 0,
 		healers = 0,
-		tanks = 5,
+		tanks = 0,
     }
     self.waves[2] = {
         blobs = 25,
         sweepers = 0,
-		tanks = 5,
+		tanks = 3,
     }
     self.waves[3] = {
         blobs = 18,
