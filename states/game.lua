@@ -58,6 +58,10 @@ function game:reset()
         self.effectsEnabled = false
     end
 
+    if self.trackpadMode == nil then
+        self.trackpadMode = false
+    end
+
     self:compileShaders()
 	
 	if self.displayFPS == nil then

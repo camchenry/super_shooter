@@ -41,16 +41,40 @@ function Player:update(dt)
     elseif love.keyboard.isDown("d", "right") then
         self.acceleration.x = self.speed
     end
+    
+    local dist = math.huge
+    local closest = nil
+
+    for i, enemy in ipairs(objects) do    
+        local d = self.position:dist(enemy.position)
+
+        if d < dist and enemy ~= player then
+            dist = d
+            closest = enemy
+        end
+    end
+
+    self.closestEnemy = closest
 
     if love.mouse.isDown('l') then
 		if game.time > .25 then -- prevents a bullet from being shot when the game starts
 			if self.heat <= 0 then
 				signal.emit('playerShot')
-				game:addBullet(Bullet:new(
-					self.position,
-					vector(love.mouse.getX(), love.mouse.getY()),
-					self.velocity)
-				):setSource(self):setDamage(self.bulletDamage):setSpeed(self.bulletVelocity)
+
+                -- trackpad shooting mode
+                if game.trackpadMode and self.closestEnemy ~= player and self.closestEnemy ~= nil then
+                    game:addBullet(Bullet:new(
+                        self.position,
+                        self.closestEnemy.position + vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + vector(math.random(-35, 35), math.random(-35, 35)),
+                        self.velocity)
+                    ):setSource(self):setDamage(self.bulletDamage):setSpeed(self.bulletVelocity)
+                else
+                    game:addBullet(Bullet:new(
+                        self.position,
+                        vector(love.mouse.getX(), love.mouse.getY()),
+                        self.velocity)
+                    ):setSource(self):setDamage(self.bulletDamage):setSpeed(self.bulletVelocity)
+                end
 				self.heat = self.rateOfFire
 			end
 		end
@@ -104,6 +128,10 @@ function Player:draw()
     love.graphics.setColor(self.color)
     love.graphics.circle("line", self.position.x, self.position.y, self.radius)
     love.graphics.setColor(rgba)
+
+    if self.closestEnemy ~= nil then
+        
+    end
 end
 
 function Player:getX()
