@@ -51,6 +51,7 @@ upgrades.gambits = {
 
 function upgrades:enter()
 	self.list = {}
+	love.mouse.setCursor(cursor)
 
 	shuffleTable(self.gambits)
 
@@ -60,9 +61,9 @@ function upgrades:enter()
 	for i, upgrade in pairs(self.list) do
 		local b = self:add(Button:new(
 			upgrade.description,
-			love.graphics.getWidth()/2 - 150,
+			love.graphics.getWidth()/2 - 300,
 			250+160*(i-1),
-			300,
+			600,
 			150
 		))
 		b:setBG(127, 127, 127, 32)
@@ -75,6 +76,7 @@ end
 
 function upgrades:leave()
 	self.elements = {}
+	love.mouse.setCursor(crosshair)
 end
 
 function upgrades:update(dt)

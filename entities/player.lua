@@ -82,7 +82,7 @@ function Player:update(dt)
                 end
                 local bullet = game:addBullet(Bullet:new(
                     self.position,
-                    target + vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y),
+                    target,
                     self.velocity
                 ))
                 bullet:setSource(self)
