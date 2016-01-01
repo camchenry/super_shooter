@@ -4,6 +4,8 @@ function FloatingMessages:initialize()
 	self.messages = {}
 
 	signal.register('enemyHit', function(enemy, damage)
+		if damage == nil then return end
+		damage = math.ceil(damage)
 		self:newMessage(enemy.position.x, enemy.position.y, damage, 1)
 	end)
 end
@@ -27,6 +29,10 @@ function FloatingMessages:update(dt)
 		if self.messages[i].time <= 0 then
 			table.remove(self.messages, i)
 		end
+	end
+
+	while #self.messages > 10 do
+		table.remove(self.messages, 1)
 	end
 end
 

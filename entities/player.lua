@@ -11,21 +11,24 @@ function Player:initialize()
     self.acceleration = vector(0, 0)
     self.speed = 500
     self.heat = 0
-    self.rateOfFire = (1/4) -- 1 / shots per second
+    self.shotsPerSecond = 4
+    self.rateOfFire = (1/self.shotsPerSecond)
+    self.canShoot = true
     self.bulletVelocity = 300
     self.bulletDamage = 50
     self.damageMultiplier = 1.0
+    self.touchDamage = 0
     self.bulletLife = 1.5
     self.bulletRadius = 5
     self.healthRegen = 0
-    self.health = 100
+    self.regenWaitAfterHurt = 5
     self.maxHealth = 100
+    self.health = self.maxHealth
     self.damageResistance = 0.0
     self.criticalChance = 0.01
     self.criticalMultiplier = 2.0
 
 	self.offScreenDamage = self.maxHealth/20
-    self.regenWaitAfterHurt = 5
     self.regenTimer = 0
     signal.register('playerHurt', function()
         self.regenTimer = self.regenWaitAfterHurt
@@ -68,7 +71,7 @@ function Player:update(dt)
     end
     self.closestEnemy = closest
 
-    if love.mouse.isDown('l') then
+    if love.mouse.isDown('l') and self.canShoot then
 		if game.time > .25 then -- prevents a bullet from being shot when the game starts
 			if self.heat <= 0 then
 				signal.emit('playerShot')
@@ -105,6 +108,8 @@ function Player:update(dt)
         self.heat = self.heat - dt
     end
 
+    self.rateOfFire = (1/self.shotsPerSecond)
+
 	if math.abs(self.x) >= WINDOW_OFFSET.x or math.abs(self.y) >= WINDOW_OFFSET.y then
 		self.health = self.health - self.offScreenDamage * dt
 	end
@@ -126,7 +131,7 @@ function Player:update(dt)
     for i, obj in pairs(collidableObjects) do
         if self.position:dist(obj.position) < self.radius + obj.radius then
             if obj:isInstanceOf(Bullet) then
-                if obj.source ~= self then
+                if (obj.source ~= self) then
                     self.health = self.health - obj.damage * (1 - self.damageResistance)
                     game:removeBullet(obj)
                     signal.emit('playerHurt')

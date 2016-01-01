@@ -43,7 +43,6 @@ function game:init()
     self.hurt = Hurt:new()
     self.floatingMessages = FloatingMessages:new()
 
-    self:reset()
     signal.emit('waveEnded')
 end
 
@@ -53,7 +52,7 @@ function game:reset()
     quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
     quadtree:subdivide()
     quadtree:subdivide()
-    player = self:addObject(Player:new())
+    -- player will be added later, in character select
 
     if self.effectsEnabled == nil then
         self.effectsEnabled = false
@@ -74,7 +73,6 @@ function game:reset()
     self.background = GridBackground:new()
 
     self.time = 0
-    self.deltaTimeMultiplier = 1
     self.firstWave = true
     self.startingWave = 0
     self.wave = self.startingWave
@@ -89,18 +87,15 @@ function game:reset()
     signal.emit('newGame')
 end
 
-function game:enter(prev)
+function game:enter(prev)   
     love.keyboard.setKeyRepeat(true)
     love.mouse.setVisible(true)
     love.mouse.setCursor(crosshair)
 
     self:compileShaders()
 
-    if self.deltaTimeMultiplier < 1 then
-        tween(.75, self, {deltaTimeMultiplier=1}, 'inQuad', function() end)
-    end
-
     if prev == restart or prev == menu then
+        state.push(charSelect)
         self:reset()
     end
 end
@@ -151,8 +146,6 @@ function game:update(dt)
     if player.health <= 0 then
         state.switch(restart)
     end
-
-    dt = dt * self.deltaTimeMultiplier
 
     for i,v in ipairs(objects) do
         v:update(dt)
@@ -225,10 +218,6 @@ end
 
 function game:onWaveEnd()
     if self._postWaveCalled then return end
-
-    if (self.wave+1)%2 == 0 then
-        state.push(upgrades)
-    end
 
     player.health = player.health + player.health * 0.1 + 1
 

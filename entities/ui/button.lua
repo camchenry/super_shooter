@@ -52,7 +52,7 @@ function Button:draw()
     local x = self.x + self.width/2 - self.font:getWidth(self.text)/2 + self.translateX
     local y = self.y + self.height/2 - self.font:getHeight(self.text)/2
     love.graphics.setFont(self.font)
-    love.graphics.print(self.text, x, y)
+    love.graphics.printf(self.text, x, y, self.width)
 
     love.graphics.setColor(oldColor)
 end

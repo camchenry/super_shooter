@@ -18,7 +18,7 @@ require 'states.options'
 require 'states.pause'
 require 'states.gameover'
 require 'states.restart'
-require 'states.upgrades'
+require 'states.charselect'
 
 -- entities
 require 'entities.entity'

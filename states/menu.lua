@@ -37,6 +37,7 @@ end
 
 function menu:enter()
     signal.emit('menuEntered')
+    love.mouse.setCursor(cursor)
 	
 	self.time = 0
 	
