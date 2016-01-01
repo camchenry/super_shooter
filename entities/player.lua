@@ -7,9 +7,9 @@ function Player:initialize()
     self.position = vector(-100, 100)
     self.oldVelocity = vector(0, 0)
     self.velocity = vector(0, 0)
-    self.friction = 2
+    self.friction = 5
     self.acceleration = vector(0, 0)
-    self.speed = 500
+    self.speed = 1350
     self.heat = 0
     self.shotsPerSecond = 4
     self.rateOfFire = (1/self.shotsPerSecond)
