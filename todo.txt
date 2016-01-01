@@ -16,3 +16,13 @@ TODO:
 		- Spread sweepers out more evenly
 	- Misc.
 		X Move background to its own function/file
+	- Scoring
+		- Score added based on wave completion time
+		- Score added based on damage taken (iffy)
+		- Highscores list to save file
+		- Save highscore with a 3 character identifier (arcade naming)
+		- Animation after boss/death to describe scoring
+	- Characters
+		- Unlock methods for characters with save file (?)
+		- Balance values
+		- Melee character and more characters
