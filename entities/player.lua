@@ -145,6 +145,7 @@ function Player:update(dt)
 
     self.prev_x, self.prev_y = self.position:unpack()
     -- verlet integration, much more accurate than euler integration for constant acceleration and variable timesteps
+    self.acceleration = self.acceleration:normalized() * self.speed
     self.oldVelocity = self.velocity
     self.velocity = self.velocity + (self.acceleration - self.friction*self.velocity) * dt
     self.position = self.position + (self.oldVelocity + self.velocity) * 0.5 * dt
