@@ -51,7 +51,7 @@ charSelect.characters = {
 			function Berserker:initialize()
 				Player.initialize(self)
 
-				local modifier = 4
+				local modifier = 3
 				self.shotsPerSecond = self.shotsPerSecond * modifier
 				self.bulletDamage = self.bulletDamage / (modifier+1)
 				self.damageResistance = 0.1

@@ -13,6 +13,7 @@ function Enemy:initialize(position)
     self.health = 100
     self.maxHealth = 100
 	self.invincible = false
+    self.knockbackResistance = 0.0
 
     self.flashTime = 0
 end
@@ -81,6 +82,7 @@ function Enemy:_handleCollision(obj)
 				self.health = self.health - obj.damage
 				signal.emit('enemyHit', self, obj.damage)
 				self.flashTime = 20/1000
+                self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
 			end
         end
     end
@@ -216,6 +218,7 @@ function Tank:initialize(position)
     self:randomizeAppearance()
 
     self.speed = 350
+    self.knockbackResistance = 0.8
 
     self.position = position
     self.touchDamage = player.maxHealth/2
