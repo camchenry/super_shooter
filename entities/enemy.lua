@@ -80,7 +80,7 @@ function Enemy:_handleCollision(obj)
             game:removeBullet(obj)
 			if not self.invincible then
 				self.health = self.health - obj.damage
-				signal.emit('enemyHit', self, obj.damage)
+				signal.emit('enemyHit', self, obj.damage, obj.critical)
 				self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
 			end

@@ -92,8 +92,10 @@ function Player:update(dt)
                 -- critical hits
                 if math.random() <= self.criticalChance then
                     bullet:setDamage(self.bulletDamage * self.damageMultiplier * self.criticalMultiplier)
+                    bullet.critical = true
                 else
                     bullet:setDamage(self.bulletDamage * self.damageMultiplier)
+                    bullet.critical = false
                 end 
                 bullet:setSpeed(self.bulletVelocity)
                 bullet:setRadius(self.bulletRadius)
@@ -121,6 +123,7 @@ function Player:update(dt)
 
     if self.health <= 0 then
         game:removeObject(self)
+        signal.emit('playerDeath')
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
     end

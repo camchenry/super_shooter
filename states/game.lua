@@ -76,7 +76,7 @@ function game:reset()
     self.firstWave = true
     self.startingWave = 0
     self.wave = self.startingWave
-    self.timeToNextWave = 2
+    self.timeToNextWave = 3
     self._postWaveCalled = false
     self._preWaveCalled = false
     self.boss = nil
@@ -170,7 +170,14 @@ function game:update(dt)
     end
 
     self.time = self.time + dt
+
     if self.waveTimer then
+        self.prevT = self.waveTimer.running
+
+        if math.floor(self.prevT) ~= math.floor(self.prevT+dt) then
+            signal.emit('waveCountdown')
+        end
+
         self.waveTimer:update(dt)
     end
 

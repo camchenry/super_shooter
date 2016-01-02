@@ -19,11 +19,14 @@ function Sound:initialize()
 	self.sounds = {
 		uiClick = "sound/click4-2.wav",
 		uiHover = "sound/rollover5-2.wav",
-		shoot = "sound/shoot.wav",
-		hit = "sound/hit.wav",
-		hitTank = "sound/hit_tank.wav",
+		playerShoot = "sound/shoot.wav",
+		criticalHit = "sound/sfx_collect.wav",
+		enemyHit = "sound/hit.wav",
+		enemyHitTank = "sound/hit_tank.wav",
 		bossIncoming = "sound/bossIncoming.wav",
-		death = "sound/Randomize125.wav",
+		enemyDeath = "sound/Randomize125.wav",
+		playerDeath = "sound/fall_death.wav",
+		waveCountdown = "sound/sfx_tink.wav",
 	}
 	for i, sound in pairs(self.music) do
 		self.music[i] = love.audio.newSource(sound)
@@ -36,7 +39,7 @@ function Sound:initialize()
 	end
 
     self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
-    self.enemyHitObserver = signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
+    self.enemyHitObserver = signal.register('enemyHit', function(enemy, damage, crit) self:onEnemyHit(enemy, damage, crit) end)
     self.playerShootObserver = signal.register('playerShot', function() self:onPlayerShoot() end)
     self.uiClick = signal.register('uiClick', function() self:onUiClick() end)
     self.uiHover = signal.register('uiHover', function() self:onUiHover() end)
@@ -46,7 +49,8 @@ function Sound:initialize()
     self.bossIncoming = signal.register('bossIncoming', function() self:onBossIncoming() end)
     self.bossSpawn = signal.register('bossSpawned', function() self:onBossSpawn() end)
     self.newGame = signal.register('newGame', function() self:onNewGame() end)
-
+    self.playerDeath = signal.register('playerDeath', function() self:onPlayerDeath() end)
+    self.waveCountdown = signal.register('waveCountdown', function() self:onWaveCountdown() end)
 end
 
 function Sound:update(dt)
@@ -70,20 +74,28 @@ function Sound:onMusicVolumeChanged(volume)
 end
 
 function Sound:onPlayerShoot()
-	self.sounds.shoot:play()
+	self.sounds.playerShoot:play()
+end
+
+function Sound:onPlayerDeath()
+	self.sounds.playerDeath:play()
 end
 
 function Sound:onEnemyDeath(enemy)
-	self.sounds.death:play()
+	self.sounds.enemyDeath:play()
 end
 
-function Sound:onEnemyHit(enemy)
+function Sound:onEnemyHit(enemy, damage, crit)
 	if enemy:isInstanceOf(Tank) then
-		self.sounds.hitTank:play()
-		self.sounds.hitTank:setPitch(1.0 + math.random(-25, 25)/100)
+		self.sounds.enemyHitTank:play()
+		self.sounds.enemyHitTank:setPitch(1.0 + math.random(-25, 25)/100)
 	else
-		self.sounds.hit:play()
-		self.sounds.hit:setPitch(1.0 + math.random(-25, 25)/100)
+		self.sounds.enemyHit:play()
+		self.sounds.enemyHit:setPitch(1.0 + math.random(-25, 25)/100)
+	end
+
+	if crit then
+		self.sounds.criticalHit:play()
 	end
 end
 
@@ -111,6 +123,10 @@ function Sound:onMenuEnter()
 		self.currentMusic = self.music.menuMusic
 		self.currentMusic:play()
 	end
+end
+
+function Sound:onWaveCountdown()
+	self.sounds.waveCountdown:play()
 end
 
 function Sound:onBossSpawn()
