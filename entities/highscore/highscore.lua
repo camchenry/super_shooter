@@ -65,7 +65,7 @@ function HighScore:onWaveEnd()
 	self.currentScore = self.currentScore + scoreChange
 	
 	if self.bulletsShot ~= 0 then
-		error(self.bulletsShot.." "..self.bulletsHit.." "..accuracy.." "..scoreChange.." "..self.currentScore)
+		--error(self.bulletsShot.." "..self.bulletsHit.." "..accuracy.." "..scoreChange.." "..self.currentScore)
 	end
 	
 	-- reset the accuracy values
