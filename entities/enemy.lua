@@ -83,8 +83,7 @@ function Enemy:_handleCollision(obj)
 				signal.emit('enemyHit', self, obj.damage)
 				self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
-			elseif obj.destroy then
-				error('This means the issue was bullet-2-hit')
+				obj.destroy = true
 			end
         end
     end
