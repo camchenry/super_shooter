@@ -78,11 +78,13 @@ function Enemy:_handleCollision(obj)
 		-- check for proximity and invincible
         if self.position:dist(obj.position) < self.radius + obj.radius then
             game:removeBullet(obj)
-			if not self.invincible then
+			if not self.invincible and not obj.destroy then -- if the bullet is set to destroy, that means it has already hit an enemy
 				self.health = self.health - obj.damage
 				signal.emit('enemyHit', self, obj.damage)
 				self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
+			elseif obj.destroy then
+				error('This means the issue was bullet-2-hit')
 			end
         end
     end

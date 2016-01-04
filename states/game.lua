@@ -52,7 +52,7 @@ function game:reset()
     quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
     quadtree:subdivide()
     quadtree:subdivide()
-    -- player will be added later, in character select
+	-- player will be added later, in character select
 
     if self.effectsEnabled == nil then
         self.effectsEnabled = false
@@ -87,7 +87,7 @@ function game:reset()
     signal.emit('newGame')
 end
 
-function game:enter(prev)   
+function game:enter(prev)
     love.keyboard.setKeyRepeat(true)
     love.mouse.setVisible(true)
     love.mouse.setCursor(crosshair)
@@ -95,7 +95,7 @@ function game:enter(prev)
     self:compileShaders()
 
     if prev == restart or prev == menu then
-        state.push(charSelect)
+	    state.push(charSelect)
         self:reset()
     end
 end
@@ -232,6 +232,8 @@ function game:onWaveEnd()
             self:onWaveStart()
         end
     end)
+	
+    signal.emit('waveEnded')
 
     self._postWaveCalled = true
     self._preWaveCalled = false
@@ -312,6 +314,8 @@ function game:draw()
 
     self:drawPlayerHealthBar()
     self:drawBossIncoming()
+	
+	highScore:gameDraw()
 
     love.graphics.setFont(font[16])
 	if self.displayFPS then

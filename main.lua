@@ -36,6 +36,8 @@ require 'entities.fx.background'
 require 'entities.fx.floating'
 -- sound effects
 require 'entities.sound.sound'
+-- high score
+require 'entities.highscore.highscore'
 -- ui elements
 require 'entities.ui.button'
 require 'entities.ui.checkbox'
@@ -58,6 +60,7 @@ function love.load()
     love.mouse.setCursor(cursor)
 
     soundControl = Sound:new()
+	highScore = HighScore:new()
 
     if love.filesystem.exists("config.txt") then
         options:load()
