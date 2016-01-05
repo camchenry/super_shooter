@@ -43,6 +43,9 @@ function game:init()
     self.hurt = Hurt:new()
     self.floatingMessages = FloatingMessages:new()
     self.highScore = HighScore:new()
+    if highscoreList and highscoreList.init then
+        highscoreList:init()
+    end
 
     signal.emit('waveEnded')
 end
@@ -75,7 +78,7 @@ function game:reset()
 
     self.time = 0
     self.firstWave = true
-    self.startingWave = 0
+    self.startingWave = 9
     self.wave = self.startingWave
     self.timeToNextWave = 3
 	self.waveTime = 0
@@ -96,7 +99,7 @@ function game:enter(prev)
 
     self:compileShaders()
 
-    if prev == restart or prev == menu then
+    if prev ~= game then
 	    state.push(charSelect)
         self:reset()
     end

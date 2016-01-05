@@ -14,10 +14,15 @@ function highscoreList:init()
 	self.initialChar = true
 	
 	self.maxScores = 10 -- how many high scores are stored
+
+	if not love.filesystem.exists(self.file) then
+		self.scores = self:getDefaultScores()
+	else
+		self.scores = self:getScores()
+	end
 end
 
 function highscoreList:enter(prev)
-	self.scores = nil
 	if not love.filesystem.exists(self.file) then
 		self.scores = self:getDefaultScores()
 	else
@@ -38,12 +43,17 @@ function highscoreList:enter(prev)
 
 	self.back = Button:new("< BACK", self.leftAlign, love.window.getHeight()-80)
 	self.back.activated = function()
-		state.switch(menu)
+		if prev == restart then
+			state.pop()
+			state.switch(game)
+		else
+			state.switch(menu)
+		end
 	end
 end
 
 function highscoreList:leave()
-	--self:load()
+	
 end
 
 function highscoreList:mousepressed(x, y, button)
@@ -52,7 +62,7 @@ end
 
 function highscoreList:keypressed(key)
 	if key == "escape" then
-		state.pop()
+		self.back.activated()
 	end
 	
 	if self.fromGame then
@@ -80,10 +90,6 @@ function highscoreList:keypressed(key)
 			end
 		end
 	end
-	
-	if key == "r" then
-		self:deleteScores()
-	end
 end
 
 function highscoreList:deleteScores()
@@ -93,15 +99,11 @@ end
 
 function highscoreList:textinput(t)
 	if self.fromGame and not self.scoreEntered then
-		if self.initialChar then
-			self.initialChar = false
-		else
 			self.initialsInput [self.selectorPos] = t
 			
 			if self.selectorPos < 3 then
 				self.selectorPos = self.selectorPos + 1
 			end
-		end
 	end
 end
 
@@ -147,7 +149,6 @@ function highscoreList:draw()
 	-- optimize! polish!
 	-- initials input
 	if self.fromGame then
-		local x = 500
 		local y = love.graphics.getHeight()/2
 
 		love.graphics.setColor(0, 0, 0, 96)
@@ -168,6 +169,7 @@ function highscoreList:draw()
 		local spacing = 20
 		local width = f:getWidth('W')
 		local height = f:getHeight() + 10
+		local x = love.graphics.getWidth()/2 - (spacing*3)/2 - (width*3)/2
 		
 		for i = 1, 3 do
 			love.graphics.setColor(0, 0, 0)
@@ -226,11 +228,7 @@ end
 
 function highscoreList:scoreIsValid(score)
 	-- evaluates true if the high score list is not full, or the score is greater than the lowest score
-	if #self.scores < self.maxScores or score > self.scores[self.maxScores].score then
-		if score ~= 0 then -- no scores of 0 can be entered
-			return true
-		end
-	end
+	return (#self.scores < self.maxScores) or (score > self.scores[self.maxScores].score) and score ~= 0
 end
 
 function highscoreList:getDefaultScores()
