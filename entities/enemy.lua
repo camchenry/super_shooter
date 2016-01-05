@@ -14,6 +14,7 @@ function Enemy:initialize(position)
     self.maxHealth = 100
 	self.invincible = false
     self.knockbackResistance = 0.0
+    self.damageResistance = 0.0
 
     self.flashTime = 0
 end
@@ -78,12 +79,11 @@ function Enemy:_handleCollision(obj)
 		-- check for proximity and invincible
         if self.position:dist(obj.position) < self.radius + obj.radius then
             game:removeBullet(obj)
-			if not self.invincible and not obj.destroy then -- if the bullet is set to destroy, that means it has already hit an enemy
-				self.health = self.health - obj.damage
-				
-				local death = self.health <= 0 -- evaluates true if the enemy dies as a result of the bullet
-				signal.emit('enemyHit', self, obj.damage, obj.critical, obj.source, death)
-				
+			if not self.invincible and not obj.destroy then
+                local dmg = obj.damage * (1 - self.damageResistance)
+				self.health = self.health - dmg
+                local death = self.health <= 0
+				signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
 				self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
 				obj.destroy = true
@@ -122,9 +122,9 @@ function Blob:handleCollision(obj)
     
 end
 
-LineEnemy = class('LineEnemy', Enemy)
+Sweeper = class('Sweeper', Enemy)
 
-function LineEnemy:initialize(start, finish)
+function Sweeper:initialize(start, finish)
     Enemy.initialize(self, start)
     self.originalColor = {241, 196, 0, 255}
     self.radius = 18
@@ -135,31 +135,41 @@ function LineEnemy:initialize(start, finish)
     self.start = start
     self.finish = finish
     self.target = finish
-    self.speed = 2500
+    self.speed = 3000
     self.friction = 3
+    self.knockbackResistance = 1
 
-    self.touchDamage = player.maxHealth/2
+    self.touchDamage = player.maxHealth
 
-    self.health = 50
-    self.maxHealth = 50
+    self.health = 75
+    self.maxHealth = 75
 end
 
-function LineEnemy:update(dt)
+function Sweeper:update(dt)
     Enemy.update(self, dt)
 
-    if self.position:dist(self.target) < 10 then
+    if self.position:dist(self.target) < 9 then
         if self.target == self.finish then
             self.target = self.start
         else
             self.target = self.finish
         end
+        self.velocity.x = 0
     end
 
     self.acceleration = (self.target - self.position):normalized() * self.speed
 end
 
-function LineEnemy:handleCollision(obj)
+function Sweeper:handleCollision(obj)
 
+end
+
+function Sweeper:draw()
+    Enemy.draw(self)
+
+    love.graphics.setColor(255, 255, 255)
+    --love.graphics.circle("fill", self.start.x, self.start.y, 10)
+    --love.graphics.circle("fill", self.finish.x, self.finish.y, 10)
 end
 
 Healer = class('Healer', Enemy)
@@ -223,6 +233,7 @@ function Tank:initialize(position)
 
     self.speed = 350
     self.knockbackResistance = 0.8
+    self.damageResistance = 0.1
 
     self.position = position
     self.touchDamage = player.maxHealth/2
@@ -274,24 +285,34 @@ Ninja = class('Ninja', Enemy)
 
 function Ninja:initialize(position)
     Enemy.initialize(self, position)
-    self.originalColor = {127, 127, 127, 127}
+    self.originalColor = {255, 255, 255, 200}
     self.radius = 15 + math.random(-2, 2)
     self.sides = 4
 
     self:randomizeAppearance(0.05, 0.1)
-    self.speed = 750
+    self.speed = 800
     self.doTeleport = false
+    self.drawTeleportLineTime = 0
+
+    self.sprintCooldownMax = 5
+    self.sprintCooldown = self.sprintCooldownMax + math.random(2, 7)
+    -- what time to start telegraphing the attack
+    -- stop the enemy, shake, change color, etc
+    self.sprintTelegraphTime = 3
+    -- for how long sprint is considered activated
+    self.sprintActivatedTime = 1
 
     self.position = position
-    self.touchDamage = player.maxHealth/5
+    self.touchDamage = player.maxHealth/4
 
-    self.health = 100
-    self.maxHealth = 100
+    self.health = 500
+    self.maxHealth = 500
 end
 
 function Ninja:update(dt)
     Enemy.update(self, dt)
-    if self.doTeleport then
+
+    if self.doTeleport and self.health > 0 and not self.sprinting then
         local teleport = vector(math.random(-200, 200),
                                 math.random(-200, 200))
         self.position = self.position + teleport
@@ -299,15 +320,48 @@ function Ninja:update(dt)
         self.doTeleport = false
     end
 
-    self.moveTowardsPlayer = (player.position - self.position):normalized()
+    for i, o in pairs(quadtree:getCollidableObjects(self, true)) do
+        if o:isInstanceOf(Bullet) then
+            if not self.sprinting then
+                self.velocity = self.velocity - (o.position - self.position):perpendicular():normalized()
+            end
+        end
+    end
 
-    self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
+    self.drawTeleportLineTime = self.drawTeleportLineTime - dt
+    self.sprintCooldown = self.sprintCooldown - dt
+
+    local t = self.position:dist(player.position) / self.speed
+    local predictedPosition = player.position + player.velocity * t
+    self.moveTowards = (predictedPosition - self.position):normalized()
+    self.acceleration = (self.moveTowards + self.moveAway):normalized() * self.speed
+
+    -- start the attack
+    if self.sprintCooldown < self.sprintActivatedTime then
+        self.speed = 5000
+        self.touchDamage = player.maxHealth * 3
+    -- start telegraphing the attack
+    elseif self.sprintCooldown < self.sprintTelegraphTime then
+        self.sprinting = true
+        self.acceleration = vector(0, 0)
+        self.position = self.position + vector((math.random()-0.5)*2, (math.random()-0.5)*2)/2
+        self.damageResistance = -0.5
+    else
+        self.speed = 800
+        self.touchDamage = player.maxHealth / 4
+        self.damageResistance = 0
+    end
+
+    if self.sprintCooldown < 0 then
+        self.sprinting = false
+        self.sprintCooldown = self.sprintCooldownMax
+    end
 end
 
 function Ninja:handleCollision(obj)
     if obj:isInstanceOf(Bullet) then
         if obj.source ~= nil and obj.source:isInstanceOf(self.class) then return end
-        if self.boss ~= nil then
+        if self.boss ~= nil then    
             if obj.source == self.boss then return end
         end
 
@@ -315,8 +369,7 @@ function Ninja:handleCollision(obj)
         if self.position:dist(obj.position) < self.radius + obj.radius then
             if not self.invincible then
                 self.doTeleport = true
-                self.drawTeleportLine = true
-                self.drawTeleportLineTime = 0.5
+                self.drawTeleportLineTime = 35/1000
                 self.oldPosition = self.position
             end
         end
@@ -326,10 +379,18 @@ end
 function Ninja:draw()
     Enemy.draw(self)
 
-    if self.drawTeleportLine then
+    if self.oldPosition and self.drawTeleportLineTime > 0 then
         love.graphics.setLineWidth(3)
         love.graphics.setColor(self.originalColor)
         love.graphics.line(self.oldPosition.x, self.oldPosition.y, self.position.x, self.position.y)
         self.drawTeleportLine = false
+    end
+
+    if self.sprintCooldown < self.sprintTelegraphTime then
+        -- goes from 0 to 1 when sprint cooldown is 0
+        local scale = (self.sprintTelegraphTime - self.sprintCooldown + self.sprintActivatedTime)/(self.sprintTelegraphTime + self.sprintActivatedTime)
+
+        love.graphics.setColor(self.originalColor)
+        love.graphics.circle("fill", self.position.x, self.position.y, scale*self.radius, self.sides)
     end
 end
