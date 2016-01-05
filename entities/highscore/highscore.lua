@@ -2,12 +2,12 @@ HighScore = class('HighScore')
 
 function HighScore:initialize()
 	self.destroyScores = {
-		blob = 2,
-		tank = 10,
-		healer = 5,
-		ninja = 8,
-		megabyte = 200,
-		default = 1
+		[Blob] = 2,
+		[Tank] = 10,
+		[Healer] = 5,
+		[Ninja] = 8,
+		[Megabyte] = 200,
+		[LineEnemy] = 1, --sweeper
 	}
 	
 	self.accuracyScore = 50 -- get this many points with 100% accuracy in a wave
@@ -52,20 +52,7 @@ end
 
 function HighScore:onEnemyDeath(enemy)
 	-- add to score based on which enemy was defeated
-	local scoreChange = self.destroyScores.default -- should only result if an enemy has not yet been given a score
-	
-	if enemy:isInstanceOf(Blob) then
-		scoreChange = self.destroyScores.blob
-	elseif enemy:isInstanceOf(Tank) then
-		scoreChange = self.destroyScores.tank
-	elseif enemy:isInstanceOf(Healer) then
-		scoreChange = self.destroyScores.healer
-	elseif enemy:isInstanceOf(Ninja) then
-		scoreChange = self.destroyScores.ninja
-	elseif enemy:isInstanceOf(Megabyte) then
-		scoreChange = self.destroyScores.megabyte
-	end
-	
+	local scoreChange = self.destroyScores[enemy.class] or 1
 	self:changeScore(scoreChange)
 end
 
@@ -88,10 +75,6 @@ function HighScore:onWaveEnd()
 	
 	local scoreChange = math.ceil(accuracy * self.accuracyScore)
 	self:changeScore(scoreChange)
-	
-	if self.bulletsShot ~= 0 then
-		--error(self.bulletsShot.." "..self.bulletsHit.." "..accuracy.." "..scoreChange.." "..self.currentScore)
-	end
 	
 	-- reset the accuracy values
 	self.bulletsShot = 0
