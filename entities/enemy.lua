@@ -82,7 +82,8 @@ function Enemy:_handleCollision(obj)
 				self.health = self.health - obj.damage
 				
 				local death = self.health <= 0 -- evaluates true if the enemy dies as a result of the bullet
-				signal.emit('enemyHit', self, obj.damage, obj.source, death)
+				signal.emit('enemyHit', self, obj.damage, obj.critical, obj.source, death)
+				
 				self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
 				obj.destroy = true

@@ -2,12 +2,12 @@ HighScore = class('HighScore')
 
 function HighScore:initialize()
 	self.destroyScores = {
-		blob = 2,
-		tank = 10,
-		healer = 5,
-		ninja = 8,
-		megabyte = 200,
-		default = 1
+		[Blob] = 2,
+		[Tank] = 10,
+		[Healer] = 5,
+		[Ninja] = 8,
+		[Megabyte] = 200,
+		[LineEnemy] = 1, --sweeper
 	}
 	
 	self.accuracyScore = 50 -- get this many points with 100% accuracy in a wave
@@ -17,43 +17,56 @@ function HighScore:initialize()
 	self.scoreMultiplier = 1 -- this is multiplied to every score, good for bonuses
 	
 	self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
-	self.enemyHitObserver = signal.register('enemyHit', function(enemy, damage, source) self:onEnemyHit(enemy, damage, source) end)
+	self.enemyHitObserver = signal.register('enemyHit', function(enemy, damage, critical, source, death) self:onEnemyHit(enemy, damage, critical, source, death) end)
     self.playerShootObserver = signal.register('playerShot', function() self:onPlayerShoot() end)
 	self.waveEndObserver = signal.register('waveEnded', function() self:onWaveEnd() end)
+	signal.register('newGame', function() self:reset() end)
 	
-	
+	self:reset()
+end
+
+function HighScore:reset()
+	-- no need to change these
+	self.currentScore = 0
 	self:resetCounters()
+
+	-- The score displayed to the screen, may or may not be equal to the current score.
+	-- It does approach the current score, though.
+	self.displayScore = 0
 end
 
 function HighScore:resetCounters()
-	-- no need to change these
-	self.currentScore = 0
 	self.bulletsShot = 0
 	self.bulletsHit = 0
 	self.ricochetKills = 0
 end
 
-function HighScore:onEnemyDeath(enemy)
-	-- add to score based on which enemy was defeated
-	scoreChange = self.destroyScores.default -- should only result if an enemy has not yet been given a score
-	
-	if enemy:isInstanceOf(Blob) then
-		scoreChange = self.destroyScores.blob
-	elseif enemy:isInstanceOf(Tank) then
-		scoreChange = self.destroyScores.tank
-	elseif enemy:isInstanceOf(Healer) then
-		scoreChange = self.destroyScores.healer
-	elseif enemy:isInstanceOf(Ninja) then
-		scoreChange = self.destroyScores.ninja
-	elseif enemy:isInstanceOf(Megabyte) then
-		scoreChange = self.destroyScores.megabyte
+function HighScore:update(dt)
+	-- interpolates the display score towards the current score
+	local diff = self.currentScore - self.displayScore
+	local epsilon = 1
+
+	if diff > epsilon then
+		self.displayScore = self.displayScore + (diff) * 5 * dt
+	else
+		self.displayScore = self.currentScore
 	end
-	
-	scoreChange = scoreChange * self.scoreMultiplier
-	self.currentScore = self.currentScore + scoreChange
+
 end
 
-function HighScore:onEnemyHit(enemy, damage, source)
+function HighScore:changeScore(amount)
+	amount = amount * self.scoreMultiplier
+	signal.emit('scoreChange', amount)
+	self.currentScore = self.currentScore + amount
+end
+
+function HighScore:onEnemyDeath(enemy)
+	-- add to score based on which enemy was defeated
+	local scoreChange = self.destroyScores[enemy.class] or 1
+	self:changeScore(scoreChange)
+end
+
+function HighScore:onEnemyHit(enemy, damage, critical, source, death)
 	if not enemy.isInstanceOf(Player) then
 		if source:isInstanceOf(Player) then
 			self.bulletsHit = self.bulletsHit + 1
@@ -75,24 +88,30 @@ function HighScore:onWaveEnd()
 	if self.bulletsShot ~= 0 then
 		accuracy = self.bulletsHit / self.bulletsShot
 	end
-	
+
 	scoreChange = scoreChange + math.ceil(accuracy * self.accuracyScore)
-	
 	
 	-- check for wave ricochet bonus
 	if self.ricochetKills >= self.ricochetMinimum then
 		scoreChange = scoreChange + self.ricochetBonus
 	end
 	
-	scoreChange = scoreChange * self.scoreMultiplier
-	self.currentScore = self.currentScore + scoreChange
+	self:changeScore(scoreChange)
 	
 	self:resetCounters()
 end
 
-function	HighScore:gameDraw()
-	love.graphics.print('Your score: ' ..self.currentScore, 5, 5)
-	love.graphics.print('Bullets shot: ' ..self.bulletsShot, 5, 55)
-	love.graphics.print('Bullets hit: ' ..self.bulletsHit, 5, 105)
+function HighScore:draw()
+	-- do not show outside the game state, unless the game is paused
+	if (state.current() ~= game) and (state.current() ~= pause) then
+		return 
+	end
+
+	local font = font[64]
+	local text = math.floor(self.displayScore)
+	love.graphics.setFont(font)
+	local w = font:getWidth(text)
+	local h = font:getHeight(text)
+	love.graphics.print(text, love.graphics.getWidth() - w - 15, love.graphics.getHeight() - h - 15)
 end
 

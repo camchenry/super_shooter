@@ -42,6 +42,7 @@ function game:init()
     self.screenShake = ScreenShake:new()
     self.hurt = Hurt:new()
     self.floatingMessages = FloatingMessages:new()
+    self.highScore = HighScore:new()
 
     signal.emit('waveEnded')
 end
@@ -76,7 +77,7 @@ function game:reset()
     self.firstWave = true
     self.startingWave = 0
     self.wave = self.startingWave
-    self.timeToNextWave = 2
+    self.timeToNextWave = 3
     self._postWaveCalled = false
     self._preWaveCalled = false
     self.boss = nil
@@ -170,7 +171,14 @@ function game:update(dt)
     end
 
     self.time = self.time + dt
+
     if self.waveTimer then
+        self.prevT = self.waveTimer.running
+
+        if math.floor(self.prevT) ~= math.floor(self.prevT+dt) then
+            signal.emit('waveCountdown')
+        end
+
         self.waveTimer:update(dt)
     end
 
@@ -181,6 +189,7 @@ function game:update(dt)
     self.hurt:update(dt)
     self.background:update(dt)
     self.floatingMessages:update(dt)
+    self.highScore:update(dt)
 
     if self.boss then
         if self.boss.health <= 0 then
@@ -315,7 +324,7 @@ function game:draw()
     self:drawPlayerHealthBar()
     self:drawBossIncoming()
 	
-	highScore:gameDraw()
+	self.highScore:draw()
 
     love.graphics.setFont(font[16])
 	if self.displayFPS then

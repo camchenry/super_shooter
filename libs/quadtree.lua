@@ -75,7 +75,7 @@ end
 
 -- Add an object to the QuadTree
 function QuadTree:addObject(object)
-  assert(not self.objects[object], "You cannot add the same object twice to a QuadTree"..#self.objects)
+  --assert(not self.objects[object], "You cannot add the same object twice to a QuadTree"..#self.objects)
 
   if not self.children then
     self.objects[object] = object
