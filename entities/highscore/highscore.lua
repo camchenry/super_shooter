@@ -13,13 +13,14 @@ function HighScore:initialize()
 	self.accuracyScore = 50 -- get this many points with 100% accuracy in a wave
 	self.ricochetBonus = 200 -- get this bonus if 5 enemies are killed in one wave, as the result of tank ricochet shots
 	self.ricochetMinimum = 5 -- kill this many enemies with tank ricochet shots in one wave, to score the bonus
+	self.timeScore = 1000 -- you would get this many points by completing wave 1 in 1 second. formula: timeScore * wave / seconds
 	
 	self.scoreMultiplier = 1 -- this is multiplied to every score, good for bonuses
 	
 	self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
 	self.enemyHitObserver = signal.register('enemyHit', function(enemy, damage, critical, source, death) self:onEnemyHit(enemy, damage, critical, source, death) end)
     self.playerShootObserver = signal.register('playerShot', function() self:onPlayerShoot() end)
-	self.waveEndObserver = signal.register('waveEnded', function() self:onWaveEnd() end)
+	self.waveEndObserver = signal.register('waveEnded', function(wave, waveTime) self:onWaveEnd(wave, waveTime) end)
 	signal.register('newGame', function() self:reset() end)
 	
 	self:reset()
@@ -80,25 +81,31 @@ function HighScore:onPlayerShoot()
 	self.bulletsShot = self.bulletsShot + 1
 end
 
-function HighScore:onWaveEnd()
-	local scoreChange = 0
+function HighScore:onWaveEnd(wave, waveTime)
+	if wave and wave > 0 then
+		local scoreChange = 0
 
-	-- calculate accuracy for the current wave, add to player score
-	local accuracy = 0
-	if self.bulletsShot ~= 0 then
-		accuracy = self.bulletsHit / self.bulletsShot
-	end
+		-- calculate accuracy for the current wave, add to player score
+		local accuracy = 0
+		if self.bulletsShot ~= 0 then
+			accuracy = self.bulletsHit / self.bulletsShot
+		end
 
-	scoreChange = scoreChange + math.ceil(accuracy * self.accuracyScore)
-	
-	-- check for wave ricochet bonus
-	if self.ricochetKills >= self.ricochetMinimum then
-		scoreChange = scoreChange + self.ricochetBonus
+		local accuracyPoints = math.ceil(accuracy * self.accuracyScore)
+		self:changeScore(accuracyPoints)
+		
+		-- add in the time bonus
+		local timePoints = math.ceil(self.timeScore * wave / waveTime)
+		scoreChange = scoreChange + timePoints
+		self:changeScore(timePoints)
+		
+		-- check for wave ricochet bonus
+		if self.ricochetKills >= self.ricochetMinimum then
+			self:changeScore(self.ricochetBonus)
+		end
+		
+		self:resetCounters()
 	end
-	
-	self:changeScore(scoreChange)
-	
-	self:resetCounters()
 end
 
 function HighScore:draw()
