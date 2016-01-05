@@ -10,6 +10,8 @@ function highscoreList:init()
 	self.selectorPos = 1
 	self.playerScore = 0
 	self.fromGame = false
+	self.scoreEntered = false
+	self.initialChar = true
 end
 
 function highscoreList:enter(prev)
@@ -24,6 +26,8 @@ function highscoreList:enter(prev)
 		self.fromGame = false
 	else -- the menu would have no player data stored
 		self.fromGame = true
+		self.scoreEntered = false
+		self.initialChar = true
 		self.playerScore = game.highScore.currentScore
 	end
 end
@@ -43,7 +47,10 @@ function highscoreList:keypressed(key)
 	
 	if self.fromGame then
 		if key == "return" then
-			self:checkScore()
+			if not self.scoreEntered then
+				self.scoreEntered = true
+				self:checkScore()
+			end
 		end
 		
 		if key == "left" then
@@ -59,8 +66,16 @@ function highscoreList:keypressed(key)
 end
 
 function highscoreList:textinput(t)
-	if self.fromGame then
-		self.initialsInput [self.selectorPos] = t
+	if self.fromGame and not self.scoreEntered then
+		if self.initialChar then
+			self.initialChar = false
+		else
+			self.initialsInput [self.selectorPos] = t
+			
+			if self.selectorPos < 3 then
+				self.selectorPos = self.selectorPos + 1
+			end
+		end
 	end
 end
 
@@ -89,14 +104,16 @@ function highscoreList:draw()
 		local x = 500
 		local y = love.graphics.getHeight()/2
 		
-		love.graphics.print('Press enter to save your score!', x, y + 200)
+		if not self.scoreEntered then
+			love.graphics.print('Press enter to save your score!', x, y + 200)
+		end
 		
 		local font = fontBold[72]
 		love.graphics.setFont(font)
 		
 		local spacing = 20
 		local width = font:getWidth('W')
-		local height = font:getHeight()
+		local height = font:getHeight() + 10
 		
 		for i = 1, 3 do
 			if i == self.selectorPos then
@@ -110,7 +127,7 @@ function highscoreList:draw()
 			local char = self.initialsInput[i]
 			local charWidth = font:getWidth(char)
 			
-			love.graphics.print(self.initialsInput[i], x + dx + width/2 - charWidth, y - height) --?
+			love.graphics.print(self.initialsInput[i], x + dx + width/2 - charWidth/2, y - height) --?
 		end
 	end
 end
