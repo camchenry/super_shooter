@@ -78,6 +78,7 @@ function game:reset()
     self.startingWave = 0
     self.wave = self.startingWave
     self.timeToNextWave = 3
+	self.waveTime = 0
     self._postWaveCalled = false
     self._preWaveCalled = false
     self.boss = nil
@@ -242,7 +243,11 @@ function game:onWaveEnd()
         end
     end)
 	
-    signal.emit('waveEnded')
+	local waveTime = 0
+	if self.waveStartTime then
+		waveTime = self.time - self.waveStartTime
+	end
+    signal.emit('waveEnded', self.wave, waveTime)
 
     self._postWaveCalled = true
     self._preWaveCalled = false
@@ -440,6 +445,7 @@ end
 
 function game:startWave()
     self.waveTimer = nil
+	self.waveStartTime = self.time -- set the wave start time to the game time
 
     if self.wave == nil then
         self.wave = self.startingWave
