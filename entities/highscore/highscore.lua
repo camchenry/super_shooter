@@ -11,17 +11,26 @@ function HighScore:initialize()
 	}
 	
 	self.accuracyScore = 50 -- get this many points with 100% accuracy in a wave
+	self.ricochetBonus = 200 -- get this bonus if 5 enemies are killed in one wave, as the result of tank ricochet shots
+	self.ricochetMinimum = 5 -- kill this many enemies with tank ricochet shots in one wave, to score the bonus
+	
+	self.scoreMultiplier = 1 -- this is multiplied to every score, good for bonuses
 	
 	self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
-	self.enemyHitObserver = signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
+	self.enemyHitObserver = signal.register('enemyHit', function(enemy, damage, source) self:onEnemyHit(enemy, damage, source) end)
     self.playerShootObserver = signal.register('playerShot', function() self:onPlayerShoot() end)
 	self.waveEndObserver = signal.register('waveEnded', function() self:onWaveEnd() end)
 	
 	
+	self:resetCounters()
+end
+
+function HighScore:resetCounters()
 	-- no need to change these
 	self.currentScore = 0
 	self.bulletsShot = 0
 	self.bulletsHit = 0
+	self.ricochetKills = 0
 end
 
 function HighScore:onEnemyDeath(enemy)
@@ -40,12 +49,17 @@ function HighScore:onEnemyDeath(enemy)
 		scoreChange = self.destroyScores.megabyte
 	end
 	
+	scoreChange = scoreChange * self.scoreMultiplier
 	self.currentScore = self.currentScore + scoreChange
 end
 
-function HighScore:onEnemyHit(enemy)
+function HighScore:onEnemyHit(enemy, damage, source)
 	if not enemy.isInstanceOf(Player) then
-		self.bulletsHit = self.bulletsHit + 1
+		if source:isInstanceOf(Player) then
+			self.bulletsHit = self.bulletsHit + 1
+		elseif source:isInstanceOf(Tank) then
+			self.ricochetKills = self.ricochetKills + 1
+		end
 	end
 end
 
@@ -54,23 +68,26 @@ function HighScore:onPlayerShoot()
 end
 
 function HighScore:onWaveEnd()
+	local scoreChange = 0
+
 	-- calculate accuracy for the current wave, add to player score
 	local accuracy = 0
 	if self.bulletsShot ~= 0 then
 		accuracy = self.bulletsHit / self.bulletsShot
 	end
 	
-	local scoreChange = math.ceil(accuracy * self.accuracyScore)
+	scoreChange = scoreChange + math.ceil(accuracy * self.accuracyScore)
 	
-	self.currentScore = self.currentScore + scoreChange
 	
-	if self.bulletsShot ~= 0 then
-		--error(self.bulletsShot.." "..self.bulletsHit.." "..accuracy.." "..scoreChange.." "..self.currentScore)
+	-- check for wave ricochet bonus
+	if self.ricochetKills >= self.ricochetMinimum then
+		scoreChange = scoreChange + self.ricochetBonus
 	end
 	
-	-- reset the accuracy values
-	self.bulletsShot = 0
-	self.bulletsHit = 0
+	scoreChange = scoreChange * self.scoreMultiplier
+	self.currentScore = self.currentScore + scoreChange
+	
+	self:resetCounters()
 end
 
 function	HighScore:gameDraw()
