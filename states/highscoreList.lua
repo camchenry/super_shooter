@@ -12,6 +12,8 @@ function highscoreList:init()
 	self.fromGame = false
 	self.scoreEntered = false
 	self.initialChar = true
+	
+	self.maxScores = 10 -- how many high scores are stored
 end
 
 function highscoreList:enter(prev)
@@ -29,6 +31,9 @@ function highscoreList:enter(prev)
 		self.scoreEntered = false
 		self.initialChar = true
 		self.playerScore = game.highScore.currentScore
+		
+		self.initialsInput = {' ', ' ', ' '}
+		self.selectorPos = 1
 	end
 
 	self.back = Button:new("< BACK", self.leftAlign, love.window.getHeight()-80)
@@ -68,6 +73,15 @@ function highscoreList:keypressed(key)
 			end
 		end
 	end
+	
+	if key == "r" then
+		self:deleteScores()
+	end
+end
+
+function highscoreList:deleteScores()
+	self.scores = self:getDefaultScores()
+	self:save()
 end
 
 function highscoreList:textinput(t)
@@ -164,9 +178,35 @@ function highscoreList:checkScore()
 	-- check if the score actually belongs in the scoreboard (top 10)
 	local playerInitials = self.initialsInput[1]..self.initialsInput[2]..self.initialsInput[3]
 	local playerScore = self.playerScore
-	table.insert(self.scores, {initials = playerInitials, score = playerScore})
+	
+	if self:scoreIsValid(playerScore) then -- check if it belongs on the scoreboard
+		-- find where the score belongs
+		local pos = 1
+		if #self.scores > 0 then -- if there are no scores in the list, it will place the score at pos 1
+			for i = #self.scores, 1, -1 do
+				if self.scores[i].score >= playerScore then -- found where new score belongs, right below the first score it is lower than
+					pos = i+1
+					break
+				end
+			end
+		end
+		table.insert(self.scores, pos, {initials = playerInitials, score = playerScore})
+		
+		if #self.scores > self.maxScores then -- if it's more than the max, it will only be one greater. so cut off the last score
+			table.remove(self.scores)
+		end
+	end
 	
 	self:save()
+end
+
+function highscoreList:scoreIsValid(score)
+	-- evaluates true if the high score list is not full, or the score is greater than the lowest score
+	if #self.scores < self.maxScores or score > self.scores[self.maxScores].score then
+		if score ~= 0 then -- no scores of 0 can be entered
+			return true
+		end
+	end
 end
 
 function highscoreList:getDefaultScores()
@@ -175,6 +215,18 @@ function highscoreList:getDefaultScores()
 		{
 			initials = 'AAA',
 			score = 1000
+		},
+		{
+			initials = 'ACE',
+			score = 750
+		},
+		{
+			initials = 'KEK',
+			score = 572
+		},
+		{
+			initials = 'H8R',
+			score = 22
 		},
 	}
 	return o
