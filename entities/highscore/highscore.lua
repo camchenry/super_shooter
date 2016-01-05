@@ -7,7 +7,7 @@ function HighScore:initialize()
 		[Healer] = 5,
 		[Ninja] = 8,
 		[Megabyte] = 200,
-		[LineEnemy] = 1, --sweeper
+		[Sweeper] = 1, --sweeper
 	}
 	
 	self.accuracyScore = 50 -- get this many points with 100% accuracy in a wave
