@@ -59,8 +59,8 @@ function love.load()
     cursor = love.mouse.newCursor(cursorImage:getData(), 0, 0)
     love.mouse.setCursor(cursor)
 
+    -- Sound is instantiated before the game because it observes things beyond the game scope
     soundControl = Sound:new()
-	highScore = HighScore:new()
 
     if love.filesystem.exists("config.txt") then
         options:load()

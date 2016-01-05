@@ -16,12 +16,33 @@ function HighScore:initialize()
 	self.enemyHitObserver = signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
     self.playerShootObserver = signal.register('playerShot', function() self:onPlayerShoot() end)
 	self.waveEndObserver = signal.register('waveEnded', function() self:onWaveEnd() end)
+	signal.register('newGame', function() self:reset() end)
 	
-	
+	self:reset()
+end
+
+function HighScore:reset()
 	-- no need to change these
 	self.currentScore = 0
 	self.bulletsShot = 0
 	self.bulletsHit = 0
+
+	-- The score displayed to the screen, may or may not be equal to the current score.
+	-- It does approach the current score, though.
+	self.displayScore = 0
+end
+
+function HighScore:update(dt)
+	-- interpolates the display score towards the current score
+	local diff = self.currentScore - self.displayScore
+	local epsilon = 1
+
+	if diff > epsilon then
+		self.displayScore = self.displayScore + (diff) * 5 * dt
+	else
+		self.displayScore = self.currentScore
+	end
+
 end
 
 function HighScore:onEnemyDeath(enemy)
@@ -73,9 +94,17 @@ function HighScore:onWaveEnd()
 	self.bulletsHit = 0
 end
 
-function	HighScore:gameDraw()
-	love.graphics.print('Your score: ' ..self.currentScore, 5, 5)
-	love.graphics.print('Bullets shot: ' ..self.bulletsShot, 5, 55)
-	love.graphics.print('Bullets hit: ' ..self.bulletsHit, 5, 105)
+function HighScore:draw()
+	-- do not show outside the game state, unless the game is paused
+	if (state.current() ~= game) and (state.current() ~= pause) then
+		return 
+	end
+
+	local font = font[64]
+	local text = math.floor(self.displayScore)
+	love.graphics.setFont(font)
+	local w = font:getWidth(text)
+	local h = font:getHeight(text)
+	love.graphics.print(text, love.graphics.getWidth() - w - 15, love.graphics.getHeight() - h - 15)
 end
 

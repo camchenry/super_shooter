@@ -42,6 +42,7 @@ function game:init()
     self.screenShake = ScreenShake:new()
     self.hurt = Hurt:new()
     self.floatingMessages = FloatingMessages:new()
+    self.highScore = HighScore:new()
 
     signal.emit('waveEnded')
 end
@@ -181,6 +182,7 @@ function game:update(dt)
     self.hurt:update(dt)
     self.background:update(dt)
     self.floatingMessages:update(dt)
+    self.highScore:update(dt)
 
     if self.boss then
         if self.boss.health <= 0 then
@@ -315,7 +317,7 @@ function game:draw()
     self:drawPlayerHealthBar()
     self:drawBossIncoming()
 	
-	highScore:gameDraw()
+	self.highScore:draw()
 
     love.graphics.setFont(font[16])
 	if self.displayFPS then
