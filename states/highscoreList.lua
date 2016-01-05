@@ -59,6 +59,7 @@ function highscoreList:keypressed(key)
 		if key == "return" then
 			if not self.scoreEntered then
 				self.scoreEntered = true
+				self.fromGame = false
 				self:checkScore()
 			end
 		end
@@ -70,6 +71,12 @@ function highscoreList:keypressed(key)
 		elseif  key == "right" then
 			if self.selectorPos < 3 then
 				self.selectorPos = self.selectorPos + 1
+			end
+		end
+
+		if key == "backspace" then
+			if self.selectorPos > 1 then
+				self.selectorPos = self.selectorPos - 1
 			end
 		end
 	end
@@ -107,7 +114,6 @@ function highscoreList:draw()
     love.graphics.setColor(255, 255, 255)
     love.graphics.print('HIGH SCORES', love.graphics.getWidth()/2 - fontBold[72]:getWidth("HIGH SCORES")/2, 70)
 	
-
     love.graphics.setFont(font[32])
 	love.graphics.setColor(255, 255, 255)
 	local sep = 45
@@ -143,31 +149,49 @@ function highscoreList:draw()
 	if self.fromGame then
 		local x = 500
 		local y = love.graphics.getHeight()/2
+
+		love.graphics.setColor(0, 0, 0, 96)
+    	love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+
+		love.graphics.setColor(255, 255, 255)
+    	love.graphics.rectangle("fill", 0, y-150, love.graphics.getWidth(), 300)
+    	love.graphics.setColor(0, 0, 0)
+
+    	local text = 'ENTER YOUR INITIALS'
+    	love.graphics.setFont(font[24])
+		love.graphics.print(text, love.graphics.getWidth()/2-font[24]:getWidth(text)/2, y - 100)
 		
-		if not self.scoreEntered then
-			love.graphics.print('Press enter to save your score!', x, y + 200)
-		end
 		
-		local font = fontBold[72]
-		love.graphics.setFont(font)
+		local f = fontBold[72]
+		love.graphics.setFont(f)
 		
 		local spacing = 20
-		local width = font:getWidth('W')
-		local height = font:getHeight() + 10
+		local width = f:getWidth('W')
+		local height = f:getHeight() + 10
 		
 		for i = 1, 3 do
-			if i == self.selectorPos then
-				love.graphics.setLineWidth(4)
-			else
-				love.graphics.setLineWidth(10)
-			end
-			
+			love.graphics.setColor(0, 0, 0)
+			love.graphics.setLineWidth(2)
+
 			local dx = (width+spacing)*(i-1)
-			love.graphics.line(x + dx, y, x + dx + width, y)
+			love.graphics.line(x + dx, y + height/2, x + dx + width, y + height/2)
 			local char = self.initialsInput[i]
-			local charWidth = font:getWidth(char)
+			local charWidth = f:getWidth(char)
 			
-			love.graphics.print(self.initialsInput[i], x + dx + width/2 - charWidth/2, y - height) --?
+			if i == self.selectorPos then
+				love.graphics.setColor(255, 0, 0)
+			else
+				love.graphics.setColor(0, 0, 0)
+			end
+
+			love.graphics.print(self.initialsInput[i], x + dx + width/2 - charWidth/2, y - height/2) --?	
+		end
+
+		if not self.scoreEntered then
+			love.graphics.setFont(font[24])
+			love.graphics.setColor(0, 0, 0)
+			local text = 'Press enter to save your score!'
+			love.graphics.print(text, love.graphics.getWidth()/2-font[24]:getWidth(text)/2, y + 85)
 		end
 	end
 
