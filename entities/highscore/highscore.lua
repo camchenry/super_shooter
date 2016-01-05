@@ -45,9 +45,14 @@ function HighScore:update(dt)
 
 end
 
+function HighScore:changeScore(amount)
+	signal.emit('scoreChange', amount)
+	self.currentScore = self.currentScore + amount
+end
+
 function HighScore:onEnemyDeath(enemy)
 	-- add to score based on which enemy was defeated
-	scoreChange = self.destroyScores.default -- should only result if an enemy has not yet been given a score
+	local scoreChange = self.destroyScores.default -- should only result if an enemy has not yet been given a score
 	
 	if enemy:isInstanceOf(Blob) then
 		scoreChange = self.destroyScores.blob
@@ -61,7 +66,7 @@ function HighScore:onEnemyDeath(enemy)
 		scoreChange = self.destroyScores.megabyte
 	end
 	
-	self.currentScore = self.currentScore + scoreChange
+	self:changeScore(scoreChange)
 end
 
 function HighScore:onEnemyHit(enemy)
@@ -82,8 +87,7 @@ function HighScore:onWaveEnd()
 	end
 	
 	local scoreChange = math.ceil(accuracy * self.accuracyScore)
-	
-	self.currentScore = self.currentScore + scoreChange
+	self:changeScore(scoreChange)
 	
 	if self.bulletsShot ~= 0 then
 		--error(self.bulletsShot.." "..self.bulletsHit.." "..accuracy.." "..scoreChange.." "..self.currentScore)
