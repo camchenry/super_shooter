@@ -25,6 +25,7 @@ function restart:draw()
 		PROGRAM TERMINATED
 	]]
 	local score = "SCORE: " .. game.highScore.currentScore
+	local wave = "WAVE: " .. game.wave
 	local text2 = [[
 		< click anywhere to reboot >
 	]]
@@ -32,9 +33,11 @@ function restart:draw()
 	love.graphics.printf(string.upper(text), 0, love.graphics.getHeight()/2-100, love.graphics.getWidth(), "center")
 	love.graphics.setFont(font[36])
 	love.graphics.printf(string.upper(score), 0, love.graphics.getHeight()/2-25, love.graphics.getWidth(), "center")
+	love.graphics.setFont(font[36])
+	love.graphics.printf(string.upper(wave), 0, love.graphics.getHeight()/2+30, love.graphics.getWidth(), "center")
 	love.graphics.setFont(font[24])
 	love.graphics.setColor(255, 255, 255, math.abs(255*math.sin(self.time)))
-	love.graphics.printf(text2, 400, love.graphics.getHeight()/2+50, love.graphics.getWidth()-800, "center")
+	love.graphics.printf(text2, 400, love.graphics.getHeight()/2+125, love.graphics.getWidth()-800, "center")
 	
 	love.graphics.printf("You qualify for a highscore! Press 'Q'", 400, love.graphics.getHeight()/2+200, love.graphics.getWidth()-800, "center")
 end
