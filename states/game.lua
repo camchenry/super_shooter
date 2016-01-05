@@ -145,7 +145,7 @@ function game:update(dt)
         self:resized()
     end
     
-    if player.health <= 0 then
+    if player.health <= 0 then -- death condition
         state.switch(restart)
     end
 

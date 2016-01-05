@@ -19,6 +19,7 @@ require 'states.pause'
 require 'states.gameover'
 require 'states.restart'
 require 'states.charselect'
+require 'states.highscoreList'
 
 -- entities
 require 'entities.entity'

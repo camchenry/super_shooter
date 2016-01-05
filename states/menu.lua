@@ -14,6 +14,13 @@ menu.items = {
 			state.push(options)
         end,
     },
+	
+	{
+        title = "HIGHSCORE",
+        action = function()
+			state.push(highscoreList)
+        end,
+    },
 
     {
         title = "QUIT",
