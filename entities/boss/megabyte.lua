@@ -17,6 +17,7 @@ function Megabyte:initialize(position)
     self.health = 1000
     self.maxHealth = 1000
     self.invincible = true
+    self.knockbackResistance = 1
     self.phase = 1
 
     self.lineWidth = 1

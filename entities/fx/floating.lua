@@ -3,19 +3,27 @@ FloatingMessages = class("FloatingMessages")
 function FloatingMessages:initialize()
 	self.messages = {}
 
-	signal.register('enemyHit', function(enemy, damage)
+	signal.register('enemyHit', function(enemy, damage, crit)
 		if damage == nil then return end
 		damage = math.ceil(damage)
-		self:newMessage(enemy.position.x, enemy.position.y, damage, 1)
+
+		local size = 14
+		if crit then
+			size = 20
+		end
+
+		self:newMessage(enemy.position.x, enemy.position.y, damage, 1, size)
 	end)
 end
 
-function FloatingMessages:newMessage(x, y, text, time)
+function FloatingMessages:newMessage(x, y, text, time, size)
+	size = size or 14
 	table.insert(self.messages, {
 		x = x,
 		y = y,
 		text = text,
-		time = time	
+		time = time,
+		size = size,
 	})
 end
 
@@ -37,9 +45,8 @@ function FloatingMessages:update(dt)
 end
 
 function FloatingMessages:draw()
-	love.graphics.setFont(font[14])
-
 	for i, msg in pairs(self.messages) do
+		love.graphics.setFont(font[msg.size])
 		love.graphics.setColor(255, 255, 255, 200 * msg.time)
 		love.graphics.print(msg.text, msg.x + WINDOW_OFFSET.x, msg.y + WINDOW_OFFSET.y)
 	end
