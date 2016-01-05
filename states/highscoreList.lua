@@ -30,6 +30,11 @@ function highscoreList:enter(prev)
 		self.initialChar = true
 		self.playerScore = game.highScore.currentScore
 	end
+
+	self.back = Button:new("< BACK", self.leftAlign, love.window.getHeight()-80)
+	self.back.activated = function()
+		state.switch(menu)
+	end
 end
 
 function highscoreList:leave()
@@ -37,7 +42,7 @@ function highscoreList:leave()
 end
 
 function highscoreList:mousepressed(x, y, button)
-
+	self.back:mousepressed(x, y, button)
 end
 
 function highscoreList:keypressed(key)
@@ -80,22 +85,43 @@ function highscoreList:textinput(t)
 end
 
 function highscoreList:update(dt)
-
+	self.back:update(dt)
 end
 
 function highscoreList:draw()
-	love.graphics.setColor(255, 255, 255)
-    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 120+55)
+    love.graphics.setFont(font[72])
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.print('HIGH SCORES', love.graphics.getWidth()/2 - fontBold[72]:getWidth("HIGH SCORES")/2, 70)
+	
 
-    love.graphics.setFont(fontBold[32])
-    love.graphics.setColor(0, 0, 0)
-    love.graphics.print('highscoreList', 75, 70)
-	
+    love.graphics.setFont(font[32])
 	love.graphics.setColor(255, 255, 255)
-	local sep = 40
-	
+	local sep = 45
+
 	for i, scoreData in ipairs(self.scores) do
-		love.graphics.print(scoreData.initials..' '..scoreData.score, 50, 200+(sep*(i-1)))
+		if i == 1 then
+			love.graphics.setFont(fontBold[36])
+			love.graphics.setColor(255, 225, 0)
+		elseif i == 2 then
+			love.graphics.setFont(fontBold[32])
+			love.graphics.setColor(192, 192, 192)
+		elseif i == 3 then
+			love.graphics.setFont(fontBold[32])
+			love.graphics.setColor(205, 127, 50)
+		else
+			love.graphics.setFont(fontLight[28])
+			love.graphics.setColor(255, 255, 255)
+		end
+
+		local line = scoreData.score
+		local x = love.graphics.getWidth()/2 + 15
+
+		love.graphics.print(line, x, 200+(sep*(i-1)))
+
+		line = string.upper(scoreData.initials)
+		x = love.graphics.getWidth()/2 - love.graphics.getFont():getWidth(line) - 15
+
+		love.graphics.print(line, x, 200+(sep*(i-1)))
 	end
 	
 	-- optimize! polish!
@@ -130,6 +156,8 @@ function highscoreList:draw()
 			love.graphics.print(self.initialsInput[i], x + dx + width/2 - charWidth/2, y - height) --?
 		end
 	end
+
+	self.back:draw()
 end
 
 function highscoreList:checkScore()
