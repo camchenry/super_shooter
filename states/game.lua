@@ -384,10 +384,11 @@ end
 function game:setupWaves()
     self.waves = {}
     self.waves[1] = {
-        blobs = 15,
+        --blobs = 15,
         sweepers = 0,
 		healers = 0,
 		tanks = 0,
+        ninjas = 3
     }
     self.waves[2] = {
         blobs = 25,
@@ -474,12 +475,17 @@ function game:spawnEnemies(w)
         local num = currentWave.sweepers
         -- margin from the sides of the screen
         local margin = 25
-        local h = (love.graphics.getHeight()-margin)/num
-        local w = (love.graphics.getWidth()-margin)
+        local h = (love.graphics.getHeight()-margin*2)/num
+        local w = (love.graphics.getWidth())
+        local leftEdge = margin--margin
+        local rightEdge = w - margin---w - margin 
+
         for i=1, num do
-            self:addObject(LineEnemy:new(
-                vector(margin-WINDOW_OFFSET.x, (margin*2+h*(i-1))-WINDOW_OFFSET.y),
-                vector(w-WINDOW_OFFSET.x-margin, (margin*2+h*(i-1))-WINDOW_OFFSET.y)
+            local y = h*(i-1) + margin + h/2
+
+            self:addObject(Sweeper:new(
+                vector(leftEdge - WINDOW_OFFSET.x, y - WINDOW_OFFSET.y),
+                vector(rightEdge - WINDOW_OFFSET.x, y - WINDOW_OFFSET.y)
             ))
         end
     end
@@ -488,7 +494,7 @@ function game:spawnEnemies(w)
         for i=1, currentWave.healers do
             local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
                              math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
-            p = p + (p - player.position):normalized()*150
+            p = p + (p - player.position):normalized()*250
             local b = Healer:new(p)
             self:addObject(b)
         end

@@ -1,19 +1,19 @@
 TODO:
 	- Gameplay changes
-		- Make ninja movement feel better, less floaty
-			- Do movement prediction
-		- Make ninjas more lethal
+		X Make ninja movement feel better, less floaty
+			X Do movement prediction
+		X Make ninjas more lethal
 		- Improve healer movement
 	- Add sounds
 		- Ninja teleportation
-		- Player death
+		X Player death
 		- Player victory
 	- Add particles
 		- Ninja teleportation
 	- Fixes
 		- UI makes sound even when muted, if you change the volume and without applying
-		- Ninja teleport line effect doesn't trigger everytime
-		- Spread sweepers out more evenly
+		X Ninja teleport line effect doesn't trigger everytime
+		X Spread sweepers out more evenly
 	- Misc.
 		X Move background to its own function/file
 	- Scoring
