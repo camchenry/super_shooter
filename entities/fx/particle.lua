@@ -19,6 +19,11 @@ function Particles:initialize()
     self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
     self.enemyHitObserver = signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
 
+
+    signal.register('newGame', function()
+		self.particleSystem:reset()
+		self.particleSmallSystem:reset()
+	end)
 end
 
 function Particles:update(dt)

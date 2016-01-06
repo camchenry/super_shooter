@@ -7,6 +7,10 @@ function Hurt:initialize()
     self.overlayAlpha = 150
     self.overlayTimeMax = 1
     self.time = 0
+
+    signal.register('newGame', function()
+		self.time = 0
+	end)
 end
 
 function Hurt:update(dt)

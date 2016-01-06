@@ -186,7 +186,7 @@ function highscoreList:draw()
 				love.graphics.setColor(0, 0, 0)
 			end
 
-			love.graphics.print(self.initialsInput[i], x + dx + width/2 - charWidth/2, y - height/2) --?	
+			love.graphics.print(string.upper(self.initialsInput[i]), x + dx + width/2 - charWidth/2, y - height/2) --?	
 		end
 
 		if not self.scoreEntered then
@@ -228,7 +228,7 @@ end
 
 function highscoreList:scoreIsValid(score)
 	-- evaluates true if the high score list is not full, or the score is greater than the lowest score
-	return (#self.scores < self.maxScores) or (score > self.scores[self.maxScores].score) and score ~= 0
+	return ((#self.scores < self.maxScores) or (score > self.scores[self.maxScores].score)) and score > 0
 end
 
 function highscoreList:getDefaultScores()

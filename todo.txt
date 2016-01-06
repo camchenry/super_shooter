@@ -14,10 +14,10 @@ TODO:
 		X UI makes sound even when muted, if you change the volume and without applying
 		X Ninja teleport line effect doesn't trigger everytime
 		X Spread sweepers out more evenly
-		- Make initials input display capital letters
+		X Make initials input display capital letters
 		- On the initials input, it only displays the active character red once all 3 are entered (will try making the line red instead)
-		- The damage numbers are not removed if you die and start a new game (same with the floating score numbers)
-		- Don't add 0 points to the high score list
+		X The damage numbers are not removed if you die and start a new game (same with the floating score numbers)
+		X Don't add 0 points to the high score list
 	- Misc.
 		X Move background to its own function/file
 		- Allow options to be accessed while a game is being played

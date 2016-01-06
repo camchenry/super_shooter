@@ -10,6 +10,9 @@ function ScreenShake:initialize()
     self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
     self.enemyHitObserver = signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
 
+    signal.register('newGame', function()
+        self.time = 0
+    end)
 end
 
 function ScreenShake:update(dt)

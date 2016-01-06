@@ -6,6 +6,11 @@ function FloatingMessages:initialize()
 	self.queueDiff = .25
 	self.queueTimer = 0
 
+	signal.register('newGame', function()
+		self.messages = {}
+		self.messagQueue = {}
+	end)
+
 	signal.register('enemyHit', function(enemy, damage, crit)
 		if damage == nil then return end
 		damage = math.ceil(damage)
