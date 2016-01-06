@@ -78,7 +78,7 @@ function game:reset()
 
     self.time = 0
     self.firstWave = true
-    self.startingWave = 9
+    self.startingWave = 0
     self.wave = self.startingWave
     self.timeToNextWave = 3
 	self.waveTime = 0
@@ -99,7 +99,7 @@ function game:enter(prev)
 
     self:compileShaders()
 
-    if prev ~= game then
+    if prev ~= pause then
 	    state.push(charSelect)
         self:reset()
     end

@@ -102,7 +102,7 @@ function Blob:initialize(position)
 
     self:randomizeAppearance(0.3, 0.1)
 
-    self.speed = 600
+    self.speed = 800
 
     self.position = position
     self.touchDamage = player.maxHealth/5
@@ -181,15 +181,16 @@ function Healer:initialize(position)
     self.sides = 5
     self:randomizeAppearance()
 
-    self.speed = 345
+    self.speed = 325
 
     self.position = position
     self.touchDamage = player.maxHealth/10
 
-    self.maxHealth = 125
+    self.maxHealth = 110
     self.health = self.maxHealth
+    self.knockbackResistance = 0.5
 	
-	self.healRate = 20
+	self.healRate = 15
     self.healRadius = 130
 end
 
@@ -200,7 +201,7 @@ function Healer:update(dt)
 
     for i, o in pairs(quadtree:getCollidableObjects(self, true)) do
         if o:isInstanceOf(Enemy) then
-            if o.position:dist(self.position) <= self.healRadius then
+            if o.position:dist(self.position) <= self.healRadius and o ~= self then
                 if o.health >= 0 then
                     o.health = o.health + self.healRate * dt
                 end

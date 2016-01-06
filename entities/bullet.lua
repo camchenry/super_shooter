@@ -18,6 +18,11 @@ function Bullet:initialize(position, target, velocity)
     self.speed = 200
     self.life = 1.5 -- seconds
     self.damage = 0
+    self.originalDamage = 0
+
+    self.distanceTraveled = 0
+    self.dropoffAmount = 0
+    self.dropoffDistance = 0
 
     self.velocity = (self.target - self.position - WINDOW_OFFSET):normalized() * self.speed
     self.width = self.radius * 2
@@ -33,6 +38,8 @@ function Bullet:update(dt)
     self.x, self.y = self.position:unpack()
     self.width, self.height = self.radius*2, self.radius*2
 
+    self.distanceTraveled = self.distanceTraveled + ((oldVelocity + self.velocity) * 0.5 * dt):len()
+
     self.life = self.life - dt
 
     if self.life <= 0 then
@@ -45,6 +52,12 @@ function Bullet:update(dt)
 
     if self.position.y > love.graphics.getHeight()-WINDOW_OFFSET.y or self.position.y < 0-WINDOW_OFFSET.y then
         self.destroy = true
+    end
+
+    if self.dropoffDistance then
+        local ratio = math.min(1, self.distanceTraveled/150)
+
+        self.damage = math.max(self.damage - ratio * self.dropoffAmount * dt, self.originalDamage - self.dropoffAmount)
     end
 end
 
@@ -81,6 +94,7 @@ end
 
 function Bullet:setDamage(damage)
     self.damage = damage
+    self.originalDamage = damage
     return self
 end
 

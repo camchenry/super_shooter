@@ -30,9 +30,10 @@ charSelect.characters = {
 			function Spectre:initialize()
 				Player.initialize(self)
 
-				self.speed = 600
+				self.shotsPerSecond = 3
+				self.speed = 1450
 				self.maxHealth = 50
-				self.bulletDamage = 35
+				self.bulletDamage = 45
 				self.bulletVelocity = 450
 				self.criticalChance = 0.05
 				self.color = {127, 127, 127}
@@ -51,10 +52,13 @@ charSelect.characters = {
 			function Berserker:initialize()
 				Player.initialize(self)
 
-				local modifier = 3
-				self.shotsPerSecond = self.shotsPerSecond * modifier
-				self.bulletDamage = self.bulletDamage / (modifier+1)
-				self.damageResistance = 0.1
+				self.shotsPerSecond = 10
+				self.bulletDamage = 20
+				self.bulletDropoffDistance = 50
+				self.bulletDropoffAmount = 5
+				self.damageResistance = -1
+				self.speed = 1225
+				self.healthRegen = 2
 
 				self.color = {255, 255, 255}
 			end

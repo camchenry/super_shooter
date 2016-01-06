@@ -16,6 +16,8 @@ function Player:initialize()
     self.canShoot = true
     self.bulletVelocity = 300
     self.bulletDamage = 50
+    self.bulletDropoffAmount = 30
+    self.bulletDropoffDistance = 100
     self.damageMultiplier = 1.0
     self.touchDamage = 0
     self.bulletLife = 1.5
@@ -100,6 +102,8 @@ function Player:update(dt)
                 bullet:setSpeed(self.bulletVelocity)
                 bullet:setRadius(self.bulletRadius)
                 bullet:setLife(self.bulletLife)
+                bullet.dropoffDistance = self.bulletDropoffDistance
+                bullet.dropoffAmount = self.bulletDropoffAmount
 
 				self.heat = self.rateOfFire
 			end
