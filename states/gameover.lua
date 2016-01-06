@@ -9,7 +9,17 @@ function gameover:update(dt)
 end
 
 function gameover:mousepressed(x, y, mbutton)
-	state.switch(menu)
+	if highscoreList:scoreIsValid(game.highScore.currentScore) then
+		state.push(highscoreList)
+	else
+		state.switch(menu)
+	end
+end
+
+function gameover:keypressed(key, isrepeat)
+	if key == 'q' then
+		state.push(highscoreList)
+	end
 end
 
 function gameover:draw()
@@ -26,5 +36,10 @@ function gameover:draw()
 	love.graphics.setFont(font[24])
 	love.graphics.printf(text2, 400, love.graphics.getHeight()/2, love.graphics.getWidth()-800, "center")
 	love.graphics.setColor(255, 255, 255, math.abs(255*math.sin(self.time)))
-	love.graphics.printf("< click to return to menu >", 400, love.graphics.getHeight()/2+100, love.graphics.getWidth()-800, "center")
+	love.graphics.printf("< click to return to menu >", 400, love.graphics.getHeight()/2+150, love.graphics.getWidth()-800, "center")
+	
+	if highscoreList:scoreIsValid(game.highScore.currentScore) then
+		love.graphics.setColor(255, 225, 0)
+		love.graphics.printf("You qualify for a highscore!", 400, love.graphics.getHeight()/2+100, love.graphics.getWidth()-800, "center")
+	end
 end

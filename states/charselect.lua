@@ -131,12 +131,17 @@ function charSelect:enter()
 
 	self.continueButton = Button:new("CONTINUE")
 	self.continueButton:setFont(fontBold[48])
-	self.continueButton:centerAround(love.graphics.getWidth()/2, love.graphics.getHeight()-100)
+	self.continueButton:centerAround(love.graphics.getWidth()/2, love.graphics.getHeight()-70)
 	self.continueButton.activated = function()
 		if self.selectedCharacter ~= nil then
 			player = game:addObject(self.tempPlayer)
-			state.switch(game)
+			state.pop()
 		end
+	end
+
+	self.back = Button:new("< BACK", 75, love.window.getHeight()-80)
+	self.back.activated = function()
+		state.switch(menu)
 	end
 end
 
@@ -153,6 +158,8 @@ function charSelect:update(dt)
 	if self.selectedCharacter then
 		self.continueButton:update(dt)
 	end
+
+	self.back:update(dt)
 end
 
 function charSelect:keypressed(key)
@@ -175,6 +182,8 @@ function charSelect:mousepressed(x, y, mbutton)
 	if self.selectedCharacter then
 		self.continueButton:mousepressed(x, y, mbutton)
 	end
+
+	self.back:mousepressed(x, y, mbutton)
 end
 
 function charSelect:draw()
@@ -222,4 +231,6 @@ function charSelect:draw()
 
 		self.continueButton:draw()
 	end
+
+	self.back:draw()
 end

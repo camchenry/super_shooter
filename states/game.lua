@@ -42,6 +42,10 @@ function game:init()
     self.screenShake = ScreenShake:new()
     self.hurt = Hurt:new()
     self.floatingMessages = FloatingMessages:new()
+    self.highScore = HighScore:new()
+    if highscoreList and highscoreList.init then
+        highscoreList:init()
+    end
 
     signal.emit('waveEnded')
 end
@@ -52,7 +56,7 @@ function game:reset()
     quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
     quadtree:subdivide()
     quadtree:subdivide()
-    -- player will be added later, in character select
+	-- player will be added later, in character select
 
     if self.effectsEnabled == nil then
         self.effectsEnabled = false
@@ -74,9 +78,10 @@ function game:reset()
 
     self.time = 0
     self.firstWave = true
-    self.startingWave = 0
+    self.startingWave = 9
     self.wave = self.startingWave
     self.timeToNextWave = 3
+	self.waveTime = 0
     self._postWaveCalled = false
     self._preWaveCalled = false
     self.boss = nil
@@ -87,15 +92,15 @@ function game:reset()
     signal.emit('newGame')
 end
 
-function game:enter(prev)   
+function game:enter(prev)
     love.keyboard.setKeyRepeat(true)
     love.mouse.setVisible(true)
     love.mouse.setCursor(crosshair)
 
     self:compileShaders()
 
-    if prev == restart or prev == menu then
-        state.push(charSelect)
+    if prev ~= game then
+	    state.push(charSelect)
         self:reset()
     end
 end
@@ -143,7 +148,7 @@ function game:update(dt)
         self:resized()
     end
     
-    if player.health <= 0 then
+    if player.health <= 0 then -- death condition
         state.switch(restart)
     end
 
@@ -188,6 +193,7 @@ function game:update(dt)
     self.hurt:update(dt)
     self.background:update(dt)
     self.floatingMessages:update(dt)
+    self.highScore:update(dt)
 
     if self.boss then
         if self.boss.health <= 0 then
@@ -239,6 +245,12 @@ function game:onWaveEnd()
             self:onWaveStart()
         end
     end)
+	
+	local waveTime = 0
+	if self.waveStartTime then
+		waveTime = self.time - self.waveStartTime
+	end
+    signal.emit('waveEnded', self.wave, waveTime)
 
     self._postWaveCalled = true
     self._preWaveCalled = false
@@ -319,6 +331,8 @@ function game:draw()
 
     self:drawPlayerHealthBar()
     self:drawBossIncoming()
+	
+	self.highScore:draw()
 
     love.graphics.setFont(font[16])
 	if self.displayFPS then
@@ -384,11 +398,11 @@ end
 function game:setupWaves()
     self.waves = {}
     self.waves[1] = {
-        --blobs = 15,
+        blobs = 15,
         sweepers = 0,
 		healers = 0,
 		tanks = 0,
-        ninjas = 3
+        --ninjas = 3
     }
     self.waves[2] = {
         blobs = 25,
@@ -435,6 +449,7 @@ end
 
 function game:startWave()
     self.waveTimer = nil
+	self.waveStartTime = self.time -- set the wave start time to the game time
 
     if self.wave == nil then
         self.wave = self.startingWave

@@ -79,12 +79,14 @@ function Enemy:_handleCollision(obj)
 		-- check for proximity and invincible
         if self.position:dist(obj.position) < self.radius + obj.radius then
             game:removeBullet(obj)
-			if not self.invincible then
+			if not self.invincible and not obj.destroy then
                 local dmg = obj.damage * (1 - self.damageResistance)
 				self.health = self.health - dmg
-				signal.emit('enemyHit', self, dmg, obj.critical)
+                local death = self.health <= 0
+				signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
 				self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
+				obj.destroy = true
 			end
         end
     end

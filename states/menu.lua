@@ -14,6 +14,13 @@ menu.items = {
 			state.push(options)
         end,
     },
+	
+	{
+        title = "HIGH SCORES",
+        action = function()
+			state.push(highscoreList)
+        end,
+    },
 
     {
         title = "QUIT",
@@ -41,6 +48,7 @@ function menu:enter()
 	
 	self.time = 0
 	
+	love.graphics.setLineWidth(1)
 	-- default value for the line
 	self.lineX = self.buttons[1].x - 10
 	self.lineY1 = self.buttons[1].y

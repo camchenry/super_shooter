@@ -19,6 +19,7 @@ require 'states.pause'
 require 'states.gameover'
 require 'states.restart'
 require 'states.charselect'
+require 'states.highscoreList'
 
 -- entities
 require 'entities.entity'
@@ -36,6 +37,8 @@ require 'entities.fx.background'
 require 'entities.fx.floating'
 -- sound effects
 require 'entities.sound.sound'
+-- high score
+require 'entities.highscore.highscore'
 -- ui elements
 require 'entities.ui.button'
 require 'entities.ui.checkbox'
@@ -57,6 +60,7 @@ function love.load()
     cursor = love.mouse.newCursor(cursorImage:getData(), 0, 0)
     love.mouse.setCursor(cursor)
 
+    -- Sound is instantiated before the game because it observes things beyond the game scope
     soundControl = Sound:new()
 
     if love.filesystem.exists("config.txt") then
