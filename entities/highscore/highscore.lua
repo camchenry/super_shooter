@@ -83,8 +83,6 @@ end
 
 function HighScore:onWaveEnd(wave, waveTime)
 	if wave and wave > 0 then
-		local scoreChange = 0
-
 		-- calculate accuracy for the current wave, add to player score
 		local accuracy = 0
 		if self.bulletsShot ~= 0 then
@@ -95,9 +93,10 @@ function HighScore:onWaveEnd(wave, waveTime)
 		self:changeScore(accuracyPoints)
 		
 		-- add in the time bonus
-		local timePoints = math.ceil(self.timeScore * wave / waveTime)
-		scoreChange = scoreChange + timePoints
-		self:changeScore(timePoints)
+		if waveTime > 0 then -- avoid dividing by 0
+			local timePoints = math.ceil(self.timeScore * wave / waveTime)
+			self:changeScore(timePoints)
+		end
 		
 		-- check for wave ricochet bonus
 		if self.ricochetKills >= self.ricochetMinimum then

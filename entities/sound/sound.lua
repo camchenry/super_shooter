@@ -62,6 +62,11 @@ function Sound:update(dt)
 end
 
 function Sound:onSoundVolumeChanged(volume)
+	-- fixes a volume bug where if it was set to 0, it would make it 1
+	if volume < .01 then
+		volume = 0
+	end
+	
 	for i, sound in pairs(self.sounds) do
 		sound:setVolume(volume)
 	end
