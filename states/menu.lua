@@ -36,10 +36,15 @@ function menu:init()
     for i, item in pairs(self.items) do
         table.insert(self.buttons, Button:new(item.title, 75, 50*(i-1) + 250, nil, nil, font[30], item.action))
     end
+
+    self.title = 'SUPER SHOOTER'
+    self.titleFont = fontBold[72]
+    self.titleX = love.graphics.getWidth()/2 - self.titleFont:getWidth(self.title)/2
+    self.titleTween = tween(2, self, {titleX = 75}, "inOutCubic")
 	
 	-- reveal the menu on game launch
 	self.headerTweenAmount = love.graphics.getHeight() - (120+55)
-	self.headerTween = tween(2, self, {headerTweenAmount = 0}, "outBack", function() end)
+	self.headerTween = tween(2, self, {headerTweenAmount = 0}, "inOutCubic", function() end)
 end
 
 function menu:enter()
@@ -105,7 +110,7 @@ function menu:draw()
 	love.graphics.setColor(255, 255, 255)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 120+55 + math.floor(self.headerTweenAmount))
 
-    love.graphics.setFont(fontBold[72])
+    love.graphics.setFont(self.titleFont)
     love.graphics.setColor(0, 0, 0)
-    love.graphics.print('SUPER SHOOTER', 75, 70 + math.floor(self.headerTweenAmount))
+    love.graphics.print(self.title, self.titleX, 70)
 end

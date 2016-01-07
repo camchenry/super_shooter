@@ -33,9 +33,9 @@ charSelect.characters = {
 				self.shotsPerSecond = 3
 				self.speed = 1450
 				self.maxHealth = 50
-				self.bulletDamage = 45
-				self.bulletVelocity = 450
-				self.criticalChance = 0.05
+				self.bulletDamage = 55
+				self.bulletVelocity = 475
+				self.criticalChance = 0.07
 				self.color = {127, 127, 127}
 			end
 
@@ -53,14 +53,18 @@ charSelect.characters = {
 				Player.initialize(self)
 
 				self.shotsPerSecond = 10
-				self.bulletDamage = 20
+				self.bulletDamage = 35
 				self.bulletDropoffDistance = 50
 				self.bulletDropoffAmount = 5
-				self.damageResistance = -1
-				self.speed = 1225
-				self.healthRegen = 2
+				self.damageResistance = -0.75
+				self.speed = 1250
+				self.healthRegen = -2
 
 				self.color = {255, 255, 255}
+
+				signal.register('enemyDeath', function()
+					self.health = self.health + 1
+				end)
 			end
 
 			return Berserker

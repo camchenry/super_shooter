@@ -5,11 +5,11 @@ TODO:
 		X Make ninjas more lethal
 		- Improve healer movement
 	- Add sounds
-		- Ninja teleportation
+		X Ninja teleportation (not needed right now)
 		X Player death
 		- Player victory
 	- Add particles
-		- Ninja teleportation
+		X Ninja teleportation (not needed right now)
 	- Fixes
 		X UI makes sound even when muted, if you change the volume and without applying
 		X Ninja teleport line effect doesn't trigger everytime
@@ -20,7 +20,7 @@ TODO:
 		X Don't add 0 points to the high score list
 	- Misc.
 		X Move background to its own function/file
-		- Allow options to be accessed while a game is being played
+		X Allow options to be accessed while a game is being played (not going to fix)
 	- Scoring
 		X Score added based on wave completion time
 			- Improve time score in the future
