@@ -25,17 +25,20 @@ function options:enter()
 	
 	self.desktopFullscreen = Checkbox:new('DESKTOP FULLSCREEN', self.leftAlign, 270+175)
 	self.desktopFullscreen.selected = config.display.flags.fullscreentype == "desktop"
+	
+	self.highdpi = Checkbox:new('HIGH-DPI', self.leftAlign, 310+175)
+	self.highdpi.selected = config.display.flags.highdpi
 
-	self.shaderEffects = Checkbox:new('SHADER EFFECTS', self.leftAlign, 350+175)
+	self.shaderEffects = Checkbox:new('SHADER EFFECTS', self.leftAlign, 360+175)
 	self.shaderEffects.selected = config.graphics.shaderEffects
 
-	self.particles = Checkbox:new('PARTICLES', self.leftAlign, 390+175)
+	self.particles = Checkbox:new('PARTICLES', self.leftAlign, 400+175)
 	self.particles.selected = config.graphics.particles
 	
-	self.displayFPS = Checkbox:new('SHOW FPS', self.leftAlign, 430+175)
+	self.displayFPS = Checkbox:new('SHOW FPS', self.leftAlign, 440+175)
 	self.displayFPS.selected = config.graphics.displayFPS
 
-	self.trackpad = Checkbox:new('TRACKPAD MODE', self.leftAlign, 470+175)
+	self.trackpad = Checkbox:new('TRACKPAD MODE', self.leftAlign, 480+175)
 	self.trackpad.selected = config.input.trackpadMode
 	
 	-- Takes all available resolutions
@@ -98,6 +101,7 @@ function options:mousepressed(x, y, button)
 		self.fullscreen:mousepressed(x, y)
 		self.borderless:mousepressed(x, y)
 		self.desktopFullscreen:mousepressed(x, y)
+		self.highdpi:mousepressed(x, y)
 		self.shaderEffects:mousepressed(x, y)
 		self.particles:mousepressed(x, y)
 		self.displayFPS:mousepressed(x, y)
@@ -125,6 +129,7 @@ function options:update(dt)
 	self.fullscreen:update(dt)
 	self.borderless:update(dt)
 	self.desktopFullscreen:update(dt)
+	self.highdpi:update(dt)
 	self.shaderEffects:update(dt)
 	self.particles:update(dt)
 	self.displayFPS:update(dt)
@@ -157,6 +162,7 @@ function options:draw()
 	self.fullscreen:draw()
 	self.borderless:draw()
 	self.desktopFullscreen:draw()
+	self.highdpi:draw()
 	self.shaderEffects:draw()
 	self.particles:draw()
 	self.displayFPS:draw()
@@ -183,6 +189,7 @@ function options:getDefaultConfig()
 				vsync = false,
 				fullscreen = false,
 				fullscreentype = "desktop",
+				highdpi = false,
 				borderless = false,
 				msaa = 0,
 			},
@@ -220,6 +227,7 @@ function options:save()
 				fullscreen = self.fullscreen.selected,
 				borderless = self.borderless.selected,
 				fullscreentype = fullscreenType,
+				highdpi = self.highdpi.selected,
 				msaa = self.msaa.options[self.msaa.selected],
 			},
 		},
@@ -255,7 +263,13 @@ function options:load()
 		reload = true
 	elseif flags.borderless ~= config.display.flags.borderless then
 		reload = true
+	elseif flags.highdpi ~= config.display.flags.highdpi then
+		reload = true
 	elseif flags.fullscreentype ~= config.display.flags.fullscreentype then
+		config.display.flags.fullscreen = true
+		if self.fullscreen then
+			self.fullscreen.selected = true
+		end
 		reload = true
 	end
 	
