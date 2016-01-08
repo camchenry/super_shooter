@@ -14,7 +14,7 @@ function Particles:initialize()
     self.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
 
     self.particleSmallSystem = self.particleSystem:clone()
-    self.particleSmallSystem:setImage(self.particleSmallImage)
+    self.particleSmallSystem:setTexture(self.particleSmallImage)
 
     self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
     self.enemyHitObserver = signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)

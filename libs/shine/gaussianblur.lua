@@ -61,7 +61,12 @@ draw = function(self, func, ...)
 	local co = {love.graphics.getColor()}
 
 	-- draw scene
+<<<<<<< HEAD
 	self:_render_to_canvas(self.canvas_h, func, ...)
+=======
+	--love.graphics.clear()
+	self.canvas_h:renderTo(func)
+>>>>>>> origin/master
 
 	love.graphics.setColor(co)
 	love.graphics.setShader(self.shader)
@@ -73,7 +78,6 @@ draw = function(self, func, ...)
 	self.shader:send('direction', {1 / love.graphics.getWidth(), 0})
 	self:_render_to_canvas(self.canvas_v,
 	                       love.graphics.draw, self.canvas_h, 0,0)
-
 	-- second pass (vertical blur)
 	self.shader:send('direction', {0, 1 / love.graphics.getHeight()})
 	love.graphics.draw(self.canvas_v, 0,0)

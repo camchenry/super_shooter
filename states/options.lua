@@ -22,17 +22,20 @@ function options:enter()
 	
 	self.borderless = Checkbox:new('BORDERLESS', self.leftAlign, 230+175)
 	self.borderless.selected = config.display.flags.borderless
+	
+	self.desktopFullscreen = Checkbox:new('DESKTOP FULLSCREEN', self.leftAlign, 270+175)
+	self.desktopFullscreen.selected = config.display.flags.fullscreentype == "desktop"
 
-	self.shaderEffects = Checkbox:new('SHADER EFFECTS', self.leftAlign, 310+175)
+	self.shaderEffects = Checkbox:new('SHADER EFFECTS', self.leftAlign, 350+175)
 	self.shaderEffects.selected = config.graphics.shaderEffects
 
-	self.particles = Checkbox:new('PARTICLES', self.leftAlign, 350+175)
+	self.particles = Checkbox:new('PARTICLES', self.leftAlign, 390+175)
 	self.particles.selected = config.graphics.particles
 	
-	self.displayFPS = Checkbox:new('SHOW FPS', self.leftAlign, 390+175)
+	self.displayFPS = Checkbox:new('SHOW FPS', self.leftAlign, 430+175)
 	self.displayFPS.selected = config.graphics.displayFPS
 
-	self.trackpad = Checkbox:new('TRACKPAD MODE', self.leftAlign, 430+175)
+	self.trackpad = Checkbox:new('TRACKPAD MODE', self.leftAlign, 470+175)
 	self.trackpad.selected = config.input.trackpadMode
 	
 	-- Takes all available resolutions
@@ -52,10 +55,10 @@ function options:enter()
 	self.resolution:selectTable({config.display.width, config.display.height})
 	self.resolution:setText('{1}x{2}')
 	
-	local fsaaOptions = {0, 2, 4, 8, 16}
-	self.fsaa = List:new('ANTIALIASING: ', fsaaOptions, self.leftAlign, 90+175, 400)
-	self.fsaa:selectValue(config.display.flags.fsaa)
-	self.fsaa:setText('{}x')
+	local msaaOptions = {0, 2, 4, 8, 16}
+	self.msaa = List:new('ANTIALIASING: ', msaaOptions, self.leftAlign, 90+175, 400)
+	self.msaa:selectValue(config.display.flags.msaa)
+	self.msaa:setText('{}x')
 
 	self.musicVolume = Slider:new("MUSIC VOLUME: %d", 0, 100, config.audio.musicVolume, self.leftAlign+450, 50+175, 275, 50, font[24])
 	self.musicVolume.changed = function() signal.emit('musicChanged', self.musicVolume.ratio) end
@@ -63,16 +66,16 @@ function options:enter()
 	self.soundVolume.changed = function() signal.emit('soundChanged', self.soundVolume.ratio) end
 	
 	-- applies current config settings
-	self.back = Button:new("< BACK", self.leftAlign, love.window.getHeight()-80)
+	self.back = Button:new("< BACK", self.leftAlign, love.graphics.getHeight()-80)
 	self.back.activated = function()
 		state.switch(menu) -- options can be accessed from multiple places in the game
 	end
 
-	self.apply = Button:new('APPLY CHANGES', self.leftAlign+170, love.window.getHeight()-80)
+	self.apply = Button:new('APPLY CHANGES', self.leftAlign+170, love.graphics.getHeight()-80)
 	self.apply.activated = function ()
 		self:applyChanges()
-		self.back.y = love.window.getHeight()-80
-		self.apply.y = love.window.getHeight()-80
+		self.back.y = love.graphics.getHeight()-80
+		self.apply.y = love.graphics.getHeight()-80
 	end
 
 	self:save()
@@ -90,10 +93,11 @@ function options:applyChanges()
 end
 
 function options:mousepressed(x, y, button)
-	if button == 'l' then
+	if button == 1 then
 		self.vsync:mousepressed(x, y)
 		self.fullscreen:mousepressed(x, y)
 		self.borderless:mousepressed(x, y)
+		self.desktopFullscreen:mousepressed(x, y)
 		self.shaderEffects:mousepressed(x, y)
 		self.particles:mousepressed(x, y)
 		self.displayFPS:mousepressed(x, y)
@@ -104,7 +108,7 @@ function options:mousepressed(x, y, button)
 	self.soundVolume:mousepressed(x, y, button)
 	
 	self.resolution:mousepressed(x, y, button)
-	self.fsaa:mousepressed(x, y, button)
+	self.msaa:mousepressed(x, y, button)
 	
 	self.back:mousepressed(x, y, button)
 	self.apply:mousepressed(x, y, button)
@@ -120,6 +124,7 @@ function options:update(dt)
 	self.vsync:update(dt)
 	self.fullscreen:update(dt)
 	self.borderless:update(dt)
+	self.desktopFullscreen:update(dt)
 	self.shaderEffects:update(dt)
 	self.particles:update(dt)
 	self.displayFPS:update(dt)
@@ -129,7 +134,7 @@ function options:update(dt)
 	self.soundVolume:update(dt)
 
 	self.resolution:update(dt)
-	self.fsaa:update(dt)
+	self.msaa:update(dt)
 
 	self.back:update(dt)
 	self.apply:update(dt)
@@ -151,6 +156,7 @@ function options:draw()
 	self.vsync:draw()
 	self.fullscreen:draw()
 	self.borderless:draw()
+	self.desktopFullscreen:draw()
 	self.shaderEffects:draw()
 	self.particles:draw()
 	self.displayFPS:draw()
@@ -160,7 +166,7 @@ function options:draw()
 	self.soundVolume:draw()
 
 	self.resolution:draw()
-	self.fsaa:draw()
+	self.msaa:draw()
 
 	self.back:draw()
 	self.apply:draw()
@@ -176,8 +182,9 @@ function options:getDefaultConfig()
 			flags = {
 				vsync = false,
 				fullscreen = false,
+				fullscreentype = "desktop",
 				borderless = false,
-				fsaa = 0,
+				msaa = 0,
 			},
 		},
 		graphics = {
@@ -197,6 +204,11 @@ function options:getDefaultConfig()
 end
 
 function options:save()
+	local fullscreenType = "desktop"
+	if not self.desktopFullscreen.selected then
+		fullscreenType = "exclusive"
+	end
+
 	local o = {
 		display = {
 			width = self.resolution.options[self.resolution.selected][1],
@@ -207,7 +219,8 @@ function options:save()
 				vsync = self.vsync.selected,
 				fullscreen = self.fullscreen.selected,
 				borderless = self.borderless.selected,
-				fsaa = self.fsaa.options[self.fsaa.selected],
+				fullscreentype = fullscreenType,
+				msaa = self.msaa.options[self.msaa.selected],
 			},
 		},
 		graphics = {
@@ -238,9 +251,11 @@ function options:load()
 		reload = true
 	elseif flags.vsync ~= config.display.flags.vsync then
 		reload = true
-	elseif flags.fsaa ~= config.display.flags.fsaa then
+	elseif flags.msaa ~= config.display.flags.msaa then
 		reload = true
 	elseif flags.borderless ~= config.display.flags.borderless then
+		reload = true
+	elseif flags.fullscreentype ~= config.display.flags.fullscreentype then
 		reload = true
 	end
 	

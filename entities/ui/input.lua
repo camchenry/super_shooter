@@ -52,9 +52,9 @@ function Input:draw()
     self.text = string.upper(self.text)
 
     -- technically this would go in some kind of update function, but its a hack
-    if self:hover() and love.mouse.isDown("l") then
+    if self:hover() and love.mouse.isDown(1) then
         self.selected = true
-    elseif not self:hover() and love.mouse.isDown("l") then
+    elseif not self:hover() and love.mouse.isDown(1) then
         self.selected = false
     end
 

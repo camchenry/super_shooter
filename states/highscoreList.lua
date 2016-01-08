@@ -41,7 +41,7 @@ function highscoreList:enter(prev)
 		self.selectorPos = 1
 	end
 
-	self.back = Button:new("< BACK", self.leftAlign, love.window.getHeight()-80)
+	self.back = Button:new("< BACK", self.leftAlign, love.graphics.getHeight()-80)
 	self.back.activated = function()
 		if prev == restart then
 			state.pop()

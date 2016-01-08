@@ -21,7 +21,7 @@ function Button:initialize(text, x, y, w, h, fontSize, activated)
 end
 
 function Button:mousepressed(x, y, mbutton)
-    if self:hover() and mbutton == "l" then
+    if self:hover() and mbutton == 1 then
         self.activated()
         signal.emit('uiClick')
     end
