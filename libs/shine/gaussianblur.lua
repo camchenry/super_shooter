@@ -61,12 +61,7 @@ draw = function(self, func, ...)
 	local co = {love.graphics.getColor()}
 
 	-- draw scene
-<<<<<<< HEAD
 	self:_render_to_canvas(self.canvas_h, func, ...)
-=======
-	--love.graphics.clear()
-	self.canvas_h:renderTo(func)
->>>>>>> origin/master
 
 	love.graphics.setColor(co)
 	love.graphics.setShader(self.shader)
