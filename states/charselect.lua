@@ -147,7 +147,7 @@ function charSelect:enter()
 		end
 	end
 
-	self.back = Button:new("< BACK", 75, love.window.getHeight()-80)
+	self.back = Button:new("< BACK", 75, love.graphics.getHeight()-80)
 	self.back.activated = function()
 		state.switch(menu)
 	end

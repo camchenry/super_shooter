@@ -62,18 +62,19 @@ draw = function(self, func)
 	local co = {love.graphics.getColor()}
 
 	-- draw scene
-	self.canvas_h:clear()
+	--love.graphics.clear()
 	self.canvas_h:renderTo(func)
 
 	love.graphics.setColor(co)
 	love.graphics.setShader(self.shader)
 
 	local b = love.graphics.getBlendMode()
-	love.graphics.setBlendMode('premultiplied')
-
+	--love.graphics.setBlendMode('premultiplied')
+	love.graphics.setBlendMode('screen')
+	
 	-- first pass (horizontal blur)
 	self.shader:send('direction', {1 / love.graphics.getWidth(), 0})
-	self.canvas_v:clear()
+	--self.canvas_v:clear()
 	self.canvas_v:renderTo(function() love.graphics.draw(self.canvas_h, 0,0) end)
 
 	-- second pass (vertical blur)

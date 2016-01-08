@@ -40,7 +40,7 @@ function menu:init()
     self.title = 'SUPER SHOOTER'
     self.titleFont = fontBold[72]
     self.titleX = love.graphics.getWidth()/2 - self.titleFont:getWidth(self.title)/2
-    self.titleTween = tween(2, self, {titleX = 75}, "inOutCubic")
+    self.titleTween = tween(1.2, self, {titleX = 75}, "inOutCubic")
 	
 	-- reveal the menu on game launch
 	self.headerTweenAmount = love.graphics.getHeight() - (120+55)

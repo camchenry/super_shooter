@@ -73,7 +73,7 @@ function Player:update(dt)
     end
     self.closestEnemy = closest
 
-    if love.mouse.isDown('l') and self.canShoot then
+    if love.mouse.isDown(1) and self.canShoot then
 		if game.time > .25 then -- prevents a bullet from being shot when the game starts
 			if self.heat <= 0 then
 				signal.emit('playerShot')

@@ -32,7 +32,7 @@ function Slider:initialize(text, min, max, value, x, y, w, h, fontSize)
 end
 
 function Slider:mousepressed(x, y, mbutton)
-    if self:hover() and mbutton == 'l' then
+    if self:hover() and mbutton == 1 then
         self.ratio = (x-self.x)/(self.width)
 		signal.emit('uiClick')
 
@@ -41,13 +41,13 @@ function Slider:mousepressed(x, y, mbutton)
         end
     end
 
-    if love.mouse.isDown('l') and self:hover() then
+    if love.mouse.isDown(1) and self:hover() then
         self.dragging = true
     end
 end
 
 function Slider:update(dt)
-    if not love.mouse.isDown('l') then
+    if not love.mouse.isDown(1) then
         self.dragging = false
     end
 
