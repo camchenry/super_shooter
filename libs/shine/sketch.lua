@@ -24,7 +24,6 @@ SOFTWARE.
 ]]--
 
 return {
-requires = {'canvas', 'shader'},
 description = "Sketched drawing style",
 
 new = function(self)
@@ -62,15 +61,14 @@ new = function(self)
 	-- Set the screen_center positions when the camera moves but the
 	-- noise texture should stay fixed in world coordinates to reduce
 	-- aliasing effects.
-	self.shader:send("screen_center_x",love.window.getWidth() * 0.5)
-	self.shader:send("screen_center_y",love.window.getHeight() * 0.5)
+	self.shader:send("screen_center_x",love.graphics.getWidth() * 0.5)
+	self.shader:send("screen_center_y",love.graphics.getHeight() * 0.5)
 
 	self.shader:send("noisetex", self.noisetex)
 end,
 
-draw = function(self, func)
-	self:_apply_shader_to_scene(self.shader, self.canvas, func)
---	self:_apply_shader_to_scene(self.shader, self.canvas, func)
+draw = function(self, func, ...)
+	self:_apply_shader_to_scene(self.shader, self.canvas, func, ...)
 end,
 
 set = function(self, key, value)

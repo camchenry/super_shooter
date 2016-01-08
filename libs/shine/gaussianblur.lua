@@ -47,7 +47,6 @@ local function build_shader(sigma)
 end
 
 return {
-requires = {'canvas', 'shader'},
 description = "Fast Gaussian blur shader",
 
 new = function(self)
@@ -56,25 +55,24 @@ new = function(self)
 	self.shader:send("direction",{1.0,0.0})
 end,
 
-draw = function(self, func)
+draw = function(self, func, ...)
 	local c = love.graphics.getCanvas()
 	local s = love.graphics.getShader()
 	local co = {love.graphics.getColor()}
 
 	-- draw scene
-	self.canvas_h:clear()
-	self.canvas_h:renderTo(func)
+	self:_render_to_canvas(self.canvas_h, func, ...)
 
 	love.graphics.setColor(co)
 	love.graphics.setShader(self.shader)
 
 	local b = love.graphics.getBlendMode()
-	love.graphics.setBlendMode('premultiplied')
+	love.graphics.setBlendMode('alpha', 'premultiplied')
 
 	-- first pass (horizontal blur)
 	self.shader:send('direction', {1 / love.graphics.getWidth(), 0})
-	self.canvas_v:clear()
-	self.canvas_v:renderTo(function() love.graphics.draw(self.canvas_h, 0,0) end)
+	self:_render_to_canvas(self.canvas_v,
+	                       love.graphics.draw, self.canvas_h, 0,0)
 
 	-- second pass (vertical blur)
 	self.shader:send('direction', {0, 1 / love.graphics.getHeight()})

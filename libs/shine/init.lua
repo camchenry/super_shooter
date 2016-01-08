@@ -28,26 +28,33 @@ local shine = {}
 shine.__index = shine
 
 -- commonly used utility function
-function shine._apply_shader_to_scene(_, shader, canvas, func)
-	local c = love.graphics.getCanvas()
+function shine._render_to_canvas(_, canvas, func, ...)
+	local old_canvas = love.graphics.getCanvas()
+
+	love.graphics.setCanvas(canvas)
+	love.graphics.clear()
+	func(...)
+
+	love.graphics.setCanvas(old_canvas)
+end
+
+function shine._apply_shader_to_scene(_, shader, canvas, func, ...)
 	local s = love.graphics.getShader()
 	local co = {love.graphics.getColor()}
 
 	-- draw scene to canvas
-	canvas:clear()
-	canvas:renderTo(func)
+	shine._render_to_canvas(_, canvas, func, ...)
 
 	-- apply shader to canvas
 	love.graphics.setColor(co)
 	love.graphics.setShader(shader)
 	local b = love.graphics.getBlendMode()
-	love.graphics.setBlendMode('premultiplied')
+	love.graphics.setBlendMode('alpha', 'premultiplied')
 	love.graphics.draw(canvas, 0,0)
 	love.graphics.setBlendMode(b)
 
 	-- reset shader and canvas
 	love.graphics.setShader(s)
-	love.graphics.setCanvas(c)
 end
 
 -- effect chaining
@@ -60,8 +67,9 @@ function shine.chain(first, second)
 			error("Unknown property: " .. tostring(k))
 		end
 	end
-	function effect:draw(func)
-		second(function() first(func) end)
+	function effect:draw(func, ...)
+		local args = {n = select('#',...), ...}
+		second(function() first(func, unpack(args, 1, args.n)) end)
 	end
 
 	return setmetatable(effect, {__newindex = shine.__newindex, __index = shine, __call = effect.draw})
@@ -93,11 +101,6 @@ return setmetatable({}, {__index = function(self, key)
 	end
 
 	setmetatable(effect, shine)
-	for _, v in ipairs(effect.requires) do
-		if not love.graphics.isSupported(v) then
-			error(v.." not supported by the graphics card", 2)
-		end
-	end
 
 	local constructor = function(t)
 		local instance = {}

@@ -23,7 +23,6 @@ SOFTWARE.
 ]]--
 
 return {
-requires = {'canvas', 'shader'},
 description = "Desaturation/tint effect",
 
 new = function(self)
@@ -42,8 +41,8 @@ new = function(self)
 	self.shader:send("strength",0.5)
 end,
 
-draw = function(self, func)
-	self:_apply_shader_to_scene(self.shader, self.canvas, func)
+draw = function(self, func, ...)
+	self:_apply_shader_to_scene(self.shader, self.canvas, func, ...)
 end,
 
 set = function(self, key, value)
