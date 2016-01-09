@@ -19,7 +19,7 @@ TODO:
 		X The damage numbers are not removed if you die and start a new game (same with the floating score numbers)
 		X Don't add 0 points to the high score list
 		- Change the save identity to avoid any incompatibility issues (options)
-		- Fullscreen forces highest resolution available
+		X Fullscreen forces highest resolution available
 	- Misc.
 		X Move background to its own function/file
 		X Allow options to be accessed while a game is being played (not going to fix)
@@ -36,3 +36,8 @@ TODO:
 		- Unlock methods for characters with save file (?)
 		- Balance values
 		- Melee character and more characters
+- UI
+ - Checkbox hover effect
+ - Bold text on hover for ui elements
+ - Change fullscree type to a list item
+ - Make list arrows better (stationary)
