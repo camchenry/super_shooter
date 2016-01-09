@@ -53,17 +53,23 @@ charSelect.characters = {
 				Player.initialize(self)
 
 				self.shotsPerSecond = 10
-				self.bulletDamage = 35
+				self.bulletDamage = 30
 				self.bulletDropoffDistance = 50
 				self.bulletDropoffAmount = 5
 				self.damageResistance = -0.75
 				self.speed = 1250
-				self.healthRegen = -2
+				self.healthRegen = -1
+				self.maxHealth = 150
+				self.health = 150
 
 				self.color = {255, 255, 255}
 
-				signal.register('enemyDeath', function()
+				signal.register('enemyDeath', function(enemy)
 					self.health = self.health + 1
+
+					if enemy:isInstanceOf(Tank) then
+						self.health = self.health + 5
+					end
 				end)
 			end
 
