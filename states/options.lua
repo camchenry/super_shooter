@@ -149,7 +149,7 @@ function options:mousepressed(x, y, button)
 	if button == 1 then
 		self.vsync:mousepressed(x, y)
 		self.fullscreen:mousepressed(x, y)
-		self.borderless:mousepressed(x, y)=
+		self.borderless:mousepressed(x, y)
 		self.highdpi:mousepressed(x, y)
 		self.shaderEffects:mousepressed(x, y)
 		self.particles:mousepressed(x, y)
