@@ -17,7 +17,8 @@ function List:initialize(label, options, x, y, w, h)
 	
 	self.width = w 
 	self.height = h or self.font:getHeight()
-
+	self.optionWidth = 100
+	
 	self.leftButton = Button:new("<", self.x, self.y, nil, nil, fontBold[22])
 	self.leftButton.activated = function()
 		self:prev()
@@ -26,6 +27,9 @@ function List:initialize(label, options, x, y, w, h)
 	self.rightButton.activated = function()
 		self:next()
 	end
+	
+	self.textSpacing = 0
+	self:setTextSpacing()
 end
 
 function List:update(dt)
@@ -35,27 +39,42 @@ end
 
 function List:draw()
 	love.graphics.setFont(self.font)
-
-	self.rightButton.x = self.x + self.width
-	self.leftButton.x = self.rightButton.x - love.graphics.getFont():getWidth(self.text) - self.leftButton.font:getWidth(self.leftButton.text) - self.margin*2
+	
+	local x, y = self.x, self.y
+	x, y = math.floor(self.x), math.floor(self.y)
 
 	love.graphics.setColor(255, 255, 255)
-	love.graphics.print(self.text, self.rightButton.x - love.graphics.getFont():getWidth(self.text) - self.margin, self.y)
-
-	love.graphics.print(self.label, self.x, self.y)
+	love.graphics.print(self.text, self.textSpacing, self.y) -- formatted to be centered between arrows
+	
+	love.graphics.print(self.label, x, y)
 
 	self.leftButton:draw()
 	self.rightButton:draw()
 end
 
+function List:setOptionWidth(optionWidth)
+	self.rightButton.x = self.x + self.width
+	self.leftButton.x = self.rightButton.x - optionWidth - self.leftButton.font:getWidth(self.leftButton.text) - self.margin*2 -- formatted to be lined up with other list arrows
+	
+	self.optionWidth = optionWidth
+	self:setTextSpacing()
+end
+
+function List:setTextSpacing() -- used internally
+	love.graphics.setFont(self.font)
+	self.textSpacing = self.rightButton.x - love.graphics.getFont():getWidth(self.text)/2 - self.margin - self.optionWidth/2
+end
+
 function List:next()
 	self.selected = self.selected < #self.options and self.selected + 1 or 1
 	self:setText()
+	self:setTextSpacing()
 end
 
 function List:prev()
 	self.selected = self.selected > 1 and self.selected - 1 or #self.options
 	self:setText()
+	self:setTextSpacing()
 end
 
 function List:mousepressed(x, y, button)

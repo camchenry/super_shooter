@@ -33,8 +33,11 @@ menu.items = {
 menu.buttons = {}
 
 function menu:init()
+	local buttonHeight = 50
+	self.lineLengthOffset = 9
+
     for i, item in pairs(self.items) do
-        table.insert(self.buttons, Button:new(item.title, 75, 50*(i-1) + 250, nil, nil, font[30], item.action))
+        table.insert(self.buttons, Button:new(item.title, 75, buttonHeight*(i-1) + 250, nil, buttonHeight, font[30], item.action))
     end
 
     self.title = 'SUPER SHOOTER'
@@ -105,12 +108,15 @@ function menu:draw()
 		button.x = x
     end
 	
-	love.graphics.line(self.lineX, self.lineY1, self.lineX, self.lineY2)
+	local lineOffset = self.lineLengthOffset
+	love.graphics.line(self.lineX, self.lineY1+lineOffset, self.lineX, self.lineY2-lineOffset)
 	
 	love.graphics.setColor(255, 255, 255)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 120+55 + math.floor(self.headerTweenAmount))
 
     love.graphics.setFont(self.titleFont)
     love.graphics.setColor(0, 0, 0)
-    love.graphics.print(self.title, self.titleX, 70)
+	local x = self.titleX
+	x = math.floor(x)
+    love.graphics.print(self.title, x, 70)
 end

@@ -86,6 +86,8 @@ function FloatingMessages:draw()
 	for i, msg in pairs(self.messages) do
 		love.graphics.setFont(font[msg.size])
 		love.graphics.setColor(255, 255, 255, 200 * msg.time)
-		love.graphics.print(msg.text, msg.x + WINDOW_OFFSET.x, msg.y + WINDOW_OFFSET.y)
+		local x, y = msg.x + WINDOW_OFFSET.x, msg.y + WINDOW_OFFSET.y
+		x, y = math.floor(x), math.floor(y)
+		love.graphics.print(msg.text, x, y)
 	end
 end

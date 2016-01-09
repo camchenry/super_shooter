@@ -49,9 +49,10 @@ function Button:draw()
         love.graphics.setColor(self.fg)
     end
 
+    love.graphics.setFont(self.font)
     local x = self.x + self.width/2 - self.font:getWidth(self.text)/2 + self.translateX
     local y = self.y + self.height/2 - self.font:getHeight(self.text)/2
-    love.graphics.setFont(self.font)
+	x, y = math.floor(x), math.floor(y)
     love.graphics.printf(self.text, x, y, self.width)
 
     love.graphics.setColor(oldColor)

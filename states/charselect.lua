@@ -23,7 +23,7 @@ charSelect.characters = {
 
 	[2] = {
 		name = "Pathfinder",
-		description = "Moves quickly and avoids contact with enemies.",
+		description = "Moves quickly to avoid contact with enemies.",
 		entity = function()
 			Spectre = class('Spectre', Player)
 
@@ -147,7 +147,9 @@ function charSelect:enter()
 		end
 	end
 
-	self.back = Button:new("< BACK", 75, love.graphics.getHeight()-80)
+	local bottomMargin = 60
+	
+	self.back = Button:new("< BACK", 75, love.graphics.getHeight() - bottomMargin)
 	self.back.activated = function()
 		state.switch(menu)
 	end

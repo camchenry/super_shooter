@@ -102,6 +102,7 @@ function Slider:draw()
     local text = string.format(self.text, self.value)
     local x = self.x + self.width/2 - self.font:getWidth(text)/2
     local y = self.y + self.height/2 - self.font:getHeight(text)/2
+	x, y = math.floor(x), math.floor(y)
     love.graphics.print(text, x, y)
 
     love.graphics.setColor(oldColor)

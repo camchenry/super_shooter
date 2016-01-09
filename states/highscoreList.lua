@@ -41,7 +41,9 @@ function highscoreList:enter(prev)
 		self.selectorPos = 1
 	end
 
-	self.back = Button:new("< BACK", self.leftAlign, love.graphics.getHeight()-80)
+	local bottomMargin = 60
+	
+	self.back = Button:new("< BACK", self.leftAlign, love.graphics.getHeight() - bottomMargin)
 	self.back.activated = function()
 		if prev == restart then
 			state.pop()
@@ -114,7 +116,9 @@ end
 function highscoreList:draw()
     love.graphics.setFont(font[72])
     love.graphics.setColor(255, 255, 255)
-    love.graphics.print('HIGH SCORES', love.graphics.getWidth()/2 - fontBold[72]:getWidth("HIGH SCORES")/2, 70)
+	local x, y = love.graphics.getWidth()/2 - fontBold[72]:getWidth("HIGH SCORES")/2, 70
+	x, y = math.floor(x), math.floor(y)
+    love.graphics.print('HIGH SCORES', x, y)
 	
     love.graphics.setFont(font[32])
 	love.graphics.setColor(255, 255, 255)
@@ -131,19 +135,22 @@ function highscoreList:draw()
 			love.graphics.setFont(fontBold[32])
 			love.graphics.setColor(205, 127, 50)
 		else
-			love.graphics.setFont(fontLight[28])
+			love.graphics.setFont(fontLight[30])
 			love.graphics.setColor(255, 255, 255)
 		end
 
 		local line = scoreData.score
 		local x = love.graphics.getWidth()/2 + 15
+		local y = 200+(sep*(i-1))
+		x, y = math.floor(x), math.floor(y)
 
-		love.graphics.print(line, x, 200+(sep*(i-1)))
+		love.graphics.print(line, x, y)
 
 		line = string.upper(scoreData.initials)
 		x = love.graphics.getWidth()/2 - love.graphics.getFont():getWidth(line) - 15
-
-		love.graphics.print(line, x, 200+(sep*(i-1)))
+		x = math.floor(x)
+		
+		love.graphics.print(line, x, y)
 	end
 	
 	-- optimize! polish!
@@ -160,7 +167,9 @@ function highscoreList:draw()
 
     	local text = 'ENTER YOUR INITIALS'
     	love.graphics.setFont(font[24])
-		love.graphics.print(text, love.graphics.getWidth()/2-font[24]:getWidth(text)/2, y - 100)
+		local textX, textY = love.graphics.getWidth()/2-font[24]:getWidth(text)/2, y - 100
+		textX, textY = math.floor(textX), math.floor(textY)
+		love.graphics.print(text, textX, textY)
 		
 		
 		local f = fontBold[72]
@@ -172,13 +181,7 @@ function highscoreList:draw()
 		local x = love.graphics.getWidth()/2 - (spacing*3)/2 - (width*3)/2
 		
 		for i = 1, 3 do
-			love.graphics.setColor(0, 0, 0)
 			love.graphics.setLineWidth(2)
-
-			local dx = (width+spacing)*(i-1)
-			love.graphics.line(x + dx, y + height/2, x + dx + width, y + height/2)
-			local char = self.initialsInput[i]
-			local charWidth = f:getWidth(char)
 			
 			if i == self.selectorPos then
 				love.graphics.setColor(255, 0, 0)
@@ -186,14 +189,26 @@ function highscoreList:draw()
 				love.graphics.setColor(0, 0, 0)
 			end
 
-			love.graphics.print(string.upper(self.initialsInput[i]), x + dx + width/2 - charWidth/2, y - height/2) --?	
+			local dx = (width+spacing)*(i-1)
+			love.graphics.line(x + dx, y + height/2, x + dx + width, y + height/2)
+			local char = self.initialsInput[i]
+			char = string.upper(char)
+			local charWidth = f:getWidth(char)
+			
+			love.graphics.setColor(0, 0, 0)
+
+			local x, y = x + dx + width/2 - charWidth/2, y - height/2
+			x, y = math.floor(x), math.floor(y)
+			love.graphics.print(char, x, y)
 		end
 
 		if not self.scoreEntered then
 			love.graphics.setFont(font[24])
 			love.graphics.setColor(0, 0, 0)
 			local text = 'Press enter to save your score!'
-			love.graphics.print(text, love.graphics.getWidth()/2-font[24]:getWidth(text)/2, y + 85)
+			local textX, textY = love.graphics.getWidth()/2-font[24]:getWidth(text)/2, y + 85
+			textX, textY = math.floor(textX), math.floor(textY)
+			love.graphics.print(text, textX, textY)
 		end
 	end
 

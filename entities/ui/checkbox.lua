@@ -12,6 +12,7 @@ function Checkbox:initialize(text, x, y, w, h, fontSize, activated, deactivated)
 	
 	self.color = {0, 0, 0}
 	self.active = {255, 255, 255}
+	self.hoverColor = {70, 70, 70}
 	
 	self.textColor = {255, 255, 255}
 	
@@ -32,16 +33,20 @@ function Checkbox:draw()
 	local oldFont = love.graphics.getFont()
 	love.graphics.setFont(self.font)
 	
+	local x = self.x
+	local y = self.y - self.height/2
+	
+	if self:hover() then
+        love.graphics.setColor(self.hoverColor)
+		love.graphics.rectangle("fill", x, y, self.width, self.height)
+    end
+	
 	if self.selected then
 		love.graphics.setColor(self.active)
 	else
 		love.graphics.setColor(self.color)
 	end
 	
-	local x = self.x
-	local y = self.y - self.height/2
-	
-	love.graphics.setColor(255, 255, 255)
 	love.graphics.rectangle("line", x, y, self.width, self.height)
 
 	if self.selected then
@@ -54,6 +59,7 @@ function Checkbox:draw()
 	local textY = self.y - self.textHeight/2
 	love.graphics.setFont(self.font)
 	love.graphics.setColor(self.textColor)
+	textX, textY = math.floor(textX), math.floor(textY)
 	love.graphics.print(self.text, textX, textY)
 	
 	love.graphics.setColor(oldColor)
