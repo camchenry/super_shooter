@@ -177,7 +177,7 @@ end
 function options:update(dt)
 	self.vsync:update(dt)
 	self.fullscreen:update(dt)
-	self.borderless:update(dt)=
+	self.borderless:update(dt)
 	self.highdpi:update(dt)
 	self.shaderEffects:update(dt)
 	self.particles:update(dt)
@@ -210,7 +210,7 @@ function options:draw()
 
 	self.vsync:draw()
 	self.fullscreen:draw()
-	self.borderless:draw()=
+	self.borderless:draw()
 	self.highdpi:draw()
 	self.shaderEffects:draw()
 	self.particles:draw()
