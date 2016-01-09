@@ -402,7 +402,6 @@ function game:setupWaves()
         sweepers = 0,
 		healers = 0,
 		tanks = 0,
-        --ninjas = 3
     }
     self.waves[2] = {
         blobs = 25,
@@ -411,12 +410,12 @@ function game:setupWaves()
     }
     self.waves[3] = {
         blobs = 18,
-        sweepers = 4,
+        sweepers = 3,
     }
     self.waves[4] = {
         blobs = 25,
         sweepers = 0,
-        healers = 3,
+        healers = 2,
     }
     self.waves[5] = {
         blobs = 25,
@@ -424,21 +423,21 @@ function game:setupWaves()
         healers = 2,
     }
     self.waves[6] = {
-        blobs = 40,
-		sweepers = 7,
+        blobs = 35,
+		sweepers = 6,
     }
     self.waves[7] = {
         tanks = 5,
         healers = 3,
     }
     self.waves[8] = {
-        blobs = 32,
+        blobs = 30,
         healers = 3,
-        tanks = 5,
+        tanks = 4,
     }
     self.waves[9] = {
         blobs = 25,
-        healers = 5,
+        healers = 3,
         tanks = 3,
         sweepers = 10,
     }

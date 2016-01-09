@@ -102,7 +102,7 @@ function Blob:initialize(position)
 
     self:randomizeAppearance(0.3, 0.1)
 
-    self.speed = 800
+    self.speed = 750
 
     self.position = position
     self.touchDamage = player.maxHealth/5
@@ -186,7 +186,7 @@ function Healer:initialize(position)
     self.position = position
     self.touchDamage = player.maxHealth/10
 
-    self.maxHealth = 110
+    self.maxHealth = 80
     self.health = self.maxHealth
     self.knockbackResistance = 0.5
 	
@@ -210,7 +210,7 @@ function Healer:update(dt)
         end
     end
 
-    self.acceleration = (self.moveTowardsPlayer + self.moveAway + self.moveTowardsEnemy*0.01):normalized() * self.speed
+    self.acceleration = (self.moveTowardsPlayer + self.moveAway + self.moveTowardsEnemy*0.1):normalized() * self.speed
 end
 
 function Healer:handleCollision(obj)
@@ -221,6 +221,18 @@ end
 
 function Healer:draw()
     Enemy.draw(self)
+
+    love.graphics.setColor(77, 214, 79, 70)
+
+    for i, o in pairs(quadtree:getCollidableObjects(self, true)) do
+        if o:isInstanceOf(Enemy) then
+            if o.position:dist(self.position) <= self.healRadius and o ~= self then
+                love.graphics.line(self.position.x, self.position.y, o.position.x, o.position.y)
+            end
+        end
+    end
+
+    love.graphics.setColor(255, 255, 255)
 end
 
 Tank = class('Tank', Enemy)
@@ -259,7 +271,7 @@ function Tank:handleCollision(obj)
 		-- bullets have ~1/4 chance of not bouncing
         --if math.random() > .75 then return end
 
-        local num = math.random(2, 4)
+        local num = math.random(1, 3)
         for i=1, num do
             local d = -1 * obj.velocity -- incoming vector
             local n = obj.position - self.position -- vector to reflect off of

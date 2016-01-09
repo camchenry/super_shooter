@@ -36,7 +36,7 @@ end
 
 function Particles:onEnemyDeath(enemy)
 	for i, system in pairs({self.particleSystem, self.particleSmallSystem}) do
-		system:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 255, 0, 0, 0, 0)
+		system:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 128, 0, 0, 0, 0)
 
 		system:setSpeed(300, 550)
 		system:setPosition(enemy.position.x, enemy.position.y)
@@ -47,7 +47,7 @@ end
 
 function Particles:onEnemyHit(enemy)
 	for i, system in pairs({self.particleSystem, self.particleSmallSystem}) do
-		system:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 255, 0, 0, 0, 0)
+		system:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 128, 0, 0, 0, 0)
 
 		system:setSpeed(50, 250)
 		system:setPosition(enemy.position.x, enemy.position.y)

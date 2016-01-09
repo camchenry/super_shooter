@@ -15,7 +15,7 @@ function Player:initialize()
     self.rateOfFire = (1/self.shotsPerSecond)
     self.canShoot = true
     self.bulletVelocity = 300
-    self.bulletDamage = 50
+    self.bulletDamage = 60
     self.bulletDropoffAmount = 30
     self.bulletDropoffDistance = 100
     self.damageMultiplier = 1.0
