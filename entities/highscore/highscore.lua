@@ -7,12 +7,12 @@ function HighScore:initialize()
 		[Healer] = 5,
 		[Ninja] = 8,
 		[Megabyte] = 200,
-		[Sweeper] = 1, --sweeper
+		[Sweeper] = 4 --sweeper
 	}
 	
 	self.accuracyScore = 50 -- get this many points with 100% accuracy in a wave
-	self.ricochetBonus = 200 -- get this bonus if 5 enemies are killed in one wave, as the result of tank ricochet shots
-	self.ricochetMinimum = 5 -- kill this many enemies with tank ricochet shots in one wave, to score the bonus
+	self.ricochetBonus = 75 -- get this bonus if 5 enemies are killed in one wave, as the result of tank ricochet shots
+	self.ricochetMinimum = 6 -- kill this many enemies with tank ricochet shots in one wave, to score the bonus
 	self.timeScore = 1000 -- you would get this many points by completing wave 1 in 1 second. formula: timeScore * wave / seconds
 	
 	self.scoreMultiplier = 1 -- this is multiplied to every score, good for bonuses
