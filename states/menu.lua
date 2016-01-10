@@ -30,6 +30,13 @@ menu.items = {
     },
 
     {
+        title = "CREDITS",
+        action = function()
+			state.push(credits)
+        end,
+    },
+
+    {
         title = "QUIT",
         action = function()
             love.event.quit()

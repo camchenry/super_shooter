@@ -21,6 +21,7 @@ require 'states.restart'
 require 'states.charselect'
 require 'states.highscoreList'
 require 'states.info'
+require 'states.credits'
 
 -- entities
 require 'entities.entity'
