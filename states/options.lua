@@ -45,6 +45,9 @@ function options:enter()
 	self.shaderEffects = Checkbox:new('SHADER EFFECTS', self.leftAlign, y)
 	self.shaderEffects.selected = config.graphics.shaderEffects
 	
+	self.azerty = Checkbox:new('AZERTY KEYBOARD', self.leftAlign + 300, y)
+	self.azerty.selected = config.graphics.azerty
+	
 	y = y+sep
 
 	self.particles = Checkbox:new('PARTICLES', self.leftAlign, y)
@@ -155,6 +158,7 @@ function options:mousepressed(x, y, button)
 		self.particles:mousepressed(x, y)
 		self.displayFPS:mousepressed(x, y)
 		self.trackpad:mousepressed(x, y)
+		self.azerty:mousepressed(x, y)
 	end
 
 	self.musicVolume:mousepressed(x, y, button)
@@ -183,6 +187,7 @@ function options:update(dt)
 	self.particles:update(dt)
 	self.displayFPS:update(dt)
 	self.trackpad:update(dt)
+	self.azerty:update(dt)
 
 	self.musicVolume:update(dt)
 	self.soundVolume:update(dt)
@@ -216,6 +221,7 @@ function options:draw()
 	self.particles:draw()
 	self.displayFPS:draw()
 	self.trackpad:draw()
+	self.azerty:draw()
 
 	self.musicVolume:draw()
 	self.soundVolume:draw()
@@ -280,6 +286,7 @@ function options:save()
 			shaderEffects = self.shaderEffects.selected,
 			particles = self.particles.selected,
 			displayFPS = self.displayFPS.selected,
+			azerty = self.azerty.selected,
 		},
 		audio = {
 			musicVolume = self.musicVolume.value,
@@ -321,6 +328,7 @@ function options:load()
 	game.effectsEnabled = config.graphics.shaderEffects
 	game.particlesEnabled = config.graphics.particles
 	game.displayFPS = config.graphics.displayFPS
+	game.azertyMode = config.graphics.azerty
 
 	game.trackpadMode = config.input.trackpadMode
 

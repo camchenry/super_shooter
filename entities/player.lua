@@ -47,16 +47,25 @@ function Player:update(dt)
     self.x, self.y = self.position:unpack()
 
     self.acceleration = vector(0, 0)
+	
+	local upKey = 'w'
+	if game.azertyMode then upKey = 'z' end
+	local leftKey = 'a'
+	if game.azertyMode then leftKey = 'q' end
+	local downKey = 's'
+	if game.azertyMode then downKey = 's' end
+	local rightKey = 'd'
+	if game.azertyMode then rightKey = 'd' end
 
-    if love.keyboard.isDown("w", "up") then
+    if love.keyboard.isDown(upKey, "up") then
         self.acceleration.y = -self.speed
-    elseif love.keyboard.isDown("s", "down") then
+    elseif love.keyboard.isDown(downKey, "down") then
         self.acceleration.y = self.speed
     end
 
-    if love.keyboard.isDown("a", "left") then
+    if love.keyboard.isDown(leftKey, "left") then
         self.acceleration.x = -self.speed
-    elseif love.keyboard.isDown("d", "right") then
+    elseif love.keyboard.isDown(rightKey, "right") then
         self.acceleration.x = self.speed
     end
     

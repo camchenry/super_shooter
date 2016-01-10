@@ -71,6 +71,9 @@ function game:reset()
 	if self.displayFPS == nil then
 		self.displayFPS = false
 	end
+	if self.azertyMode == nil then
+		self.azertyMode = false
+	end
 
     self:toggleEffects()
 
