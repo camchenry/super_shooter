@@ -20,6 +20,7 @@ require 'states.gameover'
 require 'states.restart'
 require 'states.charselect'
 require 'states.highscoreList'
+require 'states.credits'
 
 -- entities
 require 'entities.entity'
