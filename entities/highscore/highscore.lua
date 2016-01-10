@@ -2,20 +2,21 @@ HighScore = class('HighScore')
 
 function HighScore:initialize()
 	self.destroyScores = {
-		[Blob] = 2,
-		[Tank] = 10,
-		[Healer] = 5,
-		[Ninja] = 8,
-		[Megabyte] = 200,
-		[Sweeper] = 4 --sweeper
+		[Blob] = 5,
+		[Tank] = 25,
+		[Healer] = 10,
+		[Ninja] = 40,
+		[Megabyte] = 500,
+		[Sweeper] = 15 --sweeper
 	}
 	
-	self.accuracyScore = 50 -- get this many points with 100% accuracy in a wave
-	self.ricochetBonus = 75 -- get this bonus if 5 enemies are killed in one wave, as the result of tank ricochet shots
-	self.ricochetMinimum = 6 -- kill this many enemies with tank ricochet shots in one wave, to score the bonus
-	self.timeScore = 1000 -- you would get this many points by completing wave 1 in 1 second. formula: timeScore * wave / seconds
+	self.accuracyScore = 100 -- get this many points with 100% accuracy in a wave
+	self.ricochetBonus = 100 -- get this bonus if _ enemies are killed in one wave, as the result of tank ricochet shots
+	self.ricochetMinimum = 7 -- kill this many enemies with tank ricochet shots in one wave, to score the bonus
+	self.timeScore = 500 -- you would get this many points by completing wave 1 in 1 second. formula: timeScore * wave / seconds
 	
 	self.scoreMultiplier = 1 -- this is multiplied to every score, good for bonuses
+	self.perfectAccuracyMultipler = 2 -- this is multiplied to the accuracy bonus if there is 100% accuracy in a wave
 	
 	self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
 	self.enemyHitObserver = signal.register('enemyHit', function(enemy, damage, critical, source, death) self:onEnemyHit(enemy, damage, critical, source, death) end)
@@ -90,11 +91,15 @@ function HighScore:onWaveEnd(wave, waveTime)
 		end
 
 		local accuracyPoints = math.ceil(accuracy * self.accuracyScore)
+		if accuracy == 1 then -- perfect accuracy!
+			accuracyPoints = accuracyPoints * self.perfectAccuracyMultipler
+		end
 		self:changeScore(accuracyPoints)
 		
 		-- add in the time bonus
 		if waveTime > 0 then -- avoid dividing by 0
 			local timePoints = math.ceil(self.timeScore * wave / waveTime)
+			timePoints = timePoints * game.wave -- higher wave gives a higher time score
 			self:changeScore(timePoints)
 		end
 		
