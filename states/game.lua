@@ -539,15 +539,3 @@ function game:spawnEnemies(w)
         self.boss = self:addObject(b)
     end
 end
-
-function game:addAllObjectsToQuadtree()
-    for i, o in ipairs(objects) do
-        quadtree:addObject(o)
-    end
-
-    for i, o in ipairs(bullets) do
-        quadtree:addObject(o)
-    end
-
-    quadtree:addObject(player)
-end

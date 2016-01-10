@@ -30,7 +30,6 @@ require 'entities.player'
 require 'entities.enemy'
 -- bosses
 require 'entities.boss.megabyte'
-require 'entities.boss.arena'
 -- visual effects
 require 'entities.fx.particle'
 require 'entities.fx.shake'

@@ -41,30 +41,6 @@ function shuffleTable (src)
   return src
 end
 
--- Function: copyTable
--- Returns a superficial copy of a table. If it contains a 
--- reference to another table in one of its properties, that
--- reference will be copied shallowly. 
---
--- Arguments:
---      source - source table
---
--- Returns:
---      new table
-
-function copyTable (source)
-    assert(type(source) == 'table', "asked to copy a non-table")
-
-    local result = {}
-    setmetatable(result, getmetatable(source))
-    
-    for key, value in pairs(source) do
-        result[key] = value
-    end
-    
-    return result
-end
-
 -- Function: dump
 -- Returns a string representation of a variable in a way
 -- that can be reconstituted via loadstring(). Yes, this
@@ -117,14 +93,4 @@ function dump (source, ignore)
     else
         return ''
     end
-end
-
-
--- color functions
-function HSLtoRGB(hue, saturation, lightness)
-
-end
-
-function RGBtoHSL(red, green, blue)
-
 end
