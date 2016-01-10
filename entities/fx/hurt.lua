@@ -31,9 +31,10 @@ function Hurt:draw()
 	if self.time > 0 then
 		local color = self.overlayColor
 		color[4] = self.overlayAlpha*(self.overlayTimeMax - (self.overlayTimeMax - self.time))
-		love.graphics.setLineWidth(15)
+		love.graphics.setLineWidth(18)
 		love.graphics.setColor(color)
-		love.graphics.rectangle("line", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+		local padding = 10
+		love.graphics.rectangle("line", 0, 0, love.graphics.getWidth(), love.graphics.getHeight(), 20, 20, 5)
 		love.graphics.setLineWidth(1)
 	end
 end

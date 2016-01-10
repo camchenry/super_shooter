@@ -21,6 +21,13 @@ menu.items = {
 			state.push(highscoreList)
         end,
     },
+	
+	{
+        title = "HOW TO PLAY",
+        action = function()
+			state.push(info)
+        end,
+    },
 
     {
         title = "QUIT",
@@ -102,10 +109,7 @@ function menu:draw()
     love.graphics.setColor(255, 255, 255)
 
     for i, button in pairs(self.buttons) do
-		local x = button.x
-		button.x = button.x
         button:draw()
-		button.x = x
     end
 	
 	local lineOffset = self.lineLengthOffset

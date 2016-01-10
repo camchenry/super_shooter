@@ -36,10 +36,11 @@ function gameover:draw()
 	love.graphics.setFont(font[24])
 	love.graphics.printf(text2, 400, love.graphics.getHeight()/2, love.graphics.getWidth()-800, "center")
 	love.graphics.setColor(255, 255, 255, math.abs(255*math.sin(self.time)))
-	love.graphics.printf("< click to return to menu >", 400, love.graphics.getHeight()/2+150, love.graphics.getWidth()-800, "center")
+	love.graphics.printf("< click to return to menu >", love.graphics.getWidth()/2 - font[24]:getWidth(text2)/2, love.graphics.getHeight()/2+25))
 	
 	if highscoreList:scoreIsValid(game.highScore.currentScore) then
 		love.graphics.setColor(255, 225, 0)
-		love.graphics.printf("You qualify for a highscore!", 400, love.graphics.getHeight()/2+100, love.graphics.getWidth()-800, "center")
+		local highscoreText = "You qualify for a highscore!"
+		love.graphics.print(highscoreText, love.graphics.getWidth()/2 - font[24]:getWidth(highscoreText)/2, love.graphics.getHeight()/2+100)
 	end
 end
