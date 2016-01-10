@@ -30,12 +30,16 @@ charSelect.characters = {
 			function Spectre:initialize()
 				Player.initialize(self)
 
-				self.shotsPerSecond = 3
+				self.shotsPerSecond = 2
 				self.speed = 1450
-				self.maxHealth = 50
-				self.bulletDamage = 55
+				self.maxHealth = 60
+				self.health = 60
+				self.bulletDamage = 120
 				self.bulletVelocity = 475
-				self.criticalChance = 0.07
+				self.criticalChance = 0.03
+				self.criticalMultiplier = 3.0
+				self.healthRegen = 1
+			    self.regenWaitAfterHurt = 10
 				self.color = {127, 127, 127}
 			end
 
@@ -57,10 +61,9 @@ charSelect.characters = {
 				self.bulletDropoffDistance = 50
 				self.bulletDropoffAmount = 5
 				self.damageResistance = -0.75
-				self.speed = 1250
 				self.healthRegen = -1
-				self.maxHealth = 150
-				self.health = 150
+				self.maxHealth = 175
+				self.health = 175
 
 				self.color = {255, 255, 255}
 
@@ -224,7 +227,9 @@ function charSelect:draw()
 			local referenceValue = tonumber(self.referencePlayer[key])
 			local playerValue = tonumber(self.tempPlayer[key])
 
-			if referenceValue ~= playerValue and type(self.tempPlayer[key]) ~= 'table' then
+			local excluded = (key == "bulletDropoffDistance") or (key == "bulletDropoffAmount")
+
+			if referenceValue ~= playerValue and type(self.tempPlayer[key]) ~= 'table' and not excluded then
 				local diff = referenceValue - playerValue
 				local sign = ''
 				if diff < 0 then
@@ -238,6 +243,10 @@ function charSelect:draw()
 					love.graphics.setColor(255, 200, 200)
 				else
 					love.graphics.setColor(200, 255, 200)
+				end
+
+				if key == "regenWaitAfterHurt" then
+					love.graphics.setColor(255, 200, 200)
 				end
 
 				love.graphics.print(key .. " -> " .. playerValue .. ' (' .. sign .. diff .. ')', 475, 245+i*35)

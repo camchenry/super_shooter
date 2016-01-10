@@ -9,9 +9,9 @@ menu.items = {
     },
 
     {
-        title = "OPTIONS",
+        title = "HOW TO PLAY",
         action = function()
-			state.push(options)
+            state.push(info)
         end,
     },
 	
@@ -21,13 +21,14 @@ menu.items = {
 			state.push(highscoreList)
         end,
     },
-	
-	{
-        title = "HOW TO PLAY",
+
+    {
+        title = "OPTIONS",
         action = function()
-			state.push(info)
+            state.push(options)
         end,
     },
+
 
     {
         title = "CREDITS",

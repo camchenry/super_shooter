@@ -24,7 +24,7 @@ function Player:initialize()
     self.bulletRadius = 5
     self.healthRegen = 0
     self.regenWaitAfterHurt = 5
-    self.maxHealth = 100
+    self.maxHealth = 115
     self.health = self.maxHealth
     self.damageResistance = 0.0
     self.criticalChance = 0.01
