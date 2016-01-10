@@ -8,7 +8,7 @@ function info:init()
 
     self.title = "HOW TO PLAY"
     self.font = font[28]
-	self.text = "Welcome to Super Shooter!\n\nUse WASD or Arrow Keys to move.\nUse your mouse to aim, and LMB to shoot.\nTrackpad Mode enables automatic shooting,\n\tit may be helpful when using a trackpad.\n\nAll feedback and criticism is welcome,\n\tor feel free to share your high score!\n\nYou can find our LOVE forum post\n\nIf you would like to contribute to the development\n\tof this project and future endeavors, visit our"
+	self.text = "Welcome to Super Shooter!\n\nUse WASD or Arrow Keys to move.\nUse your mouse to aim, and LMB to shoot.\nTrackpad Mode enables automatic aiming,\n\tit may be helpful when using a trackpad.\n\nAll feedback and criticism is welcome,\n\tor feel free to share your high score!\n\nYou can find our LOVE forum post\n\nIf you would like to contribute to the development\n\tof this project and future endeavors, donate at our"
 end
 
 function info:enter()
@@ -32,7 +32,7 @@ function info:enter()
 	self.link.active = {62, 131, 222}
 	self.link.font = font[28]
 	
-	local x, y = self.font:getWidth("\tof this project and future endeavors, visit our "), self.font:getHeight()*13
+	local x, y = self.font:getWidth("\tof this project and future endeavors, donate at our "), self.font:getHeight()*13
 	x = x + self.leftAlign - 8
 	y = y + self.textY - 2
 	
