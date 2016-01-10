@@ -14,8 +14,8 @@ function Megabyte:initialize(position)
     self.speed = 200
 
     self.touchDamage = 150
-    self.health = 1000
-    self.maxHealth = 1000
+    self.health = 2500
+    self.maxHealth = 2500
     self.invincible = true
     self.knockbackResistance = 1
     self.phase = 1
