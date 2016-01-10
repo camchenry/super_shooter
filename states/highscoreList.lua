@@ -250,12 +250,20 @@ function highscoreList:getDefaultScores()
 	-- default values on the scoreboard
 	local o = {
 		{
-			initials = 'AAA',
-			score = 1000
+			initials = 'IKR',
+			score = 7960,
+		},
+		{
+			initials = 'NTH',
+			score = 6653,
 		},
 		{
 			initials = 'ACE',
-			score = 750
+			score = 3531
+		},
+		{
+			initials = 'AAA',
+			score = 1200
 		},
 		{
 			initials = 'KEK',
