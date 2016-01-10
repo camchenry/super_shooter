@@ -442,7 +442,7 @@ function game:setupWaves()
         blobs = 25,
         healers = 3,
         tanks = 3,
-        sweepers = 10,
+        sweepers = 8,
     }
     self.waves[10] = {
         boss = Megabyte,
