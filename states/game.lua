@@ -94,7 +94,9 @@ function game:reset()
     self.boss = nil
 	
 	
-	self.camera:zoomTo(.8)
+	self.camera:zoomTo(1.5)
+	self.camera.smoother = Camera.smooth.linear(200)
+	self.camera.smooth.damped(.1)
 
     self.waveTimer = nil
     self:setupWaves()
@@ -227,19 +229,23 @@ function game:update(dt)
 	-- baddddd
 	local scale = 1/self.camera.scale
 	
+	local nx, ny = px, py
+	
 	if px + WINDOW_OFFSET.x * scale > self.worldSize.x/2 then
-		px = self.worldSize.x/2 - WINDOW_OFFSET.x * scale
+		nx = self.worldSize.x/2 - WINDOW_OFFSET.x * scale
 	elseif px - WINDOW_OFFSET.x * scale < -self.worldSize.x/2 then
-		px = -self.worldSize.x/2 + WINDOW_OFFSET.x * scale
+		nx = -self.worldSize.x/2 + WINDOW_OFFSET.x * scale
 	end
 	
 	if py + WINDOW_OFFSET.y * scale > self.worldSize.y/2 then
-		py = self.worldSize.y/2 - WINDOW_OFFSET.y * scale
+		ny = self.worldSize.y/2 - WINDOW_OFFSET.y * scale
 	elseif py - WINDOW_OFFSET.y * scale < -self.worldSize.y/2 then
-		py = -self.worldSize.y/2 + WINDOW_OFFSET.y * scale
+		ny = -self.worldSize.y/2 + WINDOW_OFFSET.y * scale
 	end
 	
-	self.camera:lookAt(px, py) -- aim the camera at the player
+	
+	
+	self.camera:lockPosition(nx, ny) -- aim the camera at the player
 end
 
 
@@ -433,7 +439,7 @@ end
 function game:setupWaves()
     self.waves = {}
     self.waves[1] = {
-        blobs = 15,
+        blobs = 15
         sweepers = 0,
 		healers = 0,
 		tanks = 0,
@@ -511,8 +517,8 @@ function game:spawnEnemies(w)
 
     if currentWave.blobs ~= nil then
         for i=1, currentWave.blobs do
-            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
-                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            local p = vector(math.random(-self.worldSize.x/2, self.worldSize.x/2), 
+                             math.random(-self.worldSize.y/2, self.worldSize.y/2))
             p = p + (p - player.position):normalized()*150
             local b = Blob:new(p)
             self:addObject(b)
@@ -533,16 +539,16 @@ function game:spawnEnemies(w)
             local y = h*(i-1) + margin + h/2
 
             self:addObject(Sweeper:new(
-                vector(leftEdge - WINDOW_OFFSET.x, y - WINDOW_OFFSET.y),
-                vector(rightEdge - WINDOW_OFFSET.x, y - WINDOW_OFFSET.y)
+                vector(leftEdge - self.worldSize.x/2, y - self.worldSize.y/2),
+                vector(rightEdge - self.worldSize.x/2, y - self.worldSize.y/2)
             ))
         end
     end
 	
 	if currentWave.healers ~= nil then
         for i=1, currentWave.healers do
-            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
-                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            local p = vector(math.random(-self.worldSize.x/2, self.worldSize.x/2), 
+                             math.random(-self.worldSize.y/2, self.worldSize.y/2))
             p = p + (p - player.position):normalized()*250
             local b = Healer:new(p)
             self:addObject(b)
@@ -551,8 +557,8 @@ function game:spawnEnemies(w)
 	
 	if currentWave.tanks ~= nil then
         for i=1, currentWave.tanks do
-            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
-                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            local p = vector(math.random(-self.worldSize.x/2, self.worldSize.x/2), 
+                             math.random(-self.worldSize.y/2, self.worldSize.y/2))
             p = p + (p - player.position):normalized()*150
             local b = Tank:new(p)
             self:addObject(b)
@@ -561,8 +567,8 @@ function game:spawnEnemies(w)
 
     if currentWave.ninjas ~= nil then
         for i=1, currentWave.ninjas do
-            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
-                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            local p = vector(math.random(-self.worldSize.x/2, self.worldSize.x/2), 
+                             math.random(-self.worldSize.y/2, self.worldSize.y/2))
             p = p + (p - player.position):normalized()*150
             local b = Ninja:new(p)
             self:addObject(b)

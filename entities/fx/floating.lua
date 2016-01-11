@@ -114,12 +114,12 @@ function FloatingMessages:drawStatic()
 	end
 end
 
-function FloatingMessages:drawDynamic()
-	for i, msg in pairs(self.dynamicMessages) do
-		love.graphics.setFont(font[msg.size])
+function FloatingMessages:drawDynamic() -- contains many workarounds
+	for i, msg in pairs(self.dynamicMessages) do 
+		love.graphics.setFont(font[msg.size*game.camera.scale])
 		love.graphics.setColor(255, 255, 255, 200 * msg.time)
 		local x, y = msg.x, msg.y
 		x, y = math.floor(x), math.floor(y)
-		love.graphics.print(msg.text, x, y)
+		love.graphics.print(msg.text, x, y, 0, 1/game.camera.scale, 1/game.camera.scale)
 	end
 end

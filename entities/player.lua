@@ -127,7 +127,7 @@ function Player:update(dt)
 
     self.rateOfFire = (1/self.shotsPerSecond)
 
-	if math.abs(self.x) >= game.worldSize.x/2 or math.abs(self.y) >= game.worldSize.y then
+	if math.abs(self.x) >= game.worldSize.x/2 or math.abs(self.y) >= game.worldSize.y/2 then
 		self.health = self.health - self.offScreenDamage * dt
 	end
 
