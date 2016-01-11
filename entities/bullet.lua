@@ -46,11 +46,11 @@ function Bullet:update(dt)
         self.destroy = true
     end
 
-    if self.position.x > love.graphics.getWidth()-WINDOW_OFFSET.x or self.position.x < 0-WINDOW_OFFSET.x then
+    if self.position.x > game.worldSize.x/2 or self.position.x < -game.worldSize.x/2 then
         self.destroy = true
     end
 
-    if self.position.y > love.graphics.getHeight()-WINDOW_OFFSET.y or self.position.y < 0-WINDOW_OFFSET.y then
+    if self.position.y > game.worldSize.y/2 or self.position.y < -game.worldSize.y/2 then
         self.destroy = true
     end
 

@@ -92,7 +92,9 @@ function Player:update(dt)
                 if game.trackpadMode and self.closestEnemy ~= player and self.closestEnemy ~= nil then
                     target = self.closestEnemy.position + vector(math.random(-35, 35), math.random(-35, 35)) + WINDOW_OFFSET
                 else
-                    target = vector(love.mouse.getX(), love.mouse.getY())
+					local mx, my = game.camera:mousePosition() -- find where the mouse is in the game
+					mx, my = mx + WINDOW_OFFSET.x, my + WINDOW_OFFSET.y
+                    target = vector(mx, my)
                 end
                 local bullet = game:addBullet(Bullet:new(
                     self.position,
@@ -125,7 +127,7 @@ function Player:update(dt)
 
     self.rateOfFire = (1/self.shotsPerSecond)
 
-	if math.abs(self.x) >= WINDOW_OFFSET.x or math.abs(self.y) >= WINDOW_OFFSET.y then
+	if math.abs(self.x) >= game.worldSize.x/2 or math.abs(self.y) >= game.worldSize.y then
 		self.health = self.health - self.offScreenDamage * dt
 	end
 

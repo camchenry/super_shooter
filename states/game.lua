@@ -2,7 +2,7 @@ game = {}
 objects = {}
 bullets = {}
 
-WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
+WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2) -- used for screen size
 
 function game:addObject(obj, tabl)
     if tabl == nil then
@@ -48,12 +48,14 @@ function game:init()
     end
 
     signal.emit('waveEnded')
+	
+	self.camera = Camera(0, 0)
 end
 
 function game:reset()
     objects = {}
     bullets = {}
-    quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
+    quadtree = QuadTree:new(-game.worldSize.x/2-25, -game.worldSize.y/2-25, game.worldSize.x+50, game.worldSize.y/2+50)
     quadtree:subdivide()
     quadtree:subdivide()
 	-- player will be added later, in character select
@@ -88,6 +90,10 @@ function game:reset()
     self._postWaveCalled = false
     self._preWaveCalled = false
     self.boss = nil
+	
+	self.worldSize = vector(2000, 2000)
+	
+	self.camera:zoomTo(.8)
 
     self.waveTimer = nil
     self:setupWaves()
@@ -137,19 +143,19 @@ function game:compileShaders()
 end
 
 function game:resized()
-    local dx = WINDOW_OFFSET.x*2 - love.graphics.getWidth()
-    local dy = WINDOW_OFFSET.y*2 - love.graphics.getHeight()
-    quadtree:resize(dx, dy)
+    --local dx = WINDOW_OFFSET.x*2 - love.graphics.getWidth()
+    --local dy = WINDOW_OFFSET.y*2 - love.graphics.getHeight()
+    --quadtree:resize(dx, dy)
 
     WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
 end
 
 function game:update(dt)
     -- this triggers when the game resolution changes
-    if WINDOW_OFFSET.x ~= love.graphics.getWidth()/2 or WINDOW_OFFSET.y ~= love.graphics.getHeight()/2 or
-    quadtree.width ~= love.graphics.getWidth()+50 or quadtree.height ~= love.graphics.getHeight()+50 then
-        self:resized()
-    end
+    --if WINDOW_OFFSET.x ~= love.graphics.getWidth()/2 or WINDOW_OFFSET.y ~= love.graphics.getHeight()/2 or
+    --quadtree.width ~= love.graphics.getWidth()+50 or quadtree.height ~= love.graphics.getHeight()+50 then
+     --   self:resized()
+    --end
     
     if player.health <= 0 then -- death condition
         state.switch(restart)
@@ -213,6 +219,26 @@ function game:update(dt)
             self:onWaveEnd()
         end
     end
+
+	
+	local px, py = player.position.x, player.position.y
+	
+	-- baddddd
+	local scale = 1/self.camera.scale
+	
+	if px + WINDOW_OFFSET.x * scale > self.worldSize.x/2 then
+		px = self.worldSize.x/2 - WINDOW_OFFSET.x * scale
+	elseif px - WINDOW_OFFSET.x * scale < -self.worldSize.x/2 then
+		px = -self.worldSize.x/2 + WINDOW_OFFSET.x * scale
+	end
+	
+	if py + WINDOW_OFFSET.y * scale > self.worldSize.y/2 then
+		py = self.worldSize.y/2 - WINDOW_OFFSET.y * scale
+	elseif py - WINDOW_OFFSET.y * scale < -self.worldSize.y/2 then
+		py = -self.worldSize.y/2 + WINDOW_OFFSET.y * scale
+	end
+	
+	self.camera:lookAt(px, py) -- aim the camera at the player
 end
 
 
@@ -304,7 +330,7 @@ function game:draw()
     post_effect(function()
 
     local dx, dy = self.screenShake:getOffset()
-    love.graphics.translate(love.graphics.getWidth()/2+dx, love.graphics.getHeight()/2+dy)
+	self.camera:attach()
 
     self.background:draw()
 
@@ -318,11 +344,16 @@ function game:draw()
     for i,v in ipairs(bullets) do
         v:draw()
     end
-
-    love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
+	
+    self.floatingMessages:drawDynamic()
+	
+	love.graphics.line(-self.worldSize.x/2, -self.worldSize.y/2, self.worldSize.x/2, -self.worldSize.y/2, self.worldSize.x/2, self.worldSize.y/2, -self.worldSize.x/2, self.worldSize.y/2, -self.worldSize.x/2, -self.worldSize.y/2)
+	
+	self.camera:detach()
+	
+    self.floatingMessages:drawStatic()
 
     self.hurt:draw()
-    self.floatingMessages:draw()
 
     if self.waveText ~= nil and self.wave > 0 then
         self:drawPrimaryText()
