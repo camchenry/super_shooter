@@ -53,9 +53,11 @@ function game:init()
 end
 
 function game:reset()
+	self.worldSize = vector(2000, 2000)
+	
     objects = {}
     bullets = {}
-    quadtree = QuadTree:new(-game.worldSize.x/2-25, -game.worldSize.y/2-25, game.worldSize.x+50, game.worldSize.y/2+50)
+    quadtree = QuadTree:new(-self.worldSize.x/2-25, -self.worldSize.y/2-25, self.worldSize.x+50, self.worldSize.y+50)
     quadtree:subdivide()
     quadtree:subdivide()
 	-- player will be added later, in character select
@@ -91,7 +93,6 @@ function game:reset()
     self._preWaveCalled = false
     self.boss = nil
 	
-	self.worldSize = vector(2000, 2000)
 	
 	self.camera:zoomTo(.8)
 
