@@ -1,0 +1,4 @@
+-circle draw line scaling
+-low zoom fix
+-zoom slider in options
+-make game look good at different scales
