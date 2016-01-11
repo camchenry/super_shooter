@@ -7,4 +7,4 @@ https://love2d.org/forums/viewtopic.php?f=5&t=81156
 
 If you don't have Love2D installed, you can download the game here: 
 
-https://dl.dropboxusercontent.com/u/10397057/super_shooter.zip
+http://ikroth.itch.io/super-shooter
