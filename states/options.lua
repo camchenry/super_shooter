@@ -84,6 +84,7 @@ function options:enter()
 			local width, height = love.window.getDesktopDimensions(i)
 			multiWidth = multiWidth + width -- add together the width of all connected monitors
 			if height > multiHeight then -- find the largest monitor height
+				table.insert(resolutions, {multiWidth, multiHeight})
 				multiHeight = height
 			end
 		end
