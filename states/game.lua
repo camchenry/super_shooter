@@ -50,10 +50,11 @@ function game:init()
     signal.emit('waveEnded')
 	
 	self.camera = Camera(0, 0)
+	self.camera.scale = self.cameraZoom
 end
 
 function game:reset()
-	self.worldSize = vector(2000, 2000)
+	self.worldSize = vector(5000, 5000)
 	
     objects = {}
     bullets = {}
@@ -78,6 +79,11 @@ function game:reset()
 	if self.azertyMode == nil then
 		self.azertyMode = false
 	end
+	if self.cameraZoom == nil then
+		self.cameraZoom = 1
+	end
+	
+	self.camera.scale = self.cameraZoom
 
     self:toggleEffects()
 
@@ -94,7 +100,7 @@ function game:reset()
     self.boss = nil
 	
 	
-	self.camera:zoomTo(1.5)
+	--self.camera:zoomTo(1.5)
 	self.camera.smoother = Camera.smooth.linear(200)
 	self.camera.smooth.damped(.1)
 

@@ -2,3 +2,6 @@
 -low zoom fix
 -zoom slider in options
 -make game look good at different scales
+-fix tank deflections
+-fix line enemies
+-fix camera movement restriction (with scale and across 2 monitors)

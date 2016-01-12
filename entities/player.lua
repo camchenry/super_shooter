@@ -178,7 +178,9 @@ end
 function Player:draw()
     local rgba = {love.graphics.getColor()}
     love.graphics.setColor(self.color)
-    love.graphics.circle("line", self.position.x, self.position.y, self.radius)
+	local sides = math.floor(10*game.camera.scale) + 5 -- doesn't work well at some scales
+	
+    love.graphics.circle("line", self.position.x, self.position.y, self.radius, sides)
     love.graphics.setColor(rgba)
 
     if self.closestEnemy ~= nil then

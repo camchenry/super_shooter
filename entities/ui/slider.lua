@@ -11,7 +11,7 @@ function Slider:initialize(text, min, max, value, x, y, w, h, fontSize)
     self.value = value or max
     self.min = min
     self.max = max
-    self.ratio = (self.value/100) or 1
+    self.ratio = ((value - min) / ( max - min )) or 1 -- works for more values
 
     self.active = {127, 127, 127}
     self.bg = {255, 255, 255, 0}
@@ -23,6 +23,7 @@ function Slider:initialize(text, min, max, value, x, y, w, h, fontSize)
 
     self.click = Slider.click
     self.selected = false
+	self.roundTo = 1
 	
 	-- lines up the box based on the width of the slider
 	self.x = self.x - self.sliderWidth/2+1
@@ -67,7 +68,16 @@ function Slider:update(dt)
         self.ratio = 0
     end
 
-    self.value = math.floor(self.ratio * self.max)
+	-- error here
+    --self.value = math.ceil(self.ratio * (self.max - self.min) * 1/self.roundTo + self.min) * self.roundTo
+	local value = self.ratio * (self.max - self.min) + self.min -- does not round
+	--value = math.ceil(value / self.roundTo) * self.roundTo
+	if self.roundTo == 1 then
+		value = math.ceil(value)
+	else
+		value = tonumber(string.format("%.1f", value)) -- bug: only works for 1 decimal place
+	end
+	self.value = value
 end
 
 function Slider:draw()
