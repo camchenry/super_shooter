@@ -372,7 +372,7 @@ function options:load()
 		if config.display.width > width then
 			config.display.flags.x = 0
 			if self.multiHeight then
-				config.display.flags.y = (self.multiHeight - height) * -1
+				--config.display.flags.y = (self.multiHeight - height) * -1
 			end
 		end
 	end
