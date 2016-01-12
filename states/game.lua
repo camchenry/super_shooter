@@ -54,7 +54,7 @@ function game:init()
 end
 
 function game:reset()
-	self.worldSize = vector(5000, 5000)
+	self.worldSize = vector(3000, 2000)
 	
     objects = {}
     bullets = {}
@@ -249,9 +249,14 @@ function game:update(dt)
 		ny = -self.worldSize.y/2 + WINDOW_OFFSET.y * scale
 	end
 	
-	
-	
 	self.camera:lockPosition(nx, ny) -- aim the camera at the player
+	
+	if love.graphics.getWidth() * scale >= self.worldSize.x then
+		self.camera.x = 0
+	end
+	if love.graphics.getHeight() * scale >= self.worldSize.y then
+		self.camera.y = 0
+	end
 end
 
 
