@@ -1,6 +1,7 @@
 options = {}
 -- this is out here because it needs to be accessible before options:init() is called
 options.file = 'config.txt'
+options.version = 2
 
 function options:init()
 	self.leftAlign = 75
@@ -236,6 +237,7 @@ end
 
 function options:getDefaultConfig()
 	local o = {
+		version = 0,
 		display = {
 			width = 1024,
 			height = 768,
@@ -268,6 +270,7 @@ end
 
 function options:save()
 	local o = {
+		version = self.version,
 		display = {
 			width = self.resolution.options[self.resolution.selected][1],
 			height = self.resolution.options[self.resolution.selected][2],
@@ -301,7 +304,32 @@ end
 
 function options:load()
 	local config = self:getConfig()
-	
+
+	-- old config file
+	if (config.version == nil) or (self.version > config.version) then
+		local newConfig = self:getDefaultConfig()
+
+		-- this will port over old config values to a new config file, based on the default
+		-- if there are missing values, it replaces them with the default setting
+		for i, category in pairs(newConfig) do
+			if type(category) == 'table' then
+				for j, value in pairs(category) do
+					if config[i][j] == nil then
+						config[i][j] = value
+
+					-- table within a table (right now this should only be the window flags)
+					elseif type(value) == 'table' then
+						for k, flag in pairs(value) do
+							if config[i][j][k] == nil then
+								config[i][j][k] = flag
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
 	-- detects if any window settings are changed
 	local reload = false
 	local width, height, flags = love.window.getMode()
@@ -329,7 +357,6 @@ function options:load()
 	game.particlesEnabled = config.graphics.particles
 	game.displayFPS = config.graphics.displayFPS
 	game.azertyMode = config.graphics.azerty
-
 	game.trackpadMode = config.input.trackpadMode
 
 	soundControl.soundVolume = config.audio.soundVolume/100
