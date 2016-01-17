@@ -178,7 +178,7 @@ end
 function Player:draw()
     local rgba = {love.graphics.getColor()}
     love.graphics.setColor(self.color)
-	local sides = math.floor(10*game.camera.scale) + 5 -- doesn't work well at some scales
+	local sides = self:calculateDrawLines()
 	
     love.graphics.circle("line", self.position.x, self.position.y, self.radius, sides)
     love.graphics.setColor(rgba)
@@ -194,4 +194,10 @@ end
 
 function Player:getY()
     return self.position.y
+end
+
+function Player:calculateDrawLines()
+	local sides = math.floor(10*game.camera.scale) + 10 -- doesn't work well at some scales
+	sides = math.max(10, sides) -- at least 10 sides
+	return sides
 end

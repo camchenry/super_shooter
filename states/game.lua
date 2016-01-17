@@ -100,8 +100,7 @@ function game:reset()
     self.boss = nil
 	
 	
-	--self.camera:zoomTo(1.5)
-	self.camera.smoother = Camera.smooth.linear(200)
+	self.camera.smoother = Camera.smooth.linear(200*self.camera.scale)
 	self.camera.smooth.damped(.1)
 
     self.waveTimer = nil
@@ -230,23 +229,28 @@ function game:update(dt)
     end
 
 	
-	local px, py = player.position.x, player.position.y
-	
 	-- baddddd
 	local scale = 1/self.camera.scale
 	
+	local width, height = love.graphics.getWidth()/2, love.graphics.getHeight()/2
+	local scalarHalfWidth = width * scale
+	local scalarHalfHeight = height * scale
+	
+	local px, py = player.position.x, player.position.y
+	
+	
 	local nx, ny = px, py
 	
-	if px + WINDOW_OFFSET.x * scale > self.worldSize.x/2 then
-		nx = self.worldSize.x/2 - WINDOW_OFFSET.x * scale
-	elseif px - WINDOW_OFFSET.x * scale < -self.worldSize.x/2 then
-		nx = -self.worldSize.x/2 + WINDOW_OFFSET.x * scale
+	if px + scalarHalfWidth > self.worldSize.x/2 then
+		nx = self.worldSize.x/2 - scalarHalfWidth
+	elseif px - scalarHalfWidth < -self.worldSize.x/2 then
+		nx = -self.worldSize.x/2 + scalarHalfWidth
 	end
 	
-	if py + WINDOW_OFFSET.y * scale > self.worldSize.y/2 then
-		ny = self.worldSize.y/2 - WINDOW_OFFSET.y * scale
-	elseif py - WINDOW_OFFSET.y * scale < -self.worldSize.y/2 then
-		ny = -self.worldSize.y/2 + WINDOW_OFFSET.y * scale
+	if py + scalarHalfHeight > self.worldSize.y/2 then
+		ny = self.worldSize.y/2 - scalarHalfHeight
+	elseif py - scalarHalfHeight < -self.worldSize.y/2 then
+		ny = -self.worldSize.y/2 + scalarHalfHeight
 	end
 	
 	self.camera:lockPosition(nx, ny) -- aim the camera at the player
@@ -365,6 +369,9 @@ function game:draw()
 	
     self.floatingMessages:drawDynamic()
 	
+	-- draws borders of the world
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.setLineWidth(4)
 	love.graphics.line(-self.worldSize.x/2, -self.worldSize.y/2, self.worldSize.x/2, -self.worldSize.y/2, self.worldSize.x/2, self.worldSize.y/2, -self.worldSize.x/2, self.worldSize.y/2, -self.worldSize.x/2, -self.worldSize.y/2)
 	
 	self.camera:detach()
@@ -541,10 +548,10 @@ function game:spawnEnemies(w)
         local num = currentWave.sweepers
         -- margin from the sides of the screen
         local margin = 25
-        local h = (love.graphics.getHeight()-margin*2)/num
-        local w = (love.graphics.getWidth())
-        local leftEdge = margin--margin
-        local rightEdge = w - margin---w - margin 
+        local w = (self.worldSize.x)
+        local h = (self.worldSize.y-margin*2)/num
+        local leftEdge = margin
+        local rightEdge = w - margin
 
         for i=1, num do
             local y = h*(i-1) + margin + h/2

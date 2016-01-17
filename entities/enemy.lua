@@ -15,6 +15,8 @@ function Enemy:initialize(position)
 	self.invincible = false
     self.knockbackResistance = 0.0
     self.damageResistance = 0.0
+	
+	self.minimumAlpha = 100
 
     self.flashTime = 0
 end
@@ -49,7 +51,8 @@ function Enemy:update(dt)
 
     -- enemy fades away as it loses health
     self.color = self.originalColor
-    self.color[4] = math.floor(math.max(64, 255*(self.health/self.maxHealth)))
+	-- switch to HSL for enemy color degredation
+    self.color[4] = math.floor((255-self.minimumAlpha)*(self.health/self.maxHealth) + self.minimumAlpha)
 
     if self.flashTime > 0 then
         self.color = {255, 255, 255, 255}
@@ -278,7 +281,7 @@ function Tank:handleCollision(obj)
             local r = d:mirrorOn(n) -- result vector
             r:rotate_inplace(math.rad(math.random(-90, 90)))
 
-            local offset = r
+            local offset = r + game.worldSize/2
 			--offset = offset - WINDOW_OFFSET
 
             local b = game:addBullet(Bullet:new(

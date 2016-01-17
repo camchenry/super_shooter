@@ -77,6 +77,7 @@ function options:enter()
 	
 	-- add a resolution for an experimental feature to play across multiple monitors
 	local windowCount = love.window.getDisplayCount()
+	--[[
 	local multiWidth = 0
 	local multiHeight = 0
 	if windowCount > 1 then
@@ -92,8 +93,9 @@ function options:enter()
 		end
 		table.insert(resolutions, {multiWidth, multiHeight})
 	end
+	]]
 	
-	self.multiHeight = multiHeight
+	--self.multiHeight = multiHeight
 
 	-- sort resolutions from smallest to biggest
 	table.sort(resolutions, function(a, b) return a[1]*a[2] < b[1]*b[2] end)
@@ -138,7 +140,7 @@ function options:enter()
 	y = 225
 	sep = 100
 	
-	-- slider items
+	-- SLIDER ITEMS
 	self.musicVolume = Slider:new("MUSIC VOLUME: %d", 0, 100, config.audio.musicVolume, x, y, 275, 50, font[24])
 	self.musicVolume.changed = function() signal.emit('musicChanged', self.musicVolume.ratio) end
 	
@@ -149,11 +151,11 @@ function options:enter()
 	
 	y = y + sep
 	
-	self.cameraZoom = Slider:new("CAMERA ZOOM: %.1f", .1, 10, config.graphics.cameraZoom, x, y, 275, 50, font[24])
+	self.cameraZoom = Slider:new("CAMERA ZOOM: %.1f", .1, 5, config.graphics.cameraZoom, x, y, 275, 50, font[24])
 	--self.cameraZoom.changed = function() signal.emit('zoomChanged', self.cameraZoom.ratio) end
 	-- not ideal
-	self.cameraZoom.roundTo = .1
-	self.cameraZoom.changed = function() game.cameraZoom = self.cameraZoom.ratio end
+	self.cameraZoom.roundTo = 1
+	--self.cameraZoom.changed = function() game.cameraZoom = self.cameraZoom.value end
 	
 	local bottomMargin = 60
 	
