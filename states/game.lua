@@ -100,7 +100,10 @@ function game:reset()
     self.boss = nil
 	
 	
-	self.camera.smoother = Camera.smooth.linear(200*self.camera.scale)
+	self.camera.smoother = function (dx, dy)
+        local dt = love.timer.getDelta() * self.camera.scale * 1.5
+        return dx*dt, dy*dt
+    end
 	self.camera.smooth.damped(.1)
 
     self.waveTimer = nil
