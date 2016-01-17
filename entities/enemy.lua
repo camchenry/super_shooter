@@ -309,11 +309,11 @@ function Tank:handleCollision(obj)
             local r = d:mirrorOn(n) -- result vector
             r:rotate_inplace(math.rad(math.random(-90, 90)))
 
-            local offset = r - game.worldSize/2
+            local offset = r
 			
             local b = game:addBullet(Bullet:new(
                 obj.position,
-                player.position,
+                player.position + offset,
                 self.velocity)
             )
 			
