@@ -1,6 +1,9 @@
 FloatingMessages = class("FloatingMessages")
 
 function FloatingMessages:initialize()
+	-- messages will be placed in static or dynamic
+	-- dynamic will move with the game world
+	-- static will have a fixed screen position
 	self.staticMessages = {}
 	self.dynamicMessages = {}
 	self.messageQueue = {}
@@ -26,8 +29,9 @@ function FloatingMessages:initialize()
 	end)
 
 	signal.register('scoreChange', function(score)
-		local x = love.graphics.getWidth() - 40 - WINDOW_OFFSET.x
-		local y = love.graphics.getHeight() - 100 - WINDOW_OFFSET.y
+		local width, height = love.graphics.getWidth(), love.graphics.getHeight()
+		local x = love.graphics.getWidth() - 40 - width/2
+		local y = love.graphics.getHeight() - 100 - height/2
 		
 		local size = 24
 		local w = font[size]:getWidth(score) - 14
@@ -60,6 +64,7 @@ function FloatingMessages:update(dt)
 			-- release message from queue spot 1
 			local static = self.messageQueue[1].static or false
 			
+			-- messages are sorted into either static or dynamic
 			table.insert(static and self.staticMessages or self.dynamicMessages, {
 				x = self.messageQueue[1].x,
 				y = self.messageQueue[1].y,
@@ -108,7 +113,8 @@ function FloatingMessages:drawStatic()
 		love.graphics.setFont(font[msg.size])
 		love.graphics.setColor(255, 255, 255, 200 * msg.time)
 		local x, y = msg.x, msg.y
-		x, y = x + WINDOW_OFFSET.x, y + WINDOW_OFFSET.y
+		local width, height = love.graphics.getWidth(), love.graphics.getHeight()
+		x, y = x + width/2, y + height/2
 		x, y = math.floor(x), math.floor(y)
 		love.graphics.print(msg.text, x, y)
 	end
@@ -116,7 +122,8 @@ end
 
 function FloatingMessages:drawDynamic() -- contains many workarounds
 	for i, msg in pairs(self.dynamicMessages) do 
-		love.graphics.setFont(font[msg.size*game.camera.scale])
+		local fontSize = msg.size*game.camera.scale
+		love.graphics.setFont(font[fontSize])
 		love.graphics.setColor(255, 255, 255, 200 * msg.time)
 		local x, y = msg.x, msg.y
 		x, y = math.floor(x), math.floor(y)

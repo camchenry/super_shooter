@@ -93,7 +93,7 @@ function Player:update(dt)
                     target = self.closestEnemy.position + vector(math.random(-35, 35), math.random(-35, 35)) + WINDOW_OFFSET
                 else
 					local mx, my = game.camera:mousePosition() -- find where the mouse is in the game
-					mx, my = mx + WINDOW_OFFSET.x, my + WINDOW_OFFSET.y
+					mx, my = mx, my
                     target = vector(mx, my)
                 end
                 local bullet = game:addBullet(Bullet:new(

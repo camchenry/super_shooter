@@ -24,7 +24,7 @@ function Bullet:initialize(position, target, velocity)
     self.dropoffAmount = 0
     self.dropoffDistance = 0
 
-    self.velocity = (self.target - self.position - WINDOW_OFFSET):normalized() * self.speed
+    self.velocity = (self.target - self.position):normalized() * self.speed
     self.width = self.radius * 2
     self.height = self.radius * 2
     self.x, self.y = self.position:unpack()
@@ -77,7 +77,7 @@ end
 
 function Bullet:setSpeed(speed)
     self.speed = speed
-    self.velocity = (self.target - self.position - WINDOW_OFFSET):normalized() * self.speed
+    self.velocity = (self.target - self.position):normalized() * self.speed
     return self
 end
 
