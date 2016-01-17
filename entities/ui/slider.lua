@@ -39,7 +39,6 @@ function Slider:mousepressed(x, y, mbutton)
 
         if self.changed then
             self:changed()
-			self:setValue()
         end
     end
 
@@ -59,9 +58,10 @@ function Slider:update(dt)
 
         if self.changed then
             self:changed()
-			self:setValue()
         end
     end
+	
+	self:setValue()
 end
 
 function Slider:draw()
@@ -132,11 +132,11 @@ function Slider:hover()
 end
 
 function Slider:setValue()
-	local r = self.ratio*self.max
+	local r = self.ratio*(self.max-self.min) + self.min
     if r > self.max then
-        self.ratio = 1
+		self.ratio = 1
     elseif r < self.min then
-        self.ratio = 0
+		self.ratio = 0
     end
 
 	local value = self.ratio * (self.max - self.min) + self.min -- does not round
