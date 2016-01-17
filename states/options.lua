@@ -151,7 +151,7 @@ function options:enter()
 	
 	y = y + sep
 	
-	self.cameraZoom = Slider:new("CAMERA ZOOM: %.1f", .5, 2, config.graphics.cameraZoom, x, y, 275, 50, font[24])
+	self.cameraZoom = Slider:new("CAMERA ZOOM: %.1f", .7, 2, config.graphics.cameraZoom, x, y, 275, 50, font[24])
 	--self.cameraZoom.changed = function() signal.emit('zoomChanged', self.cameraZoom.ratio) end
 	-- not ideal
 	self.cameraZoom.roundTo = 1
