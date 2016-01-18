@@ -1,0 +1,8 @@
+X circle draw line scaling
+X low zoom fix
+X zoom slider in options
+X make game look good at different scales
+X fix tank deflections
+X fix line enemies
+-fix camera movement restriction (with scale and across 2 monitors)
+-fix camera speed

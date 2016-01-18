@@ -70,10 +70,32 @@ function options:enter()
 	local resTable = love.window.getFullscreenModes(1)
 	local resolutions = {}
 	for k, res in pairs(resTable) do
-		if res.width > 800 then -- cuts off any resolutions with a width under 800
+		--if res.width > 800 then -- cuts off any resolutions with a width under 800
 			table.insert(resolutions, {res.width, res.height})
-		end
+		--end
 	end
+	
+	-- add a resolution for an experimental feature to play across multiple monitors
+	local windowCount = love.window.getDisplayCount()
+	--[[
+	local multiWidth = 0
+	local multiHeight = 0
+	if windowCount > 1 then
+		for i = 1, windowCount do
+			local width, height = love.window.getDesktopDimensions(i)
+			multiWidth = multiWidth + width -- add together the width of all connected monitors
+			if height > multiHeight then -- find the largest monitor height
+				if multiHeight > 0 then
+					table.insert(resolutions, {multiWidth, multiHeight})
+				end
+				multiHeight = height
+			end
+		end
+		table.insert(resolutions, {multiWidth, multiHeight})
+	end
+	]]
+	
+	--self.multiHeight = multiHeight
 
 	-- sort resolutions from smallest to biggest
 	table.sort(resolutions, function(a, b) return a[1]*a[2] < b[1]*b[2] end)
@@ -102,6 +124,15 @@ function options:enter()
 	self.fullscreenMode:setText('{}')
 	self.fullscreenMode:setOptionWidth(optionWidth)
 	
+	local monitorOptions = {}
+	for i = 1, windowCount do
+		table.insert(monitorOptions, i)
+	end
+	self.monitorSelect = List:new("DISPLAY MONITOR: ", monitorOptions, self.leftAlign, y+400, 400)
+	self.monitorSelect:selectValue(config.display.flags.display)
+	self.monitorSelect:setText('{}')
+	self.monitorSelect:setOptionWidth(optionWidth)
+	
 	y = y+sep
 	
 	
@@ -109,15 +140,22 @@ function options:enter()
 	y = 225
 	sep = 100
 	
-	-- slider items
+	-- SLIDER ITEMS
 	self.musicVolume = Slider:new("MUSIC VOLUME: %d", 0, 100, config.audio.musicVolume, x, y, 275, 50, font[24])
 	self.musicVolume.changed = function() signal.emit('musicChanged', self.musicVolume.ratio) end
 	
 	y = y + sep
 	
-	self.soundVolume = Slider:new("SOUND VOLUME: %d",0, 100, config.audio.soundVolume, x, y, 275, 50, font[24])
+	self.soundVolume = Slider:new("SOUND VOLUME: %d", 0, 100, config.audio.soundVolume, x, y, 275, 50, font[24])
 	self.soundVolume.changed = function() signal.emit('soundChanged', self.soundVolume.ratio) end
 	
+	y = y + sep
+	
+	self.cameraZoom = Slider:new("CAMERA ZOOM: %.1f", .7, 2, config.graphics.cameraZoom, x, y, 275, 50, font[24])
+	--self.cameraZoom.changed = function() signal.emit('zoomChanged', self.cameraZoom.ratio) end
+	-- not ideal
+	self.cameraZoom.roundTo = 1
+	--self.cameraZoom.changed = function() game.cameraZoom = self.cameraZoom.value end
 	
 	local bottomMargin = 60
 	
@@ -163,10 +201,12 @@ function options:mousepressed(x, y, button)
 
 	self.musicVolume:mousepressed(x, y, button)
 	self.soundVolume:mousepressed(x, y, button)
+	self.cameraZoom:mousepressed(x, y, button)
 	
 	self.resolution:mousepressed(x, y, button)
 	self.msaa:mousepressed(x, y, button)
 	self.fullscreenMode:mousepressed(x, y, button)
+	self.monitorSelect:mousepressed(x, y, button)
 	
 	self.back:mousepressed(x, y, button)
 	self.apply:mousepressed(x, y, button)
@@ -191,10 +231,12 @@ function options:update(dt)
 
 	self.musicVolume:update(dt)
 	self.soundVolume:update(dt)
+	self.cameraZoom:update(dt)
 
 	self.resolution:update(dt)
 	self.msaa:update(dt)
 	self.fullscreenMode:update(dt)
+	self.monitorSelect:update(dt)
 
 	self.back:update(dt)
 	self.apply:update(dt)
@@ -225,10 +267,12 @@ function options:draw()
 
 	self.musicVolume:draw()
 	self.soundVolume:draw()
+	self.cameraZoom:draw()
 
 	self.resolution:draw()
 	self.msaa:draw()
 	self.fullscreenMode:draw()
+	self.monitorSelect:draw()
 
 	self.back:draw()
 	self.apply:draw()
@@ -245,6 +289,7 @@ function options:getDefaultConfig()
 				vsync = false,
 				fullscreen = false,
 				fullscreentype = "desktop",
+				display = 1,
 				highdpi = false,
 				borderless = false,
 				msaa = 0,
@@ -254,6 +299,8 @@ function options:getDefaultConfig()
 			shaderEffects = true,
 			particles = true,
 			displayFPS = false,
+			azerty = false,
+			cameraZoom = 1,
 		},
 		audio = {
 			soundVolume = 100,
@@ -280,6 +327,7 @@ function options:save()
 				highdpi = self.highdpi.selected,
 				msaa = self.msaa.options[self.msaa.selected],
 				fullscreentype = self.fullscreenMode.options[self.fullscreenMode.selected],
+				display = self.monitorSelect.options[self.monitorSelect.selected],
 			},
 		},
 		graphics = {
@@ -287,6 +335,7 @@ function options:save()
 			particles = self.particles.selected,
 			displayFPS = self.displayFPS.selected,
 			azerty = self.azerty.selected,
+			cameraZoom = self.cameraZoom.value,
 		},
 		audio = {
 			musicVolume = self.musicVolume.value,
@@ -319,6 +368,18 @@ function options:load()
 		reload = true
 	elseif flags.fullscreentype ~= config.display.flags.fullscreentype then
 		reload = true
+	elseif flags.display ~= config.display.flags.display then
+		reload = true
+	end
+	
+	if love.window.getDisplayCount() > 1 then
+		local width, height = love.window.getDesktopDimensions(flags.display)
+		if config.display.width > width then
+			config.display.flags.x = 0
+			if self.multiHeight then
+				--config.display.flags.y = (self.multiHeight - height) * -1
+			end
+		end
 	end
 	
 	if reload then -- only reloads the window if needed
@@ -329,6 +390,7 @@ function options:load()
 	game.particlesEnabled = config.graphics.particles
 	game.displayFPS = config.graphics.displayFPS
 	game.azertyMode = config.graphics.azerty
+	game.cameraZoom = config.graphics.cameraZoom
 
 	game.trackpadMode = config.input.trackpadMode
 

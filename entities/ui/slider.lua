@@ -11,7 +11,7 @@ function Slider:initialize(text, min, max, value, x, y, w, h, fontSize)
     self.value = value or max
     self.min = min
     self.max = max
-    self.ratio = (self.value/100) or 1
+    self.ratio = ((value - min) / ( max - min )) or 1 -- works for more values
 
     self.active = {127, 127, 127}
     self.bg = {255, 255, 255, 0}
@@ -23,6 +23,7 @@ function Slider:initialize(text, min, max, value, x, y, w, h, fontSize)
 
     self.click = Slider.click
     self.selected = false
+	self.roundTo = 0
 	
 	-- lines up the box based on the width of the slider
 	self.x = self.x - self.sliderWidth/2+1
@@ -59,15 +60,8 @@ function Slider:update(dt)
             self:changed()
         end
     end
-
-    local r = self.ratio*self.max
-    if r > self.max then
-        self.ratio = 1
-    elseif r < self.min then
-        self.ratio = 0
-    end
-
-    self.value = math.floor(self.ratio * self.max)
+	
+	self:setValue()
 end
 
 function Slider:draw()
@@ -135,4 +129,17 @@ function Slider:hover()
     local inX = mx >= self.x and mx <= self.x + self.width
     local inY = my >= self.y and my <= self.y + self.height
     return inX and inY
+end
+
+function Slider:setValue()
+	local r = self.ratio*(self.max-self.min) + self.min
+    if r > self.max then
+		self.ratio = 1
+    elseif r < self.min then
+		self.ratio = 0
+    end
+
+	local value = self.ratio * (self.max - self.min) + self.min -- does not round
+	value = tonumber(string.format("%."..self.roundTo.."f", value))
+	self.value = value
 end

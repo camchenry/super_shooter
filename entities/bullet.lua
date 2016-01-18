@@ -24,7 +24,7 @@ function Bullet:initialize(position, target, velocity)
     self.dropoffAmount = 0
     self.dropoffDistance = 0
 
-    self.velocity = (self.target - self.position - WINDOW_OFFSET):normalized() * self.speed
+    self.velocity = (self.target - self.position):normalized() * self.speed
     self.width = self.radius * 2
     self.height = self.radius * 2
     self.x, self.y = self.position:unpack()
@@ -46,11 +46,11 @@ function Bullet:update(dt)
         self.destroy = true
     end
 
-    if self.position.x > love.graphics.getWidth()-WINDOW_OFFSET.x or self.position.x < 0-WINDOW_OFFSET.x then
+    if self.position.x > game.worldSize.x/2 or self.position.x < -game.worldSize.x/2 then
         self.destroy = true
     end
 
-    if self.position.y > love.graphics.getHeight()-WINDOW_OFFSET.y or self.position.y < 0-WINDOW_OFFSET.y then
+    if self.position.y > game.worldSize.y/2 or self.position.y < -game.worldSize.y/2 then
         self.destroy = true
     end
 
@@ -77,7 +77,7 @@ end
 
 function Bullet:setSpeed(speed)
     self.speed = speed
-    self.velocity = (self.target - self.position - WINDOW_OFFSET):normalized() * self.speed
+    self.velocity = (self.target - self.position):normalized() * self.speed
     return self
 end
 

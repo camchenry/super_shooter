@@ -92,7 +92,9 @@ function Player:update(dt)
                 if game.trackpadMode and self.closestEnemy ~= player and self.closestEnemy ~= nil then
                     target = self.closestEnemy.position + vector(math.random(-35, 35), math.random(-35, 35)) + WINDOW_OFFSET
                 else
-                    target = vector(love.mouse.getX(), love.mouse.getY())
+					local mx, my = game.camera:mousePosition() -- find where the mouse is in the game
+					mx, my = mx, my
+                    target = vector(mx, my)
                 end
                 local bullet = game:addBullet(Bullet:new(
                     self.position,
@@ -125,7 +127,7 @@ function Player:update(dt)
 
     self.rateOfFire = (1/self.shotsPerSecond)
 
-	if math.abs(self.x) >= WINDOW_OFFSET.x or math.abs(self.y) >= WINDOW_OFFSET.y then
+	if math.abs(self.x) >= game.worldSize.x/2 or math.abs(self.y) >= game.worldSize.y/2 then
 		self.health = self.health - self.offScreenDamage * dt
 	end
 
@@ -176,7 +178,9 @@ end
 function Player:draw()
     local rgba = {love.graphics.getColor()}
     love.graphics.setColor(self.color)
-    love.graphics.circle("line", self.position.x, self.position.y, self.radius)
+	local sides = self:calculateDrawLines()
+	
+    love.graphics.circle("line", self.position.x, self.position.y, self.radius, sides)
     love.graphics.setColor(rgba)
 
     if self.closestEnemy ~= nil then
@@ -190,4 +194,10 @@ end
 
 function Player:getY()
     return self.position.y
+end
+
+function Player:calculateDrawLines()
+	local sides = math.floor(10*game.camera.scale) + 10 -- doesn't work well at some scales
+	sides = math.max(10, sides) -- at least 10 sides
+	return sides
 end
