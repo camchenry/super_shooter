@@ -2,8 +2,6 @@ game = {}
 objects = {}
 bullets = {}
 
-WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
-
 function game:addObject(obj, tabl)
     if tabl == nil then
         tabl = objects
@@ -48,12 +46,17 @@ function game:init()
     end
 
     signal.emit('waveEnded')
+	
+	self.camera = Camera(0, 0)
+	self.camera.scale = self.cameraZoom
 end
 
 function game:reset()
+	self.worldSize = vector(3000, 2000)
+	
     objects = {}
     bullets = {}
-    quadtree = QuadTree:new(-WINDOW_OFFSET.x-25, -WINDOW_OFFSET.y-25, love.graphics.getWidth()+50, love.graphics.getHeight()+50)
+    quadtree = QuadTree:new(-self.worldSize.x/2-25, -self.worldSize.y/2-25, self.worldSize.x+50, self.worldSize.y+50)
     quadtree:subdivide()
     quadtree:subdivide()
 	-- player will be added later, in character select
@@ -74,6 +77,11 @@ function game:reset()
 	if self.azertyMode == nil then
 		self.azertyMode = false
 	end
+	if self.cameraZoom == nil then
+		self.cameraZoom = 1
+	end
+	
+	self.camera.scale = self.cameraZoom
 
     self:toggleEffects()
 
@@ -88,6 +96,12 @@ function game:reset()
     self._postWaveCalled = false
     self._preWaveCalled = false
     self.boss = nil
+	
+	self.camera.smoother = function (dx, dy)
+        local dt = love.timer.getDelta() * self.camera.scale * 1.5
+        return dx*dt, dy*dt
+    end
+	self.camera.smooth.damped(.1)
 
     self.waveTimer = nil
     self:setupWaves()
@@ -109,71 +123,41 @@ function game:enter(prev)
 end
 
 function game:compileShaders()
-    shaders = {}
-
-    local bloom = shine.bloom()
-    bloom.parameters = {
-        samples = 4,
-        quality = 1,
+    local shaders = {
+        bloom = shine.bloom{
+            samples = 4,
+            quality = 1,
+        },
+        chroma = shine.separate_chroma{
+            radius = -1,
+            angle = 5*math.pi/4
+        },
+        blur = shine.gaussianblur{
+            sigma = 4
+        },
     }
-    shaders.bloom = bloom
 
-    local chroma = shine.separate_chroma()
-    chroma.parameters = {
-        radius = -1,
-        angle = 5*math.pi/4
-    }
-    shaders.chroma = chroma
-
-    local blur = shine.gaussianblur()
-    blur.parameters = {
-        sigma = 4
-    }
-    shaders.blur = blur
-
-    pause_effect = bloom:chain(blur)
-    default_effect = bloom
+    pause_effect = shaders.bloom:chain(shaders.blur)
+    default_effect = shaders.bloom
     post_effect = default_effect
 end
 
-function game:resized()
-    local dx = WINDOW_OFFSET.x*2 - love.graphics.getWidth()
-    local dy = WINDOW_OFFSET.y*2 - love.graphics.getHeight()
-    quadtree:resize(dx, dy)
-
-    WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
-end
-
 function game:update(dt)
-    -- this triggers when the game resolution changes
-    if WINDOW_OFFSET.x ~= love.graphics.getWidth()/2 or WINDOW_OFFSET.y ~= love.graphics.getHeight()/2 or
-    quadtree.width ~= love.graphics.getWidth()+50 or quadtree.height ~= love.graphics.getHeight()+50 then
-        self:resized()
-    end
-    
     if player.health <= 0 then -- death condition
         state.switch(restart)
     end
 
-    for i,v in ipairs(objects) do
-        v:update(dt)
-        quadtree:updateObject(v)
-    end
-
-    for i, v in ipairs(objects) do
-        if v.destroy then
-            self:removeObject(v)
+    local toUpdate = {objects, bullets}
+    for i, tabl in ipairs(toUpdate) do
+        for j, obj in ipairs(tabl) do
+            obj:update(dt)
+            quadtree:updateObject(obj)
         end
-    end
 
-    for i,v in ipairs(bullets) do
-        v:update(dt)
-        quadtree:updateObject(v)
-    end
-
-    for i, v in ipairs(bullets) do
-        if v.destroy then
-            self:removeBullet(v)
+        for j, obj in ipairs(tabl) do
+            if obj.destroy then
+                self:removeObject(obj)
+            end
         end
     end
 
@@ -213,6 +197,37 @@ function game:update(dt)
             self:onWaveEnd()
         end
     end
+	
+	-- baddddd
+	local scale = 1/self.camera.scale
+	
+	local width, height = love.graphics.getWidth()/2, love.graphics.getHeight()/2
+	local scalarHalfWidth = width * scale
+	local scalarHalfHeight = height * scale
+	
+	local px, py = player.position.x, player.position.y
+	local nx, ny = px, py
+	
+	if px + scalarHalfWidth > self.worldSize.x/2 then
+		nx = self.worldSize.x/2 - scalarHalfWidth
+	elseif px - scalarHalfWidth < -self.worldSize.x/2 then
+		nx = -self.worldSize.x/2 + scalarHalfWidth
+	end
+	
+	if py + scalarHalfHeight > self.worldSize.y/2 then
+		ny = self.worldSize.y/2 - scalarHalfHeight
+	elseif py - scalarHalfHeight < -self.worldSize.y/2 then
+		ny = -self.worldSize.y/2 + scalarHalfHeight
+	end
+	
+	self.camera:lockPosition(nx, ny) -- aim the camera at the player
+	
+	if love.graphics.getWidth() * scale >= self.worldSize.x then
+		self.camera.x = 0
+	end
+	if love.graphics.getHeight() * scale >= self.worldSize.y then
+		self.camera.y = 0
+	end
 end
 
 
@@ -304,7 +319,8 @@ function game:draw()
     post_effect(function()
 
     local dx, dy = self.screenShake:getOffset()
-    love.graphics.translate(love.graphics.getWidth()/2+dx, love.graphics.getHeight()/2+dy)
+    love.graphics.translate(dx, dy)
+	self.camera:attach()
 
     self.background:draw()
 
@@ -318,11 +334,20 @@ function game:draw()
     for i,v in ipairs(bullets) do
         v:draw()
     end
+	
+    self.floatingMessages:drawDynamic()
+	
+	-- draws borders of the world
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.setLineWidth(4)
+	love.graphics.line(-self.worldSize.x/2, -self.worldSize.y/2, self.worldSize.x/2, -self.worldSize.y/2, self.worldSize.x/2, self.worldSize.y/2, -self.worldSize.x/2, self.worldSize.y/2, -self.worldSize.x/2, -self.worldSize.y/2)
+	
+	self.camera:detach()
+	love.graphics.translate(0, 0)
 
-    love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
+    self.floatingMessages:drawStatic()
 
     self.hurt:draw()
-    self.floatingMessages:draw()
 
     if self.waveText ~= nil and self.wave > 0 then
         self:drawPrimaryText()
@@ -479,8 +504,8 @@ function game:spawnEnemies(w)
 
     if currentWave.blobs ~= nil then
         for i=1, currentWave.blobs do
-            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
-                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            local p = vector(math.random(-self.worldSize.x/2, self.worldSize.x/2), 
+                             math.random(-self.worldSize.y/2, self.worldSize.y/2))
             p = p + (p - player.position):normalized()*150
             local b = Blob:new(p)
             self:addObject(b)
@@ -492,25 +517,25 @@ function game:spawnEnemies(w)
         local num = currentWave.sweepers
         -- margin from the sides of the screen
         local margin = 25
-        local h = (love.graphics.getHeight()-margin*2)/num
-        local w = (love.graphics.getWidth())
-        local leftEdge = margin--margin
-        local rightEdge = w - margin---w - margin 
+        local w = (self.worldSize.x)
+        local h = (self.worldSize.y-margin*2)/num
+        local leftEdge = margin
+        local rightEdge = w - margin
 
         for i=1, num do
             local y = h*(i-1) + margin + h/2
 
             self:addObject(Sweeper:new(
-                vector(leftEdge - WINDOW_OFFSET.x, y - WINDOW_OFFSET.y),
-                vector(rightEdge - WINDOW_OFFSET.x, y - WINDOW_OFFSET.y)
+                vector(leftEdge - self.worldSize.x/2, y - self.worldSize.y/2),
+                vector(rightEdge - self.worldSize.x/2, y - self.worldSize.y/2)
             ))
         end
     end
 	
 	if currentWave.healers ~= nil then
         for i=1, currentWave.healers do
-            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
-                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            local p = vector(math.random(-self.worldSize.x/2, self.worldSize.x/2), 
+                             math.random(-self.worldSize.y/2, self.worldSize.y/2))
             p = p + (p - player.position):normalized()*250
             local b = Healer:new(p)
             self:addObject(b)
@@ -519,8 +544,8 @@ function game:spawnEnemies(w)
 	
 	if currentWave.tanks ~= nil then
         for i=1, currentWave.tanks do
-            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
-                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            local p = vector(math.random(-self.worldSize.x/2, self.worldSize.x/2), 
+                             math.random(-self.worldSize.y/2, self.worldSize.y/2))
             p = p + (p - player.position):normalized()*150
             local b = Tank:new(p)
             self:addObject(b)
@@ -529,8 +554,8 @@ function game:spawnEnemies(w)
 
     if currentWave.ninjas ~= nil then
         for i=1, currentWave.ninjas do
-            local p = vector(math.random(0, love.graphics.getWidth())-WINDOW_OFFSET.x, 
-                             math.random(0, love.graphics.getHeight())-WINDOW_OFFSET.y)
+            local p = vector(math.random(-self.worldSize.x/2, self.worldSize.x/2), 
+                             math.random(-self.worldSize.y/2, self.worldSize.y/2))
             p = p + (p - player.position):normalized()*150
             local b = Ninja:new(p)
             self:addObject(b)

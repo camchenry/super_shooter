@@ -9,6 +9,7 @@ signal = require 'libs.signal'
 QuadTree = require 'libs.quadtree'
 serialize = require 'libs.ser'
 husl = require 'libs.husl'
+Camera = require 'libs.camera'
 require 'libs.util'
 
 -- gamestates

@@ -15,21 +15,27 @@ function Enemy:initialize(position)
 	self.invincible = false
     self.knockbackResistance = 0.0
     self.damageResistance = 0.0
+	
+	--self.minimumAlpha = 100
+	
+	self.hue = 0
+	self.saturation = 100
+	self.lightness = 40
+	self.minLightness = 25
 
     self.flashTime = 0
 end
 
-function Enemy:randomizeAppearance(color, radius)
-    local colorVariance = color or 0.1
-    self.originalColor[1] = self.originalColor[1] + math.random(0, self.originalColor[1]*colorVariance) * math.random(-1, 1)
-    self.originalColor[2] = self.originalColor[2] + math.random(0, self.originalColor[2]*colorVariance) * math.random(-1, 1)
-    self.originalColor[3] = self.originalColor[3] + math.random(0, self.originalColor[3]*colorVariance) * math.random(-1, 1)
+function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiusDiff)
+    local hueVariance = hueDiff or 5
+    local saturationVariance = saturationDiff or 5
+    local lightnessVariance = lightnessDiff or 5
+    local radiusVariance = radiusDiff or 0.1
+	
+	self.hue = self.hue + math.random(-hueVariance, hueVariance)
+	self.saturation = self.saturation + math.random(-saturationVariance, saturationVariance)
+	self.lightness = self.lightness + math.random(-lightnessVariance, lightnessVariance)
     
-    self.originalColor[1] = math.min(self.originalColor[1], 255) 
-    self.originalColor[2] = math.min(self.originalColor[2], 255)
-    self.originalColor[3] = math.min(self.originalColor[3], 255)
-    
-    local radiusVariance = radius or 0.1
     self.radius = self.radius + math.random(-self.radius*radiusVariance, self.radius*radiusVariance)
 end
 
@@ -49,7 +55,13 @@ function Enemy:update(dt)
 
     -- enemy fades away as it loses health
     self.color = self.originalColor
-    self.color[4] = math.floor(math.max(64, 255*(self.health/self.maxHealth)))
+	-- switch to HSL for enemy color degredation
+    --self.color[4] = math.floor((255-self.minimumAlpha)*(self.health/self.maxHealth) + self.minimumAlpha)
+	local saturation = self.saturation * self.health/self.maxHealth
+	local lightness = (self.lightness - self.minLightness) * self.health/self.maxHealth + self.minLightness
+	
+	local r, g, b = husl.husl_to_rgb(self.hue, saturation, lightness)
+	self.color = {r*255, g*255, b*255, self.color[4]}
 
     if self.flashTime > 0 then
         self.color = {255, 255, 255, 255}
@@ -100,7 +112,11 @@ function Blob:initialize(position)
     self.radius = 15 + math.random(-2, 2)
     self.sides = 4
 
-    self:randomizeAppearance(0.3, 0.1)
+	self.hue = 10
+	self.saturation = 80
+	self.lightness = 50
+	
+    self:randomizeAppearance(15, 15, 10, .2)
 
     self.speed = 750
 
@@ -129,7 +145,12 @@ function Sweeper:initialize(start, finish)
     self.originalColor = {241, 196, 0, 255}
     self.radius = 18
     self.sides = 3
-    self:randomizeAppearance()
+	
+	self.hue = 65
+	self.saturation = 80
+	self.lightness = 80
+	
+    self:randomizeAppearance(5, 10, 5, .2)
 
     self.position = start
     self.start = start
@@ -179,7 +200,12 @@ function Healer:initialize(position)
     self.originalColor = {77, 214, 79, 255}
     self.radius = 11
     self.sides = 5
-    self:randomizeAppearance()
+	
+	self.hue = 125
+	self.saturation = 80
+	self.lightness = 50
+	
+    self:randomizeAppearance(15, 15, 10, .2)
 
     self.speed = 325
 
@@ -242,7 +268,12 @@ function Tank:initialize(position)
     self.originalColor = {122, 214, 210, 255}
     self.radius = 20
     self.sides = 6
-    self:randomizeAppearance()
+	
+	self.hue = 230
+	self.saturation = 80
+	self.lightness = 50
+	
+    self:randomizeAppearance(20, 15, 10, .2)
 
     self.speed = 350
     self.knockbackResistance = 0.8
@@ -278,13 +309,14 @@ function Tank:handleCollision(obj)
             local r = d:mirrorOn(n) -- result vector
             r:rotate_inplace(math.rad(math.random(-90, 90)))
 
-            local offset = vector(WINDOW_OFFSET.x, WINDOW_OFFSET.y) + r
-
+            local offset = r
+			
             local b = game:addBullet(Bullet:new(
                 obj.position,
                 player.position + offset,
                 self.velocity)
             )
+			
             b:setSource(self)
             b:setDamage(obj.damage*0.08)
             b:setSpeed(obj.velocity:len()*1.4)
@@ -302,7 +334,12 @@ function Ninja:initialize(position)
     self.radius = 15 + math.random(-2, 2)
     self.sides = 4
 
-    self:randomizeAppearance(0.05, 0.1)
+	self.hue = 280
+	self.saturation = 20
+	self.lightness = 50
+	
+    self:randomizeAppearance(10, 15, 10, .2)
+	
     self.speed = 800
     self.doTeleport = false
     self.drawTeleportLineTime = 0

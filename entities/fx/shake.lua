@@ -22,21 +22,16 @@ function ScreenShake:update(dt)
 end
 
 function ScreenShake:onEnemyDeath(enemy)
-	self:shake(1, 90)
+	self:shake(1, 3000)
 end
 
 function ScreenShake:onEnemyHit(enemy)
-	self:shake(1, 35)
+	self:shake(1, 1500)
 end
 
 function ScreenShake:shake(time, strength)
-	self.time = time
-
-    if strength > self.strength then
-        self.strength = strength
-    elseif time <= 0 then
-        self.strength = strength
-    end
+    self.strength = strength
+    self.time = time + self.time * 0.1
 
     self.angle = math.random(0, math.pi)
     self.velocity = vector(math.cos(self.angle), math.sin(self.angle))
