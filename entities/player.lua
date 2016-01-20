@@ -90,7 +90,7 @@ function Player:update(dt)
                 local target = nil
                 -- trackpad shooting mode
                 if game.trackpadMode and self.closestEnemy ~= player and self.closestEnemy ~= nil then
-                    target = self.closestEnemy.position + vector(math.random(-35, 35), math.random(-35, 35)) + WINDOW_OFFSET
+                    target = self.closestEnemy.position + vector(math.random(-35, 35), math.random(-35, 35))
                 else
 					local mx, my = game.camera:mousePosition() -- find where the mouse is in the game
 					mx, my = mx, my
