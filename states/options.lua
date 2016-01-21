@@ -428,8 +428,11 @@ function options:load()
 end
 
 function options:getConfig()
-	assert(self:configFileExists(), 'Tried to load config file, but it does not exist.')
-	return love.filesystem.load(self.file)()
+	if not self:configFileExists() then
+		return self:getDefaultConfig()
+	else
+		return love.filesystem.load(self.file)()
+	end
 end
 
 function options:configFileExists()
