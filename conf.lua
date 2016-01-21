@@ -1,5 +1,9 @@
 function love.conf(t)
-	t.identity = "super_shooter-1.1"                    -- The name of the save directory (string)
+	if love._version_minor <= 9 then
+        error("This game is designed for Love2D 0.10.0 and up, you are running:"..love._version_major.."."..love._version_minor.."."..love._version_revision)
+    end
+
+    t.identity = "super_shooter"                    -- The name of the save directory (string)
     t.version = "0.10.0"                -- The LÖVE version this game was made for (string)
     t.console = false                   -- Attach a console (boolean, Windows only)
     t.accelerometerjoystick = false     -- Enable the accelerometer on iOS and Android by exposing it as a Joystick (boolean)

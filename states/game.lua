@@ -2,8 +2,6 @@ game = {}
 objects = {}
 bullets = {}
 
-WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2) -- used for screen size
-
 function game:addObject(obj, tabl)
     if tabl == nil then
         tabl = objects
@@ -54,7 +52,8 @@ function game:init()
 end
 
 function game:reset()
-	self.worldSize = vector(3000, 2000)
+    options:load()
+    self.worldSize = vector(3000, 2000)
 	
     objects = {}
     bullets = {}
@@ -63,30 +62,10 @@ function game:reset()
     quadtree:subdivide()
 	-- player will be added later, in character select
 
-    if self.effectsEnabled == nil then
-        self.effectsEnabled = false
-    end
-
-    if self.trackpadMode == nil then
-        self.trackpadMode = false
-    end
-
     self:compileShaders()
-	
-	if self.displayFPS == nil then
-		self.displayFPS = false
-	end
-	if self.azertyMode == nil then
-		self.azertyMode = false
-	end
-	if self.cameraZoom == nil then
-		self.cameraZoom = 1
-	end
+    self:toggleEffects()
 	
 	self.camera.scale = self.cameraZoom
-
-    self:toggleEffects()
-
     self.background = GridBackground:new()
 
     self.time = 0
@@ -98,7 +77,6 @@ function game:reset()
     self._postWaveCalled = false
     self._preWaveCalled = false
     self.boss = nil
-	
 	
 	self.camera.smoother = function (dx, dy)
         local dt = love.timer.getDelta() * self.camera.scale * 1.5
@@ -126,71 +104,41 @@ function game:enter(prev)
 end
 
 function game:compileShaders()
-    shaders = {}
-
-    local bloom = shine.bloom()
-    bloom.parameters = {
-        samples = 4,
-        quality = 1,
+    local shaders = {
+        bloom = shine.bloom{
+            samples = 4,
+            quality = 1,
+        },
+        chroma = shine.separate_chroma{
+            radius = -1,
+            angle = 5*math.pi/4
+        },
+        blur = shine.gaussianblur{
+            sigma = 4
+        },
     }
-    shaders.bloom = bloom
 
-    local chroma = shine.separate_chroma()
-    chroma.parameters = {
-        radius = -1,
-        angle = 5*math.pi/4
-    }
-    shaders.chroma = chroma
-
-    local blur = shine.gaussianblur()
-    blur.parameters = {
-        sigma = 4
-    }
-    shaders.blur = blur
-
-    pause_effect = bloom:chain(blur)
-    default_effect = bloom
+    pause_effect = shaders.bloom:chain(shaders.blur)
+    default_effect = shaders.bloom
     post_effect = default_effect
 end
 
-function game:resized()
-    --local dx = WINDOW_OFFSET.x*2 - love.graphics.getWidth()
-    --local dy = WINDOW_OFFSET.y*2 - love.graphics.getHeight()
-    --quadtree:resize(dx, dy)
-
-    WINDOW_OFFSET = vector(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
-end
-
 function game:update(dt)
-    -- this triggers when the game resolution changes
-    --if WINDOW_OFFSET.x ~= love.graphics.getWidth()/2 or WINDOW_OFFSET.y ~= love.graphics.getHeight()/2 or
-    --quadtree.width ~= love.graphics.getWidth()+50 or quadtree.height ~= love.graphics.getHeight()+50 then
-     --   self:resized()
-    --end
-    
     if player.health <= 0 then -- death condition
         state.switch(restart)
     end
 
-    for i,v in ipairs(objects) do
-        v:update(dt)
-        quadtree:updateObject(v)
-    end
-
-    for i, v in ipairs(objects) do
-        if v.destroy then
-            self:removeObject(v)
+    local toUpdate = {objects, bullets}
+    for i, tabl in ipairs(toUpdate) do
+        for j, obj in ipairs(tabl) do
+            obj:update(dt)
+            quadtree:updateObject(obj)
         end
-    end
 
-    for i,v in ipairs(bullets) do
-        v:update(dt)
-        quadtree:updateObject(v)
-    end
-
-    for i, v in ipairs(bullets) do
-        if v.destroy then
-            self:removeBullet(v)
+        for j, obj in ipairs(tabl) do
+            if obj.destroy then
+                self:removeObject(obj)
+            end
         end
     end
 
@@ -230,7 +178,6 @@ function game:update(dt)
             self:onWaveEnd()
         end
     end
-
 	
 	-- baddddd
 	local scale = 1/self.camera.scale
@@ -240,8 +187,6 @@ function game:update(dt)
 	local scalarHalfHeight = height * scale
 	
 	local px, py = player.position.x, player.position.y
-	
-	
 	local nx, ny = px, py
 	
 	if px + scalarHalfWidth > self.worldSize.x/2 then
@@ -355,6 +300,7 @@ function game:draw()
     post_effect(function()
 
     local dx, dy = self.screenShake:getOffset()
+    love.graphics.translate(dx, dy)
 	self.camera:attach()
 
     self.background:draw()
@@ -378,7 +324,8 @@ function game:draw()
 	love.graphics.line(-self.worldSize.x/2, -self.worldSize.y/2, self.worldSize.x/2, -self.worldSize.y/2, self.worldSize.x/2, self.worldSize.y/2, -self.worldSize.x/2, self.worldSize.y/2, -self.worldSize.x/2, -self.worldSize.y/2)
 	
 	self.camera:detach()
-	
+	love.graphics.translate(0, 0)
+
     self.floatingMessages:drawStatic()
 
     self.hurt:draw()
@@ -396,9 +343,8 @@ function game:draw()
 	
 	self.highScore:draw()
 
-    love.graphics.setFont(font[16])
 	if self.displayFPS then
-		love.graphics.print(love.timer.getFPS() .. " FPS", 5, 5)
+        self:drawFPS()
 	end
 
     end) -- end post effect
@@ -455,6 +401,11 @@ function game:drawPrimaryText()
     love.graphics.setFont(font[48])
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print(self.waveText, love.graphics.getWidth()/2 - love.graphics.getFont():getWidth(self.waveText)/2, 100)
+end
+
+function game:drawFPS()
+    love.graphics.setFont(font[16])
+    love.graphics.print(love.timer.getFPS() .. " FPS", 5, 5)
 end
 
 function game:setupWaves()
@@ -601,3 +552,4 @@ function game:spawnEnemies(w)
         self.boss = self:addObject(b)
     end
 end
+

@@ -78,11 +78,11 @@ function Megabyte:update(dt)
     if self.heat <= 0 and not (self.spawnTimer.running < 2.5) then
         game:addBullet(Bullet:new(
             self.position,
-            vector(self.x+math.cos(self.fireAngle)*250, self.y+math.sin(self.fireAngle)*250) + WINDOW_OFFSET
+            vector(self.x+math.cos(self.fireAngle)*250, self.y+math.sin(self.fireAngle)*250)
         ):setLife(5):setSource(self):setDamage(10):setSpeed(350))
         game:addBullet(Bullet:new(
             self.position,
-            vector(self.x+math.cos(self.fireAngle-math.pi)*250, self.y+math.sin(self.fireAngle-math.pi)*250) + WINDOW_OFFSET
+            vector(self.x+math.cos(self.fireAngle-math.pi)*250, self.y+math.sin(self.fireAngle-math.pi)*250)
         ):setLife(5):setSource(self):setDamage(10):setSpeed(350))
         self.heat = self.rateOfFire
 
@@ -90,7 +90,7 @@ function Megabyte:update(dt)
         if math.random() > .9 then
             game:addBullet(Bullet:new(
                 self.position,
-                player.position + (player.velocity*player.position:dist(self.position)/350) + WINDOW_OFFSET
+                player.position + (player.velocity*player.position:dist(self.position)/350)
             ):setLife(6):setSource(self):setDamage(15):setSpeed(350))
         end
     end
