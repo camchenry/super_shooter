@@ -52,7 +52,8 @@ function game:init()
 end
 
 function game:reset()
-	self.worldSize = vector(3000, 2000)
+    options:load()
+    self.worldSize = vector(3000, 2000)
 	
     objects = {}
     bullets = {}
@@ -61,30 +62,10 @@ function game:reset()
     quadtree:subdivide()
 	-- player will be added later, in character select
 
-    if self.effectsEnabled == nil then
-        self.effectsEnabled = false
-    end
-
-    if self.trackpadMode == nil then
-        self.trackpadMode = false
-    end
-
     self:compileShaders()
-	
-	if self.displayFPS == nil then
-		self.displayFPS = false
-	end
-	if self.azertyMode == nil then
-		self.azertyMode = false
-	end
-	if self.cameraZoom == nil then
-		self.cameraZoom = 1
-	end
+    self:toggleEffects()
 	
 	self.camera.scale = self.cameraZoom
-
-    self:toggleEffects()
-
     self.background = GridBackground:new()
 
     self.time = 0
@@ -362,9 +343,8 @@ function game:draw()
 	
 	self.highScore:draw()
 
-    love.graphics.setFont(font[16])
 	if self.displayFPS then
-		love.graphics.print(love.timer.getFPS() .. " FPS", 5, 5)
+        self:drawFPS()
 	end
 
     end) -- end post effect
@@ -421,6 +401,11 @@ function game:drawPrimaryText()
     love.graphics.setFont(font[48])
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print(self.waveText, love.graphics.getWidth()/2 - love.graphics.getFont():getWidth(self.waveText)/2, 100)
+end
+
+function game:drawFPS()
+    love.graphics.setFont(font[16])
+    love.graphics.print(love.timer.getFPS() .. " FPS", 5, 5)
 end
 
 function game:setupWaves()
@@ -567,3 +552,4 @@ function game:spawnEnemies(w)
         self.boss = self:addObject(b)
     end
 end
+
