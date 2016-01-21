@@ -38,12 +38,12 @@ function Megabyte:spawnMinions(inner, outer)
     local d2 = 2*math.pi/numMinions2
 
     for i=1, numMinions do
-        local m = game:addObject(MegabyteEnemy:new(65, d*i, math.rad(15), self))
+        local m = game:add(MegabyteEnemy:new(65, d*i, math.rad(15), self))
         table.insert(self.minions, m)
     end
 
     for i=1, numMinions2 do
-        local m = game:addObject(MegabyteEnemy:new(15, d2*i, math.rad(25), self))
+        local m = game:add(MegabyteEnemy:new(15, d2*i, math.rad(25), self))
         table.insert(self.minions, m)
     end
 end

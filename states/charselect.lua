@@ -151,7 +151,7 @@ function charSelect:enter()
 	self.continueButton:centerAround(love.graphics.getWidth()/2, love.graphics.getHeight()-70)
 	self.continueButton.activated = function()
 		if self.selectedCharacter ~= nil then
-			player = game:addObject(self.tempPlayer)
+			player = game:add(self.tempPlayer)
 			state.pop()
 		end
 	end

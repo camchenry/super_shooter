@@ -47,6 +47,9 @@ require 'entities.ui.checkbox'
 require 'entities.ui.input'
 require 'entities.ui.list'
 require 'entities.ui.slider'
+-- game modes
+require 'entities.mode.gamemode'
+require 'entities.mode.survival'
 
 function love.load()
 	love.window.setTitle(config.windowTitle)
