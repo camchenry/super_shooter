@@ -92,15 +92,15 @@ end
 function Survival:setupWaves()
     game.waves = {}
     game.waves[1] = {
-        blobs = 15,
-        sweepers = 0,
+        --blobs = 15,
+        sweepers = 7,
 		healers = 0,
 		tanks = 0,
     }
     game.waves[2] = {
-        blobs = 25,
-        sweepers = 0,
-		tanks = 1,
+        blobs = 15, -- 25,
+        sweepers = 10,
+		tanks = 0, -- 1,
     }
     game.waves[3] = {
         blobs = 18,
@@ -190,10 +190,17 @@ function Survival:spawnEnemies()
 
         for i=1, num do
             local y = h*(i-1) + margin + h/2
-
+			local percent = i / num -- used for circular movement
+			
+			local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2), 
+                             math.random(-game.worldSize.y/2, game.worldSize.y/2))
+            p = p + (p - player.position):normalized()*150
+			
+			
             game:add(Sweeper:new(
-                vector(leftEdge - game.worldSize.x/2, y - game.worldSize.y/2),
-                vector(rightEdge - game.worldSize.x/2, y - game.worldSize.y/2)
+                p,
+				percent,
+				num
             ))
         end
     end

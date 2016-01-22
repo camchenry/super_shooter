@@ -140,7 +140,7 @@ end
 
 Sweeper = class('Sweeper', Enemy)
 
-function Sweeper:initialize(start, finish)
+function Sweeper:initialize(start, percent, num)
     Enemy.initialize(self, start)
     self.originalColor = {241, 196, 0, 255}
     self.radius = 18
@@ -154,21 +154,31 @@ function Sweeper:initialize(start, finish)
 
     self.position = start
     self.start = start
-    self.finish = finish
     self.target = finish
-    self.speed = 3000
+    self.speed = 900
     self.friction = 3
     self.knockbackResistance = 1
+	
+	self.percent = percent
+	self.rotateSpeed = 1/8
+	self.countSimilar = num
 
-    self.touchDamage = player.maxHealth
+    --self.touchDamage = player.maxHealth
+	self.touchDamage = 0
 
     self.health = 75
     self.maxHealth = 75
+	
+	signal.register('enemyDeath', function(enemy)
+        if enemy.class == Sweeper then
+			self.countSimilar = self.countSimilar - 1
+		end
+    end)
 end
 
 function Sweeper:update(dt)
     Enemy.update(self, dt)
-
+	--[[
     if self.position:dist(self.target) < 9 then
         if self.target == self.finish then
             self.target = self.start
@@ -179,6 +189,17 @@ function Sweeper:update(dt)
     end
 
     self.acceleration = (self.target - self.position):normalized() * self.speed
+	]]
+	
+	
+	local radius = 20 * self.countSimilar + 40
+	local offset = vector(math.cos(self.percent * math.pi * 2), math.sin(self.percent * math.pi * 2)) * radius
+	
+    self.moveTowardsPlayer = (player.position - self.position + offset):normalized()
+	
+    self.acceleration = (self.moveTowardsPlayer):normalized() * self.speed
+	
+	self.percent = self.percent + dt * self.rotateSpeed
 end
 
 function Sweeper:handleCollision(obj)

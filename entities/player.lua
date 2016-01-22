@@ -137,7 +137,7 @@ function Player:update(dt)
 	end
 
     if self.health <= 0 then
-        game:removeObject(self)
+        game:remove(self)
         signal.emit('playerDeath')
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
