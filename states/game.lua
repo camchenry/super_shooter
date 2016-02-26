@@ -45,8 +45,6 @@ function game:init()
     self.floatingMessages = FloatingMessages:new()
     self.highScore = HighScore:new()
     highscoreList:init()
-
-    signal.emit('waveEnded')
 	
 	self.camera = Camera(0, 0)
 	self.camera.scale = self.cameraZoom

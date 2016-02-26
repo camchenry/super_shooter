@@ -159,8 +159,9 @@ function Sweeper:initialize(start, percent, num)
     self.friction = 3
     self.knockbackResistance = 1
 	
-	self.percent = percent
-	self.rotateSpeed = 1/8
+	self.angle = math.random(0, 360)
+    self.orbitRadius = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2)) 
+	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
 	self.countSimilar = num
 
     --self.touchDamage = player.maxHealth
@@ -178,28 +179,12 @@ end
 
 function Sweeper:update(dt)
     Enemy.update(self, dt)
-	--[[
-    if self.position:dist(self.target) < 9 then
-        if self.target == self.finish then
-            self.target = self.start
-        else
-            self.target = self.finish
-        end
-        self.velocity.x = 0
-    end
-
-    self.acceleration = (self.target - self.position):normalized() * self.speed
-	]]
 	
-	
-	local radius = 20 * self.countSimilar + 40
-	local offset = vector(math.cos(self.percent * math.pi * 2), math.sin(self.percent * math.pi * 2)) * radius
-	
-    self.moveTowardsPlayer = (player.position - self.position + offset):normalized()
-	
-    self.acceleration = (self.moveTowardsPlayer):normalized() * self.speed
-	
-	self.percent = self.percent + dt * self.rotateSpeed
+    self.position = vector(
+        math.cos(self.angle) * self.orbitRadius,
+        math.sin(self.angle) * self.orbitRadius
+    )
+	self.angle = self.angle + dt * self.rotateSpeed
 end
 
 function Sweeper:handleCollision(obj)
@@ -209,9 +194,11 @@ end
 function Sweeper:draw()
     Enemy.draw(self)
 
+    love.graphics.setColor(255, 255, 255, 64)
+    love.graphics.setLineWidth(1)
+    love.graphics.circle("line", 0, 0, self.orbitRadius)
+
     love.graphics.setColor(255, 255, 255)
-    --love.graphics.circle("fill", self.start.x, self.start.y, 10)
-    --love.graphics.circle("fill", self.finish.x, self.finish.y, 10)
 end
 
 Healer = class('Healer', Enemy)
