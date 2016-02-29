@@ -191,7 +191,9 @@ function Survival:spawnEnemies()
 				local pLast = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
 												 math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
 				--p = p + (p - player.position):normalized()*150
-				local radiusLast = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))*.75
+				--local radiusLast = math.random(400, math.min(game.worldSize.x/2, game.worldSize.y/2))*.75
+				local radiusLast = math.random(200, 400)
+				local angleLast = math.rad(math.random(0, 360))
 
 				local p = pLast
 				local radius = radiusLast
@@ -200,8 +202,10 @@ function Survival:spawnEnemies()
 					if j > 1 then -- don't change the first circle, it's already been set
 						--radius = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))/3
 						radius = radiusLast*math.random(.7, .95)
-						local changeAngle = math.rad(math.random(0, 360))
-						local posChange = vector(math.sin(changeAngle)*(radius+radiusLast), math.cos(changeAngle)*(radius+radiusLast))
+						--local changeAngle = angleLast + math.rad(math.random(-30, 30))
+						local changeAngle = -pLast:angleTo()
+						local extraDist = math.random(20, 50)
+						local posChange = vector(math.sin(changeAngle)*(radius+radiusLast+extraDist), math.cos(changeAngle)*(radius+radiusLast+extraDist))
 
 						p = pLast + posChange
 
@@ -210,6 +214,7 @@ function Survival:spawnEnemies()
 					end
 
         	for i=1, num do
+						radius = radius*.9
             local y = h*(i-1) + margin + h/2
 						local percent = i / (num) -- used for circular movement
 

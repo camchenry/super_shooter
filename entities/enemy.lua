@@ -158,7 +158,7 @@ function Sweeper:initialize(start, percent, num, radius)
   	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
   	self.countSimilar = num
 
-    self.rotateSpeed = self.rotateSpeed*(math.sqrt(self.orbitRadius)/12)
+    self.rotateSpeed = self.rotateSpeed*(self.orbitRadius/20)
 
     self.position = start
     self.start = start
