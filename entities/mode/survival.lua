@@ -170,7 +170,7 @@ function Survival:spawnEnemies()
 
     if currentWave.blobs ~= nil then
         for i=1, currentWave.blobs do
-            local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2), 
+            local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2),
                              math.random(-game.worldSize.y/2, game.worldSize.y/2))
             p = p + (p - player.position):normalized()*150
             local b = Blob:new(p)
@@ -188,36 +188,60 @@ function Survival:spawnEnemies()
         local leftEdge = margin
         local rightEdge = w - margin
 
-        for i=1, num do
+				local margin = math.min(game.worldSize.x/2, game.worldSize.y/2)
+
+				-- initial position and radius for the first circle
+				local pLast = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
+												 math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
+				--p = p + (p - player.position):normalized()*150
+				local radiusLast = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))*.75
+
+				local p = pLast
+				local radius = radiusLast
+
+				for j = 1, 4 do
+					if j > 1 then -- don't change the first circle, it's already been set
+						--radius = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))/3
+						radius = radiusLast*math.random(.7, .95)
+						local changeAngle = math.rad(math.random(0, 360))
+						local posChange = vector(math.sin(changeAngle)*(radius+radiusLast), math.cos(changeAngle)*(radius+radiusLast))
+
+						p = pLast + posChange
+
+						pLast = p
+						radiusLast = radius
+					end
+
+        	for i=1, num do
             local y = h*(i-1) + margin + h/2
-			local percent = i / num -- used for circular movement
-			
-			local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2), 
-                             math.random(-game.worldSize.y/2, game.worldSize.y/2))
-            p = p + (p - player.position):normalized()*150
-			
-			
+						local percent = i / (num) -- used for circular movement
+
+
+
+
             game:add(Sweeper:new(
                 p,
-				percent,
-				num
+								percent,
+								num,
+								radius
             ))
-        end
+        	end
+				end
     end
-	
+
 	if currentWave.healers ~= nil then
         for i=1, currentWave.healers do
-            local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2), 
+            local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2),
                              math.random(-game.worldSize.y/2, game.worldSize.y/2))
             p = p + (p - player.position):normalized()*250
             local b = Healer:new(p)
             game:add(b)
         end
     end
-	
+
 	if currentWave.tanks ~= nil then
         for i=1, currentWave.tanks do
-            local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2), 
+            local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2),
                              math.random(-game.worldSize.y/2, game.worldSize.y/2))
             p = p + (p - player.position):normalized()*150
             local b = Tank:new(p)
@@ -227,7 +251,7 @@ function Survival:spawnEnemies()
 
     if currentWave.ninjas ~= nil then
         for i=1, currentWave.ninjas do
-            local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2), 
+            local p = vector(math.random(-game.worldSize.x/2, game.worldSize.x/2),
                              math.random(-game.worldSize.y/2, game.worldSize.y/2))
             p = p + (p - player.position):normalized()*150
             local b = Ninja:new(p)
@@ -248,7 +272,7 @@ function Survival:draw()
 
     if game.boss ~= nil then
         self:drawBossHealthBar()
-    end 
+    end
 
     self:drawPlayerHealthBar()
     self:drawBossIncoming()

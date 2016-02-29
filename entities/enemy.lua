@@ -15,9 +15,9 @@ function Enemy:initialize(position)
 	self.invincible = false
     self.knockbackResistance = 0.0
     self.damageResistance = 0.0
-	
+
 	--self.minimumAlpha = 100
-	
+
 	self.hue = 0
 	self.saturation = 100
 	self.lightness = 40
@@ -31,11 +31,11 @@ function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiu
     local saturationVariance = saturationDiff or 5
     local lightnessVariance = lightnessDiff or 5
     local radiusVariance = radiusDiff or 0.1
-	
+
 	self.hue = self.hue + math.random(-hueVariance, hueVariance)
 	self.saturation = self.saturation + math.random(-saturationVariance, saturationVariance)
 	self.lightness = self.lightness + math.random(-lightnessVariance, lightnessVariance)
-    
+
     self.radius = self.radius + math.random(-self.radius*radiusVariance, self.radius*radiusVariance)
 end
 
@@ -59,7 +59,7 @@ function Enemy:update(dt)
     --self.color[4] = math.floor((255-self.minimumAlpha)*(self.health/self.maxHealth) + self.minimumAlpha)
 	local saturation = self.saturation * self.health/self.maxHealth
 	local lightness = (self.lightness - self.minLightness) * self.health/self.maxHealth + self.minLightness
-	
+
 	local r, g, b = husl.husl_to_rgb(self.hue, saturation, lightness)
 	self.color = {r*255, g*255, b*255, self.color[4]}
 
@@ -115,7 +115,7 @@ function Blob:initialize(position)
 	self.hue = 10
 	self.saturation = 80
 	self.lightness = 50
-	
+
     self:randomizeAppearance(15, 15, 10, .2)
 
     self.speed = 750
@@ -135,22 +135,30 @@ function Blob:update(dt)
 end
 
 function Blob:handleCollision(obj)
-    
+
 end
 
 Sweeper = class('Sweeper', Enemy)
 
-function Sweeper:initialize(start, percent, num)
+function Sweeper:initialize(start, percent, num, radius)
     Enemy.initialize(self, start)
     self.originalColor = {241, 196, 0, 255}
     self.radius = 18
     self.sides = 3
-	
-	self.hue = 65
-	self.saturation = 80
-	self.lightness = 80
-	
+
+    self.hue = 65
+    self.saturation = 80
+    self.lightness = 80
+
     self:randomizeAppearance(5, 10, 5, .2)
+
+    --self.angle = math.random(0, 360)
+    self.angle = percent * 2 * math.pi
+    self.orbitRadius = radius or math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))
+  	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
+  	self.countSimilar = num
+
+    self.rotateSpeed = self.rotateSpeed*(math.sqrt(self.orbitRadius)/12)
 
     self.position = start
     self.start = start
@@ -158,18 +166,13 @@ function Sweeper:initialize(start, percent, num)
     self.speed = 900
     self.friction = 3
     self.knockbackResistance = 1
-	
-	self.angle = math.random(0, 360)
-    self.orbitRadius = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2)) 
-	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
-	self.countSimilar = num
 
     --self.touchDamage = player.maxHealth
 	self.touchDamage = 0
 
     self.health = 75
     self.maxHealth = 75
-	
+
 	signal.register('enemyDeath', function(enemy)
         if enemy.class == Sweeper then
 			self.countSimilar = self.countSimilar - 1
@@ -179,8 +182,8 @@ end
 
 function Sweeper:update(dt)
     Enemy.update(self, dt)
-	
-    self.position = vector(
+
+    self.position = self.start + vector(
         math.cos(self.angle) * self.orbitRadius,
         math.sin(self.angle) * self.orbitRadius
     )
@@ -196,7 +199,7 @@ function Sweeper:draw()
 
     love.graphics.setColor(255, 255, 255, 64)
     love.graphics.setLineWidth(1)
-    love.graphics.circle("line", 0, 0, self.orbitRadius)
+    love.graphics.circle("line", self.start.x, self.start.y, self.orbitRadius)
 
     love.graphics.setColor(255, 255, 255)
 end
@@ -208,11 +211,11 @@ function Healer:initialize(position)
     self.originalColor = {77, 214, 79, 255}
     self.radius = 11
     self.sides = 5
-	
+
 	self.hue = 125
 	self.saturation = 80
 	self.lightness = 50
-	
+
     self:randomizeAppearance(15, 15, 10, .2)
 
     self.speed = 325
@@ -223,7 +226,7 @@ function Healer:initialize(position)
     self.maxHealth = 80
     self.health = self.maxHealth
     self.knockbackResistance = 0.5
-	
+
 	self.healRate = 15
     self.healRadius = 130
 end
@@ -276,11 +279,11 @@ function Tank:initialize(position)
     self.originalColor = {122, 214, 210, 255}
     self.radius = 20
     self.sides = 6
-	
+
 	self.hue = 230
 	self.saturation = 80
 	self.lightness = 50
-	
+
     self:randomizeAppearance(20, 15, 10, .2)
 
     self.speed = 350
@@ -318,13 +321,13 @@ function Tank:handleCollision(obj)
             r:rotate_inplace(math.rad(math.random(-90, 90)))
 
             local offset = r
-			
+
             local b = game:addBullet(Bullet:new(
                 obj.position,
                 player.position + offset,
                 self.velocity)
             )
-			
+
             b:setSource(self)
             b:setDamage(obj.damage*0.08)
             b:setSpeed(obj.velocity:len()*1.4)
@@ -345,9 +348,9 @@ function Ninja:initialize(position)
 	self.hue = 280
 	self.saturation = 20
 	self.lightness = 50
-	
+
     self:randomizeAppearance(10, 15, 10, .2)
-	
+
     self.speed = 800
     self.doTeleport = false
     self.drawTeleportLineTime = 0
@@ -419,7 +422,7 @@ end
 function Ninja:handleCollision(obj)
     if obj:isInstanceOf(Bullet) then
         if obj.source ~= nil and obj.source:isInstanceOf(self.class) then return end
-        if self.boss ~= nil then    
+        if self.boss ~= nil then
             if obj.source == self.boss then return end
         end
 
