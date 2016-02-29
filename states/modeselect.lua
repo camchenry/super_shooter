@@ -1,53 +1,24 @@
-menu = {}
+modeselect = {}
 
-menu.items = {
+modeselect.items = {
     {
-        title = "NEW GAME",
+        title = "SURVIVAL",
         action = function()
-            state.switch(modeselect)
+            state.switch(game, Survival)
         end,
     },
 
     {
-        title = "HOW TO PLAY",
+        title = "OTHER",
         action = function()
-            state.push(info)
-        end,
-    },
-	
-	{
-        title = "HIGH SCORES",
-        action = function()
-			state.push(highscoreList)
-        end,
-    },
-
-    {
-        title = "OPTIONS",
-        action = function()
-            state.push(options)
-        end,
-    },
-
-
-    {
-        title = "CREDITS",
-        action = function()
-			state.push(credits)
-        end,
-    },
-
-    {
-        title = "QUIT",
-        action = function()
-            love.event.quit()
+            state.push(game, Gamemode)
         end,
     },
 }
 
-menu.buttons = {}
+modeselect.buttons = {}
 
-function menu:init()
+function modeselect:init()
 	local buttonHeight = 50
 	self.lineLengthOffset = 9
 
@@ -55,18 +26,16 @@ function menu:init()
         table.insert(self.buttons, Button:new(item.title, 75, buttonHeight*(i-1) + 250, nil, buttonHeight, font[30], item.action))
     end
 
+    self.back = Button:new("< BACK", 75, love.graphics.getHeight() - 80)
+    self.back.activated = function()
+        state.switch(menu)
+    end
+
     self.title = 'SUPER SHOOTER'
     self.titleFont = fontBold[72]
-    self.titleX = love.graphics.getWidth()/2 - self.titleFont:getWidth(self.title)/2
-    self.titleTween = tween(1.2, self, {titleX = 75}, "inOutCubic")
-	
-	-- reveal the menu on game launch
-	self.headerTweenAmount = love.graphics.getHeight() - (120+55)
-	self.headerTween = tween(2, self, {headerTweenAmount = 0}, "inOutCubic", function() end)
 end
 
-function menu:enter()
-    signal.emit('menuEntered')
+function modeselect:enter()
     love.mouse.setCursor(cursor)
 	
 	self.time = 0
@@ -78,12 +47,14 @@ function menu:enter()
 	self.lineY2 = self.buttons[#self.buttons].y + self.buttons[#self.buttons].height
 end
 
-function menu:update(dt)
+function modeselect:update(dt)
 	self.time = self.time+dt
 
     for i, button in pairs(self.buttons) do
         button:update(dt)
     end
+
+    self.back:update(dt)
 	
 	-- moving selector
 	if not self.lineTween then
@@ -103,32 +74,33 @@ function menu:update(dt)
 	end
 end
 
-function menu:keyreleased(key, code)
+function modeselect:keyreleased(key, code)
 
 end
 
-function menu:mousepressed(x, y, mbutton)
+function modeselect:mousepressed(x, y, mbutton)
     for i, button in pairs(self.buttons) do
         button:mousepressed(x, y, mbutton)
     end
+    self.back:mousepressed(x, y, mbutton)
 end
 
-function menu:draw()
+function modeselect:draw()
     love.graphics.setColor(255, 255, 255)
 
     for i, button in pairs(self.buttons) do
         button:draw()
     end
+
+    self.back:draw()
 	
 	local lineOffset = self.lineLengthOffset
 	love.graphics.line(self.lineX, self.lineY1+lineOffset, self.lineX, self.lineY2-lineOffset)
 	
 	love.graphics.setColor(255, 255, 255)
-    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 120+55 + math.floor(self.headerTweenAmount))
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 175)
 
     love.graphics.setFont(self.titleFont)
     love.graphics.setColor(0, 0, 0)
-	local x = self.titleX
-	x = math.floor(x)
-    love.graphics.print(self.title, x, 70)
+    love.graphics.print(self.title, 75, 70)
 end

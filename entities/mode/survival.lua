@@ -5,7 +5,6 @@ function Survival:initialize()
 end
 
 function Survival:reset()
-	game.time = 0
 	game.firstWave = false
 	game.startingWave = 0
 	game.wave = game.startingWave
@@ -19,8 +18,6 @@ function Survival:reset()
 end
 
 function Survival:update(dt)
-    game.time = game.time + dt
-
 	if game.waveTimer then
         game.prevT = game.waveTimer.running
 

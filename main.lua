@@ -23,6 +23,7 @@ require 'states.charselect'
 require 'states.highscoreList'
 require 'states.info'
 require 'states.credits'
+require 'states.modeselect'
 
 -- entities
 require 'entities.entity'

@@ -62,7 +62,12 @@ function game:reset()
     quadtree:subdivide()
 	-- player will be added later, in character select
 
-    self.mode = Survival:new()
+    self.time = 0
+
+    if self.currentMode == nil then
+        self.currentMode = Survival
+    end
+    self.mode = self.currentMode:new()
     self.mode:reset()
 
     self:compileShaders()
@@ -79,12 +84,16 @@ function game:reset()
     signal.emit('newGame')
 end
 
-function game:enter(prev)
+function game:enter(prev, mode)
     love.keyboard.setKeyRepeat(true)
     love.mouse.setVisible(true)
     love.mouse.setCursor(crosshair)
 
     self:compileShaders()
+
+    if mode then
+        self.currentMode = mode
+    end
 
     if prev ~= pause then
 	    state.push(charSelect)
@@ -113,6 +122,8 @@ function game:compileShaders()
 end
 
 function game:update(dt)
+    self.time = self.time + dt
+
     if player.health <= 0 then
         state.switch(restart)
     end
