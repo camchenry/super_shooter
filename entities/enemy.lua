@@ -160,7 +160,7 @@ function Sweeper:initialize(start, percent, num, radius)
 
     self.rotateSpeed = self.rotateSpeed*(self.orbitRadius/20)
 
-    self.position = start
+    --self.position = start
     self.start = start
     self.target = finish
     self.speed = 900
@@ -183,11 +183,16 @@ end
 function Sweeper:update(dt)
     Enemy.update(self, dt)
 
-    self.position = self.start + vector(
+    local position = vector(
         math.cos(self.angle) * self.orbitRadius,
         math.sin(self.angle) * self.orbitRadius
     )
-	self.angle = self.angle + dt * self.rotateSpeed
+
+    self.moveTowardsPosition = (self.start - self.position + position):normalized()
+    local speed = math.atan2(self.position.y-self.moveTowardsPosition.y, self.position.x-self.moveTowardsPosition.x) + 4
+    self.acceleration = (self.moveTowardsPosition)
+
+  	self.angle = self.angle + dt * self.rotateSpeed
 end
 
 function Sweeper:handleCollision(obj)

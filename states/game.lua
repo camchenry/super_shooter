@@ -45,7 +45,7 @@ function game:init()
     self.floatingMessages = FloatingMessages:new()
     self.highScore = HighScore:new()
     highscoreList:init()
-	
+
 	self.camera = Camera(0, 0)
 	self.camera.scale = self.cameraZoom
 end
@@ -53,7 +53,7 @@ end
 function game:reset()
     options:load()
     self.worldSize = vector(3000, 2000)
-	
+
     objects = {}
     bullets = {}
     quadtree = QuadTree:new(-self.worldSize.x/2-25, -self.worldSize.y/2-25, self.worldSize.x+50, self.worldSize.y+50)
@@ -73,8 +73,8 @@ function game:reset()
     self:compileShaders()
     self:toggleEffects()
     self.background = GridBackground:new()
-	
-	self.camera.scale = self.cameraZoom	
+
+	self.camera.scale = self.cameraZoom
 	self.camera.smoother = function (dx, dy)
         local dt = love.timer.getDelta() * self.camera.scale * 1.5
         return dx*dt, dy*dt
@@ -135,9 +135,10 @@ function game:update(dt)
             quadtree:updateObject(obj)
         end
 
-        for j, obj in ipairs(tabl) do
+        for j = #tabl, 1, -1 do
+            local obj = tabl[j]
             if obj.destroy then
-                self:remove(obj)
+              self:remove(obj, tabl)
             end
         end
     end
@@ -158,28 +159,28 @@ end
 function game:updateCamera(dt)
     -- baddddd
     local scale = 1/self.camera.scale
-    
+
     local width, height = love.graphics.getWidth(), love.graphics.getHeight()
     local scalarHalfWidth = width * scale / 2
     local scalarHalfHeight = height * scale / 2
-    
+
     local px, py = player.position.x, player.position.y
     local nx, ny = px, py
-    
+
     if px + scalarHalfWidth > self.worldSize.x/2 then
         nx = self.worldSize.x/2 - scalarHalfWidth
     elseif px - scalarHalfWidth < -self.worldSize.x/2 then
         nx = -self.worldSize.x/2 + scalarHalfWidth
     end
-    
+
     if py + scalarHalfHeight > self.worldSize.y/2 then
         ny = self.worldSize.y/2 - scalarHalfHeight
     elseif py - scalarHalfHeight < -self.worldSize.y/2 then
         ny = -self.worldSize.y/2 + scalarHalfHeight
     end
-    
+
     self.camera:lockPosition(nx, ny) -- aim the camera at the player
-    
+
     if width * scale >= self.worldSize.x then
         self.camera.x = 0
     end
@@ -248,7 +249,7 @@ function game:draw()
         for i,v in ipairs(bullets) do
             v:draw()
         end
-    	
+
         self.floatingMessages:drawDynamic()
         self:drawWorldBorders()
 
@@ -277,9 +278,9 @@ end
 function game:drawWorldBorders()
     love.graphics.setColor(255, 255, 255)
     love.graphics.setLineWidth(4)
-    love.graphics.line(-self.worldSize.x/2, -self.worldSize.y/2, 
-                        self.worldSize.x/2, -self.worldSize.y/2, 
-                        self.worldSize.x/2,  self.worldSize.y/2, 
-                       -self.worldSize.x/2,  self.worldSize.y/2, 
+    love.graphics.line(-self.worldSize.x/2, -self.worldSize.y/2,
+                        self.worldSize.x/2, -self.worldSize.y/2,
+                        self.worldSize.x/2,  self.worldSize.y/2,
+                       -self.worldSize.x/2,  self.worldSize.y/2,
                        -self.worldSize.x/2, -self.worldSize.y/2)
 end
