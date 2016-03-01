@@ -192,37 +192,22 @@ function Survival:spawnEnemies()
 												 math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
 				--p = p + (p - player.position):normalized()*150
 				--local radiusLast = math.random(400, math.min(game.worldSize.x/2, game.worldSize.y/2))*.75
-				local radiusLast = math.random(200, 400)
-				local angleLast = math.rad(math.random(0, 360))
 
-				local p = pLast
-				local radius = radiusLast
+				for i = 1, num do
+					local circleCount = math.random(1, num-i)
+					i = i + circleCount
 
-				for j = 1, 4 do
-					if j > 1 then -- don't change the first circle, it's already been set
-						--radius = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))/3
-						radius = radiusLast*math.random(.7, .95)
-						--local changeAngle = angleLast + math.rad(math.random(-30, 30))
-						local changeAngle = -pLast:angleTo()
-						local extraDist = math.random(20, 50)
-						local posChange = vector(math.sin(changeAngle)*(radius+radiusLast+extraDist), math.cos(changeAngle)*(radius+radiusLast+extraDist))
+					local position = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
+													 math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
+					local radius = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))
 
-						p = pLast + posChange
-
-						pLast = p
-						radiusLast = radius
-					end
-
-        	for i=1, num do
+					for j = 1, circleCount do
 						radius = radius*.9
-            local y = h*(i-1) + margin + h/2
-						local percent = i / (num) -- used for circular movement
-
-
-
+            --local y = h*(i-1) + margin + h/2
+						local percent = j / (circleCount) -- used for circular movement
 
             game:add(Sweeper:new(
-                p,
+                position,
 								percent,
 								num,
 								radius

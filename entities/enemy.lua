@@ -158,12 +158,14 @@ function Sweeper:initialize(start, percent, num, radius)
   	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
   	self.countSimilar = num
 
-    self.rotateSpeed = self.rotateSpeed*(self.orbitRadius/20)
+    self.rotateSpeed = 50*self.rotateSpeed/math.sqrt(self.orbitRadius) -- temporary decrease
+
+    --self.rotateSpeed = self.rotateSpeed*math.sqrt(self.orbitRadius)
 
     --self.position = start
     self.start = start
     self.target = finish
-    self.speed = 900
+    self.speed = 400
     self.friction = 3
     self.knockbackResistance = 1
 
@@ -189,8 +191,8 @@ function Sweeper:update(dt)
     )
 
     self.moveTowardsPosition = (self.start - self.position + position):normalized()
-    local speed = math.atan2(self.position.y-self.moveTowardsPosition.y, self.position.x-self.moveTowardsPosition.x) + 4
-    self.acceleration = (self.moveTowardsPosition)
+    local speed = math.atan2(self.position.y-self.moveTowardsPosition.y, self.position.x-self.moveTowardsPosition.x) + 5
+    self.acceleration = (self.moveTowardsPosition):normalized()*speed
 
   	self.angle = self.angle + dt * self.rotateSpeed
 end
