@@ -6,7 +6,7 @@ bullets = {}
 DEBUG = false
 
 -- Debug tools
-PRESS_KEY_TO_PAUSE = "pause" -- stops game updates with a single keypress
+PRESS_KEY_TO_PAUSE = "space" -- stops game updates with a single keypress
 DRAW_COLLISION_BODIES = false -- draws collision bodies around all entities
 DRAW_PHYSICS_VECTORS = false -- draws acceleration and velocity headers
 TRACK_ENTITIES = false -- enables entity inspector (right click on entity)
@@ -259,8 +259,7 @@ function game:mousepressed(x, y, mbutton)
     if DEBUG and TRACK_ENTITIES and mbutton == 2 then
         -- stop tracking last enemy
         self.activeEntity = nil
-        local mx = x + self.camera.x - love.graphics.getWidth()/2
-        local my = y + self.camera.y - love.graphics.getHeight()/2
+        local mx, my = game.camera:mousePosition()
         for i, object in pairs(objects) do
             if object:isUnder(mx, my, 15) then
                 self.activeEntity = object
@@ -320,6 +319,7 @@ function game:draw()
             self:drawEntityInspectorInfo()
         end
 
+
         self.floatingMessages:drawDynamic()
         self:drawWorldBorders()
 
@@ -363,62 +363,79 @@ end
 function game:drawEntityInspectorInfo()
     local entity = self.activeEntity
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.circle("line", entity.position.x, entity.position.y, entity.radius)
+
+    -- ripped from player.lua
+    local sides = math.floor(10*game.camera.scale) + 10 -- doesn't work well at some scales
+  	sides = math.max(10, sides) -- at least 10 sides
+    --
+    love.graphics.circle("line", entity.position.x, entity.position.y, entity.radius, sides)
+
+    love.graphics.scale(1/self.camera.scale)
+    local entityX, entityY = entity.position.x * self.camera.scale, entity.position.y * self.camera.scale
+    local radius = entity.radius * self.camera.scale
 
     -- width and height lines
     -- width
     local padding = 15
     local f = love.graphics.getFont()
-    love.graphics.line(entity.position.x - entity.radius,
-                       entity.position.y + entity.radius*2,
-                       entity.position.x + entity.radius,
-                       entity.position.y + entity.radius*2)
+    love.graphics.line(entityX - radius,
+                       entityY + radius*2,
+                       entityX + radius,
+                       entityY + radius*2)
     local text = entity.width
-    love.graphics.print(text, entity.position.x - f:getWidth(text)/2, entity.position.y + entity.radius*2 - f:getHeight(text)/2 + padding )
+    love.graphics.print(text, entityX - f:getWidth(text)/2, entityY + radius*2 - f:getHeight(text)/2 + padding )
 
     -- height
-    love.graphics.line(entity.position.x - entity.radius*2,
-                       entity.position.y - entity.radius,
-                       entity.position.x - entity.radius*2,
-                       entity.position.y + entity.radius)
+    love.graphics.line(entityX - radius*2,
+                       entityY - radius,
+                       entityX - radius*2,
+                       entityY + radius)
     local text = entity.height
-    love.graphics.print(text, entity.position.x - entity.radius*2 - f:getWidth(text) - padding, entity.position.y - f:getHeight(text)/2)
+    love.graphics.print(text, entityX - radius*2 - f:getWidth(text) - padding, entityY - f:getHeight(text)/2)
 
     -- velocity heading
+    love.graphics.scale(self.camera.scale)
     self:drawVectors(entity)
-    
+    love.graphics.scale(1/self.camera.scale)
+
     love.graphics.setColor(0, 0, 0, 128)
-    love.graphics.rectangle("fill", entity.position.x + entity.radius + 25, entity.position.y - 25, 510, 500)
+    love.graphics.rectangle("fill", entityX + radius + 25, entityY - 25, 510, 500)
 
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(fontBold[24])
-    love.graphics.print(tostring(entity.class), entity.position.x + entity.radius + 35, entity.position.y - 25)
+    love.graphics.print(tostring(entity.class), entityX + radius + 35, entityY - 25)
     love.graphics.setFont(font[18])
     local debugString = "Position: " .. tostring(entity.position) .. "\n" ..
                         "Velocity: " .. tostring(entity.velocity) .. "\n" ..
                         "Acceleration: " .. tostring(entity.acceleration) .. "\n" ..
-                        "Speed: " .. tostring(entity.speed) .. "\n" .. 
-                        "Friction: " .. tostring(entity.friction) .. "\n" .. 
+                        "Speed: " .. tostring(entity.speed) .. "\n" ..
+                        "Friction: " .. tostring(entity.friction) .. "\n" ..
                         "Radius: " .. tostring(entity.radius) .. "\n"
 
     if entity:isInstanceOf(Bullet) then
-        debugString = debugString .. "\n" .. 
+        debugString = debugString .. "\n" ..
             "Fired by: " .. tostring(entity.source) .. "\n" ..
             "Lifetime: " .. tostring(entity.life) .. "" .. "\n" ..
             "Damage: " .. math.floor(entity.damage) .. ", Max: " .. entity.originalDamage .. ", Min: " .. entity.originalDamage - entity.dropoffAmount .. "\n" ..
             "Distance traveled: " .. math.floor(entity.distanceTraveled) .. "\n"
 
+        love.graphics.scale(self.camera.scale)
         -- bullet target
         love.graphics.setColor(18, 87, 233, 200)
-        love.graphics.circle("line", entity.target.x, entity.target.y, 15)
+        -- ripped from player.lua
+        local sides = math.floor(10*game.camera.scale) + 10 -- doesn't work well at some scales
+      	sides = math.max(10, sides) -- at least 10 sides
+        love.graphics.circle("line", entity.target.x, entity.target.y, 15, sides)
 
         -- bullet source
         love.graphics.setColor(255, 255, 255, 64)
         love.graphics.line(entity.position.x, entity.position.y, entity.source.x, entity.source.y)
+
+        love.graphics.scale(1/self.camera.scale)
     end
 
     if entity:isInstanceOf(Enemy) or entity:isInstanceOf(Player) then
-        debugString = debugString .. "\n" .. 
+        debugString = debugString .. "\n" ..
             "Health: " .. entity.health .. " / " .. entity.maxHealth .. " (" .. math.floor(entity.health/entity.maxHealth*100) .. "%)\n" ..
             "Touch Damage: " .. tostring(entity.touchDamage) .. "\n" ..
             "Invincible: " .. tostring(entity.invincible) .. "\n" ..
@@ -427,7 +444,7 @@ function game:drawEntityInspectorInfo()
     end
 
     if entity:isInstanceOf(Player) then
-        debugString = debugString .. 
+        debugString = debugString ..
             "Regen timer: " .. tostring(entity.regenWaitAfterHurt) .. " sec, current: " .. tostring(entity.regenTimer) .. "\n" ..
             "Rate of fire: " .. tostring(entity.shotsPerSecond) .. " shots per sec\n" ..
             "Bullet damage: " .. tostring(entity.bulletDamage) .. "\n" ..
@@ -438,7 +455,9 @@ function game:drawEntityInspectorInfo()
     end
 
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.printf(debugString, entity.position.x + entity.radius + 35, entity.position.y, 500)
+    love.graphics.printf(debugString, entityX + radius + 35, entityY, 500)
+
+    love.graphics.scale(self.camera.scale)
 end
 
 function game:drawCollisionBodies()
@@ -466,18 +485,18 @@ end
 function game:drawVectors(object)
     if object.velocity then
         love.graphics.setColor(255, 207, 24, 200)
-        love.graphics.line(object.position.x, 
+        love.graphics.line(object.position.x,
                            object.position.y,
                            object.position.x + object.velocity.x,
                            object.position.y + object.velocity.y)
     end
 
     -- acceleration heading
-    if object.acceleration then 
+    if object.acceleration then
         love.graphics.setColor(18, 87, 233, 200)
-        love.graphics.line(object.position.x, 
+        love.graphics.line(object.position.x,
                            object.position.y,
-                           object.position.x + object.acceleration.x, 
+                           object.position.x + object.acceleration.x,
                            object.position.y + object.acceleration.y)
     end
 end

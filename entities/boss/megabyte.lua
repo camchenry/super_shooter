@@ -125,7 +125,7 @@ function MegabyteEnemy:initialize(offset, angle, angleIncrease, boss)
 
     self.health = 100
     self.maxHealth = 100
-    self.touchDamage = player.maxHealth/4
+    self.touchDamage = 40
 
     self.offset = offset
     self.angle = angle

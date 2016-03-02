@@ -121,7 +121,7 @@ function Blob:initialize(position)
 
     self:randomizeAppearance(15, 15, 10, .3)
 
-    self.speed = 750 * 1/(self.radius/radiusOrig)
+    self.speed = math.sqrt(750 * 1/(self.radius/radiusOrig)) * 20
     self.touchDamage = 25 * (self.radius/radiusOrig)
 
 
