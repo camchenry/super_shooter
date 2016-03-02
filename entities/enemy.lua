@@ -8,7 +8,7 @@ function Enemy:initialize(position)
 
     self.position = position
     self.x, self.y = self.position:unpack()
-    self.touchDamage = player.maxHealth/5
+    self.touchDamage = 25
 
     self.health = 100
     self.maxHealth = 100
@@ -121,8 +121,8 @@ function Blob:initialize(position)
 
     self:randomizeAppearance(15, 15, 10, .3)
 
-    self.speed = 750 * (self.radius/radiusOrig)
-    self.touchDamage = 25 * 1/(self.radius/radiusOrig)
+    self.speed = 750 * 1/(self.radius/radiusOrig)
+    self.touchDamage = 25 * (self.radius/radiusOrig)
 
 
     self.position = position
@@ -157,8 +157,8 @@ function Sweeper:initialize(start, percent, num, radius)
 
     self:randomizeAppearance(5, 10, 5, .3)
 
-    self.speed = 400 * (self.radius/radiusOrig)
-    self.touchDamage = 125 * 1/(self.radius/radiusOrig)
+    self.speed = 400 * 1/(self.radius/radiusOrig)
+    self.touchDamage = 125 * (self.radius/radiusOrig)
 
     self.angle = percent * 2 * math.pi
     self.orbitRadius = radius or math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))
@@ -227,8 +227,8 @@ function Healer:initialize(position)
 
     self:randomizeAppearance(15, 15, 10, .2)
 
-    self.speed = 325 * (self.radius/radiusOrig)
-    self.touchDamage = 12 * 1/(self.radius/radiusOrig)
+    self.speed = 325 * 1/(self.radius/radiusOrig)
+    self.touchDamage = 12 * (self.radius/radiusOrig)
 
     self.position = position
 
@@ -300,8 +300,8 @@ function Tank:initialize(position)
 
     self:randomizeAppearance(20, 15, 10, .2)
 
-    self.speed = 350 * (self.radius/radiusOrig)
-    self.touchDamage = 65 * 1/(self.radius/radiusOrig)
+    self.speed = 350 * 1/(self.radius/radiusOrig)
+    self.touchDamage = 65 * (self.radius/radiusOrig)
 
     self.knockbackResistance = 0.8
     self.damageResistance = 0.1
@@ -368,8 +368,8 @@ function Ninja:initialize(position)
 
     self:randomizeAppearance(10, 15, 10, .3)
 
-    self.speed = 800 * (self.radius/radiusOrig)
-    self.touchDamage = 45 * 1/(self.radius/radiusOrig)
+    self.speed = 800 * 1/(self.radius/radiusOrig)
+    self.touchDamage = 45 * (self.radius/radiusOrig)
 
     self.doTeleport = false
     self.drawTeleportLineTime = 0
@@ -418,7 +418,7 @@ function Ninja:update(dt)
     -- start the attack
     if self.sprintCooldown < self.sprintActivatedTime then
         self.speed = 5000
-        self.touchDamage = player.maxHealth * 3
+        self.touchDamage = 375
     -- start telegraphing the attack
     elseif self.sprintCooldown < self.sprintTelegraphTime then
         self.sprinting = true
@@ -427,7 +427,7 @@ function Ninja:update(dt)
         self.damageResistance = -0.5
     else
         self.speed = 800
-        self.touchDamage = player.maxHealth / 4
+        self.touchDamage = 40
         self.damageResistance = 0
     end
 
