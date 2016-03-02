@@ -110,20 +110,22 @@ Blob = class('Blob', Enemy)
 function Blob:initialize(position)
     Enemy.initialize(self, position)
     self.originalColor = {231, 76, 60, 255}
-    self.radius = 15 + math.random(-2, 2)
     self.sides = 4
 
-	self.hue = 10
-	self.saturation = 80
-	self.lightness = 50
+	  self.hue = 10
+	  self.saturation = 80
+	  self.lightness = 50
 
-    self:randomizeAppearance(15, 15, 10, .2)
+    local radiusOrig = 15
+    self.radius = radiusOrig
 
-    self.speed = 750
+    self:randomizeAppearance(15, 15, 10, .3)
+
+    self.speed = 750 * (self.radius/radiusOrig)
+    self.touchDamage = 25 * 1/(self.radius/radiusOrig)
+
 
     self.position = position
-    self.touchDamage = player.maxHealth/5
-
     self.health = 100
     self.maxHealth = 100
 end
@@ -144,16 +146,20 @@ Sweeper = class('Sweeper', Enemy)
 function Sweeper:initialize(start, percent, num, radius)
     Enemy.initialize(self, start)
     self.originalColor = {241, 196, 0, 255}
-    self.radius = 18
     self.sides = 3
 
     self.hue = 65
     self.saturation = 80
     self.lightness = 80
 
-    self:randomizeAppearance(5, 10, 5, .2)
+    local radiusOrig = 18
+    self.radius = radiusOrig
 
-    --self.angle = math.random(0, 360)
+    self:randomizeAppearance(5, 10, 5, .3)
+
+    self.speed = 400 * (self.radius/radiusOrig)
+    self.touchDamage = 125 * 1/(self.radius/radiusOrig)
+
     self.angle = percent * 2 * math.pi
     self.orbitRadius = radius or math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))
   	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
@@ -161,25 +167,18 @@ function Sweeper:initialize(start, percent, num, radius)
 
     self.rotateSpeed = 50*self.rotateSpeed/math.sqrt(self.orbitRadius) -- temporary decrease
 
-    --self.rotateSpeed = self.rotateSpeed*math.sqrt(self.orbitRadius)
-
-    --self.position = start
     self.start = start
     self.target = finish
-    self.speed = 400
     self.friction = 3
     self.knockbackResistance = 1
-
-    --self.touchDamage = player.maxHealth
-	self.touchDamage = 0
 
     self.health = 75
     self.maxHealth = 75
 
-	signal.register('enemyDeath', function(enemy)
-        if enemy.class == Sweeper then
-			self.countSimilar = self.countSimilar - 1
-		end
+	  signal.register('enemyDeath', function(enemy)
+      if enemy.class == Sweeper then
+		      self.countSimilar = self.countSimilar - 1
+		  end
     end)
 end
 
@@ -217,25 +216,27 @@ Healer = class('Healer', Enemy)
 function Healer:initialize(position)
     Enemy.initialize(self, position)
     self.originalColor = {77, 214, 79, 255}
-    self.radius = 11
     self.sides = 5
 
-	self.hue = 125
-	self.saturation = 80
-	self.lightness = 50
+	  self.hue = 125
+	  self.saturation = 80
+	  self.lightness = 50
+
+    local radiusOrig = 11
+    self.radius = radiusOrig
 
     self:randomizeAppearance(15, 15, 10, .2)
 
-    self.speed = 325
+    self.speed = 325 * (self.radius/radiusOrig)
+    self.touchDamage = 12 * 1/(self.radius/radiusOrig)
 
     self.position = position
-    self.touchDamage = player.maxHealth/10
 
     self.maxHealth = 80
     self.health = self.maxHealth
     self.knockbackResistance = 0.5
 
-	self.healRate = 15
+  	self.healRate = 15
     self.healRadius = 130
 end
 
@@ -253,7 +254,7 @@ function Healer:update(dt)
             end
             self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)
             if o:isInstanceOf(Healer) then
-              self.moveTowardsEnemy = self.moveTowardsEnemy * -1
+              self.moveTowardsEnemy = self.moveTowardsEnemy * -.1
             end
         end
     end
@@ -288,21 +289,24 @@ Tank = class('Tank', Enemy)
 function Tank:initialize(position)
     Enemy.initialize(self, position)
     self.originalColor = {122, 214, 210, 255}
-    self.radius = 20
     self.sides = 6
 
-	self.hue = 230
-	self.saturation = 80
-	self.lightness = 50
+  	self.hue = 230
+  	self.saturation = 80
+  	self.lightness = 50
+
+    local radiusOrig = 20
+    self.radius = radiusOrig
 
     self:randomizeAppearance(20, 15, 10, .2)
 
-    self.speed = 350
+    self.speed = 350 * (self.radius/radiusOrig)
+    self.touchDamage = 65 * 1/(self.radius/radiusOrig)
+
     self.knockbackResistance = 0.8
     self.damageResistance = 0.1
 
     self.position = position
-    self.touchDamage = player.maxHealth/2
 
     self.maxHealth = 750
     self.health = self.maxHealth
@@ -353,16 +357,20 @@ Ninja = class('Ninja', Enemy)
 function Ninja:initialize(position)
     Enemy.initialize(self, position)
     self.originalColor = {255, 255, 255, 200}
-    self.radius = 15 + math.random(-2, 2)
     self.sides = 4
 
-	self.hue = 280
-	self.saturation = 20
-	self.lightness = 50
+  	self.hue = 280
+  	self.saturation = 20
+  	self.lightness = 50
 
-    self:randomizeAppearance(10, 15, 10, .2)
+    local radiusOrig = 15
+    self.radius = radiusOrig
 
-    self.speed = 800
+    self:randomizeAppearance(10, 15, 10, .3)
+
+    self.speed = 800 * (self.radius/radiusOrig)
+    self.touchDamage = 45 * 1/(self.radius/radiusOrig)
+
     self.doTeleport = false
     self.drawTeleportLineTime = 0
 
@@ -375,7 +383,6 @@ function Ninja:initialize(position)
     self.sprintActivatedTime = 1
 
     self.position = position
-    self.touchDamage = player.maxHealth/4
 
     self.health = 500
     self.maxHealth = 500
