@@ -5,7 +5,7 @@ function love.conf(t)
 
     t.identity = "super_shooter"                    -- The name of the save directory (string)
     t.version = "0.10.0"                -- The LÖVE version this game was made for (string)
-    t.console = false                   -- Attach a console (boolean, Windows only)
+    t.console = true                   -- Attach a console (boolean, Windows only)
     t.accelerometerjoystick = false     -- Enable the accelerometer on iOS and Android by exposing it as a Joystick (boolean)
     t.gammacorrect = false              -- Enable gamma-correct rendering, when supported by the system (boolean)
  
@@ -45,8 +45,6 @@ function love.conf(t)
 end
 
 config = {
-    debug = false,
-
     gameTitle = "super shooter",
     windowTitle = "super shooter",
     windowIcon = 'img/icon.png',

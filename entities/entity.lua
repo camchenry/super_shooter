@@ -83,3 +83,7 @@ end
 function Entity:getY()
 	return self.position.y
 end
+
+function Entity:isUnder(x, y, margin)
+	return vector(x, y):dist(self.position) <= self.radius + (margin or 0)
+end

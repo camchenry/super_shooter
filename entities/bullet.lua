@@ -105,3 +105,7 @@ end
 function Bullet:getY()
     return self.position.y
 end
+
+function Bullet:isUnder(x, y, margin)
+    return vector(x, y):dist(self.position) <= self.radius + (margin or 0)
+end

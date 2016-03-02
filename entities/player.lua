@@ -196,6 +196,10 @@ function Player:getY()
     return self.position.y
 end
 
+function Player:isUnder(x, y, margin)
+    return vector(x, y):dist(self.position) <= self.radius + (margin or 0)
+end
+
 function Player:calculateDrawLines()
 	local sides = math.floor(10*game.camera.scale) + 10 -- doesn't work well at some scales
 	sides = math.max(10, sides) -- at least 10 sides
