@@ -300,7 +300,7 @@ function Survival:drawBossHealthBar()
 
     local text = string.upper(game.boss.name)
     love.graphics.setFont(fontLight[24])
-    love.graphics.print(text, love.graphics.getWidth()/2-love.graphics.getFont():getWidth(text)/2, 10)
+    love.graphics.print(text, math.floor(love.graphics.getWidth()/2-love.graphics.getFont():getWidth(text)/2), 10)
 end
 
 function Survival:setPrimaryText(text)
