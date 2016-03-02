@@ -51,7 +51,10 @@ function Entity:draw()
 	love.graphics.setColor(self.color)
 
 	love.graphics.circle("line", self.position.x, self.position.y, self.radius, self.sides)
-	love.graphics.circle("fill", self.position.x, self.position.y, self.radius*(self.health/self.maxHealth), self.sides)
+
+	if self.healthRadius then
+			love.graphics.circle("fill", self.position.x, self.position.y, self.healthRadius, self.sides)
+	end
 
 	love.graphics.setColor(rgba)
 	love.graphics.pop()
@@ -59,7 +62,7 @@ function Entity:draw()
 end
 
 function Entity:checkCollision(callback)
-	local collidableObjects = quadtree:getCollidableObjects(self, true)
+		local collidableObjects = quadtree:getCollidableObjects(self, true)
     for i, obj in pairs(collidableObjects) do
 
     	local aabbOverlapping = self.x + self.radius + obj.radius > obj.x

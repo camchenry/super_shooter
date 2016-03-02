@@ -12,9 +12,11 @@ function Enemy:initialize(position)
 
     self.health = 100
     self.maxHealth = 100
-	self.invincible = false
+	  self.invincible = false
     self.knockbackResistance = 0.0
     self.damageResistance = 0.0
+
+    self.healthRadius = self.radius*self.health/self.maxHealth
 
 	--self.minimumAlpha = 100
 
@@ -92,15 +94,17 @@ function Enemy:_handleCollision(obj)
 		-- check for proximity and invincible
         if self.position:dist(obj.position) < self.radius + obj.radius then
             game:removeBullet(obj)
-			if not self.invincible and not obj.destroy then
+			      if not self.invincible and not obj.destroy then
                 local dmg = obj.damage * (1 - self.damageResistance)
-				self.health = self.health - dmg
+				        self.health = self.health - dmg
                 local death = self.health <= 0
-				signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
-				self.flashTime = 20/1000
+				        signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
+				        self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
-				obj.destroy = true
-			end
+				        obj.destroy = true
+
+                self.healthTween = tween(.4, self, {healthRadius = self.radius*self.health/self.maxHealth}, "inOutCubic")
+			      end
         end
     end
 end
@@ -128,6 +132,7 @@ function Blob:initialize(position)
     self.position = position
     self.health = 100
     self.maxHealth = 100
+    self.healthRadius = self.radius*self.health/self.maxHealth
 end
 
 function Blob:update(dt)
@@ -174,6 +179,7 @@ function Sweeper:initialize(start, percent, num, radius)
 
     self.health = 75
     self.maxHealth = 75
+    self.healthRadius = self.radius*self.health/self.maxHealth
 
 	  signal.register('enemyDeath', function(enemy)
       if enemy.class == Sweeper then
@@ -234,6 +240,8 @@ function Healer:initialize(position)
 
     self.maxHealth = 80
     self.health = self.maxHealth
+    self.healthRadius = self.radius*self.health/self.maxHealth
+
     self.knockbackResistance = 0.5
 
   	self.healRate = 15
@@ -310,6 +318,7 @@ function Tank:initialize(position)
 
     self.maxHealth = 750
     self.health = self.maxHealth
+    self.healthRadius = self.radius*self.health/self.maxHealth
 end
 
 function Tank:update(dt)
@@ -386,6 +395,7 @@ function Ninja:initialize(position)
 
     self.health = 500
     self.maxHealth = 500
+    self.healthRadius = self.radius*self.health/self.maxHealth
 end
 
 function Ninja:update(dt)

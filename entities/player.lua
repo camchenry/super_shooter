@@ -15,7 +15,8 @@ function Player:initialize()
     self.rateOfFire = (1/self.shotsPerSecond)
     self.canShoot = true
     self.bulletVelocity = 325
-    self.bulletDamage = 65
+    --self.bulletDamage = 65
+    self.bulletDamage = 30
     self.bulletDropoffAmount = 15
     self.bulletDropoffDistance = 100
     self.damageMultiplier = 1.0
@@ -47,7 +48,7 @@ function Player:update(dt)
     self.x, self.y = self.position:unpack()
 
     self.acceleration = vector(0, 0)
-	
+
 	local upKey = 'w'
 	if game.azertyMode then upKey = 'z' end
 	local leftKey = 'a'
@@ -68,11 +69,11 @@ function Player:update(dt)
     elseif love.keyboard.isDown(rightKey, "right") then
         self.acceleration.x = self.speed
     end
-    
+
     local dist = math.huge
     local closest = nil
 
-    for i, enemy in ipairs(objects) do    
+    for i, enemy in ipairs(objects) do
         local d = self.position:dist(enemy.position)
 
         if d < dist and enemy ~= player then
@@ -109,7 +110,7 @@ function Player:update(dt)
                 else
                     bullet:setDamage(self.bulletDamage * self.damageMultiplier)
                     bullet.critical = false
-                end 
+                end
                 bullet:setSpeed(self.bulletVelocity)
                 bullet:setRadius(self.bulletRadius)
                 bullet:setLife(self.bulletLife)
@@ -179,12 +180,12 @@ function Player:draw()
     local rgba = {love.graphics.getColor()}
     love.graphics.setColor(self.color)
 	local sides = self:calculateDrawLines()
-	
+
     love.graphics.circle("line", self.position.x, self.position.y, self.radius, sides)
     love.graphics.setColor(rgba)
 
     if self.closestEnemy ~= nil then
-        
+
     end
 end
 
