@@ -5,11 +5,11 @@ function Survival:initialize()
 end
 
 function Survival:reset()
-	game.firstWave = false
-	game.startingWave = 0
-	game.wave = game.startingWave
-	game.timeToNextWave = 3
-	game.waveTime = 0
+		game.firstWave = false
+		game.startingWave = 0
+		game.wave = game.startingWave
+		game.timeToNextWave = 3
+		game.waveTime = 0
     game.waveStartTime = 0
     game._postWaveCalled = false
     game._preWaveCalled = false
@@ -19,30 +19,30 @@ end
 
 function Survival:update(dt)
 	if game.waveTimer then
-        game.prevT = game.waveTimer.running
+		game.prevT = game.waveTimer.running
 
-        if math.floor(game.prevT) ~= math.floor(game.prevT+dt) then
-            signal.emit('waveCountdown')
-        end
+		if math.floor(game.prevT) ~= math.floor(game.prevT+dt) then
+			signal.emit('waveCountdown')
+		end
 
-        game.waveTimer:update(dt)
-    end
+		game.waveTimer:update(dt)
+	end
 
-    if game.boss then
-        if game.boss.health <= 0 then
-            game.boss = nil
-        end
-    end
+	if game.boss then
+		if game.boss.health <= 0 then
+			game.boss = nil
+		end
+	end
 
-    if #objects == 1 and game.waves[game.wave+1] == nil and not (player.health <= 0) then
-        state.switch(gameover)
-    end
+	if #objects == 1 and game.waves[game.wave+1] == nil and not (player.health <= 0) then
+		state.switch(gameover)
+	end
 
-    if #objects == 1 and not game.waveTimer and game.boss == nil then
-        if not game._postWaveCalled then
-            self:onWaveEnd()
-        end
-    end
+	if #objects == 1 and not game.waveTimer and game.boss == nil then
+		if not game._postWaveCalled then
+			self:onWaveEnd()
+		end
+	end
 end
 
 function Survival:onWaveStart()
@@ -70,17 +70,17 @@ function Survival:onWaveEnd()
 
     player.health = player.health + player.health * 0.1 + 1
 
-    if game.waves[game.wave+1] ~= nil then
-        if game.waves[game.wave+1].boss ~= nil then
-            signal.emit('bossIncoming')
-        end
-    end
+		if game.waves[game.wave+1] ~= nil then
+			if game.waves[game.wave+1].boss ~= nil then
+				signal.emit('bossIncoming')
+			end
+		end
 
     game.waveTimer = cron.after(game.timeToNextWave, function()
-        if not game._preWaveCalled then
-            self:onWaveStart()
-        end
-    end)
+			if not game._preWaveCalled then
+				self:onWaveStart()
+			end
+		end)
 
     game._postWaveCalled = true
     game._preWaveCalled = false
@@ -138,26 +138,26 @@ function Survival:setupWaves()
 end
 
 function Survival:startWave()
-    game.waveTimer = nil
+	game.waveTimer = nil
 	game.waveStartTime = game.time -- set the wave start time to the game time
 
-    if game.wave == nil then
-        game.wave = game.startingWave
-    elseif game.waves[game.wave+1] == nil then
-        state.switch(gameover)
-    else
-        game.wave = game.wave + 1
-    end
+	if game.wave == nil then
+		game.wave = game.startingWave
+	elseif game.waves[game.wave+1] == nil then
+		state.switch(gameover)
+	else
+		game.wave = game.wave + 1
+	end
 
-    self:setPrimaryText("WAVE "..game.wave)
+	self:setPrimaryText("WAVE "..game.wave)
 
-    if game.waves[game.wave] ~= nil and game.wave ~= game.startingWave then
-        self:spawnEnemies()
-    end
+	if game.waves[game.wave] ~= nil and game.wave ~= game.startingWave then
+		self:spawnEnemies()
+  end
 end
 
 function Survival:spawnEnemies()
-    local wave = nil
+		local wave = nil
     if w ~= nil then
         wave = w
     else
@@ -254,15 +254,15 @@ end
 
 function Survival:draw()
 	if game.waveText ~= nil and game.wave > 0 then
-        self:drawPrimaryText()
-    end
+		self:drawPrimaryText()
+  end
 
-    if game.boss ~= nil then
-        self:drawBossHealthBar()
-    end
+	if game.boss ~= nil then
+		self:drawBossHealthBar()
+  end
 
-    self:drawPlayerHealthBar()
-    self:drawBossIncoming()
+  self:drawPlayerHealthBar()
+  self:drawBossIncoming()
 end
 
 function Survival:drawBossIncoming()
