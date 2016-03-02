@@ -57,7 +57,8 @@ function Enemy:update(dt)
     self.color = self.originalColor
 	-- switch to HSL for enemy color degredation
     --self.color[4] = math.floor((255-self.minimumAlpha)*(self.health/self.maxHealth) + self.minimumAlpha)
-	local saturation = self.saturation * self.health/self.maxHealth
+	--local saturation = self.saturation * self.health/self.maxHealth
+  local saturation = self.saturation
 	local lightness = (self.lightness - self.minLightness) * self.health/self.maxHealth + self.minLightness
 
 	local r, g, b = husl.husl_to_rgb(self.hue, saturation, lightness)
@@ -251,6 +252,9 @@ function Healer:update(dt)
                 end
             end
             self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)
+            if o:isInstanceOf(Healer) then
+              self.moveTowardsEnemy = self.moveTowardsEnemy * -1
+            end
         end
     end
 

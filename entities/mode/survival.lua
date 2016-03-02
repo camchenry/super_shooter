@@ -89,9 +89,9 @@ end
 function Survival:setupWaves()
     game.waves = {}
     game.waves[1] = {
-        blobs = 15,
+        --blobs = 15,
         sweepers = 0,
-		healers = 0,
+		healers = 15,
 		tanks = 0,
     }
     game.waves[2] = {
