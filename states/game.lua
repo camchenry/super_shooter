@@ -314,7 +314,6 @@ function game:draw()
         end
 
         -- Debug enemy inspector, displays a bunch of info about an enemy
-        -- TODO: this doesn't work with camera zoom yet
         if DEBUG and TRACK_ENTITIES and self.activeEntity then
             self:drawEntityInspectorInfo()
         end

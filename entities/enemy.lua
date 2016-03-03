@@ -12,13 +12,11 @@ function Enemy:initialize(position)
 
     self.health = 100
     self.maxHealth = 100
-	  self.invincible = false
+    self.invincible = false
     self.knockbackResistance = 0.0
     self.damageResistance = 0.0
 
     self.healthRadius = self.radius*self.health/self.maxHealth
-
-	--self.minimumAlpha = 100
 
 	self.hue = 0
 	self.saturation = 100
@@ -57,10 +55,7 @@ function Enemy:update(dt)
 
     -- enemy fades away as it loses health
     self.color = self.originalColor
-	-- switch to HSL for enemy color degredation
-    --self.color[4] = math.floor((255-self.minimumAlpha)*(self.health/self.maxHealth) + self.minimumAlpha)
-	--local saturation = self.saturation * self.health/self.maxHealth
-  local saturation = self.saturation
+    local saturation = self.saturation -- saturation not modified
 	local lightness = (self.lightness - self.minLightness) * self.health/self.maxHealth + self.minLightness
 
 	local r, g, b = husl.husl_to_rgb(self.hue, saturation, lightness)
@@ -94,17 +89,17 @@ function Enemy:_handleCollision(obj)
 		-- check for proximity and invincible
         if self.position:dist(obj.position) < self.radius + obj.radius then
             game:removeBullet(obj)
-			      if not self.invincible and not obj.destroy then
+			if not self.invincible and not obj.destroy then
                 local dmg = obj.damage * (1 - self.damageResistance)
-				        self.health = self.health - dmg
+				self.health = self.health - dmg
                 local death = self.health <= 0
-				        signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
-				        self.flashTime = 20/1000
+				signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
+                self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
-				        obj.destroy = true
+                obj.destroy = true
 
                 self.healthTween = tween(.4, self, {healthRadius = self.radius*self.health/self.maxHealth}, "inOutCubic")
-			      end
+			end
         end
     end
 end
@@ -116,9 +111,9 @@ function Blob:initialize(position)
     self.originalColor = {231, 76, 60, 255}
     self.sides = 4
 
-	  self.hue = 10
-	  self.saturation = 80
-	  self.lightness = 50
+	self.hue = 10
+	self.saturation = 80
+	self.lightness = 50
 
     local radiusOrig = 15
     self.radius = radiusOrig
@@ -181,10 +176,10 @@ function Sweeper:initialize(start, percent, num, radius)
     self.maxHealth = 75
     self.healthRadius = self.radius*self.health/self.maxHealth
 
-	  signal.register('enemyDeath', function(enemy)
-      if enemy.class == Sweeper then
-		      self.countSimilar = self.countSimilar - 1
-		  end
+    signal.register('enemyDeath', function(enemy)
+        if enemy.class == Sweeper then
+            self.countSimilar = self.countSimilar - 1
+		end
     end)
 end
 
@@ -224,9 +219,9 @@ function Healer:initialize(position)
     self.originalColor = {77, 214, 79, 255}
     self.sides = 5
 
-	  self.hue = 125
-	  self.saturation = 80
-	  self.lightness = 50
+	self.hue = 125
+	self.saturation = 80
+	self.lightness = 50
 
     local radiusOrig = 11
     self.radius = radiusOrig

@@ -5,11 +5,11 @@ function Survival:initialize()
 end
 
 function Survival:reset()
-		game.firstWave = false
-		game.startingWave = 0
-		game.wave = game.startingWave
-		game.timeToNextWave = 3
-		game.waveTime = 0
+	game.firstWave = false
+	game.startingWave = 0
+	game.wave = game.startingWave
+	game.timeToNextWave = 3
+	game.waveTime = 0
     game.waveStartTime = 0
     game._postWaveCalled = false
     game._preWaveCalled = false
@@ -70,11 +70,11 @@ function Survival:onWaveEnd()
 
     player.health = player.health + player.health * 0.1 + 1
 
-		if game.waves[game.wave+1] ~= nil then
-			if game.waves[game.wave+1].boss ~= nil then
-				signal.emit('bossIncoming')
-			end
+	if game.waves[game.wave+1] ~= nil then
+		if game.waves[game.wave+1].boss ~= nil then
+			signal.emit('bossIncoming')
 		end
+	end
 
     game.waveTimer = cron.after(game.timeToNextWave, function()
 			if not game._preWaveCalled then
@@ -91,13 +91,13 @@ function Survival:setupWaves()
     game.waves[1] = {
         blobs = 15,
         sweepers = 0,
-				healers = 0,
-				tanks = 0,
+		healers = 0,
+		tanks = 0,
     }
     game.waves[2] = {
         blobs = 15, -- 25,
         sweepers = 10,
-				tanks = 0, -- 1,
+		tanks = 0, -- 1,
     }
     game.waves[3] = {
         blobs = 18,
@@ -115,7 +115,7 @@ function Survival:setupWaves()
     }
     game.waves[6] = {
         blobs = 35,
-				sweepers = 6,
+		sweepers = 6,
     }
     game.waves[7] = {
         tanks = 5,
@@ -153,11 +153,11 @@ function Survival:startWave()
 
 	if game.waves[game.wave] ~= nil and game.wave ~= game.startingWave then
 		self:spawnEnemies()
-  end
+	end
 end
 
 function Survival:spawnEnemies()
-		local wave = nil
+	local wave = nil
     if w ~= nil then
         wave = w
     else
@@ -185,35 +185,28 @@ function Survival:spawnEnemies()
         local leftEdge = margin
         local rightEdge = w - margin
 
-				local margin = math.min(game.worldSize.x/2, game.worldSize.y/2)
+		local margin = math.min(game.worldSize.x/2, game.worldSize.y/2)
 
-				-- initial position and radius for the first circle
-				local pLast = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
-												 math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
-				--p = p + (p - player.position):normalized()*150
-				--local radiusLast = math.random(400, math.min(game.worldSize.x/2, game.worldSize.y/2))*.75
+		for i = 1, num do
+			local circleCount = math.random(1, num-i)
+			i = i + circleCount
 
-				for i = 1, num do
-					local circleCount = math.random(1, num-i)
-					i = i + circleCount
+			local position = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
+									math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
+			local radius = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))
 
-					local position = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
-													 math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
-					local radius = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))
+			for j = 1, circleCount do
+				radius = radius*.9
+				local percent = j / (circleCount) -- used for circular movement
 
-					for j = 1, circleCount do
-						radius = radius*.9
-            --local y = h*(i-1) + margin + h/2
-						local percent = j / (circleCount) -- used for circular movement
-
-            game:add(Sweeper:new(
-                position,
-								percent,
-								num,
-								radius
-            ))
+            	game:add(Sweeper:new(
+               		position,
+					percent,
+					num,
+					radius
+            	))
         	end
-				end
+		end
     end
 
 	if currentWave.healers ~= nil then
@@ -255,25 +248,25 @@ end
 function Survival:draw()
 	if game.waveText ~= nil and game.wave > 0 then
 		self:drawPrimaryText()
-  end
+	end
 
 	if game.boss ~= nil then
 		self:drawBossHealthBar()
-  end
+	end
 
-  self:drawPlayerHealthBar()
-  self:drawBossIncoming()
+	self:drawPlayerHealthBar()
+	self:drawBossIncoming()
 end
 
 function Survival:drawBossIncoming()
     love.graphics.setFont(font[48])
     if game.waveTimer ~= nil and game.waveTimer.time - game.waveTimer.running <= 3 and #objects == 1 then
-        local t = game.waveTimer.time - game.waveTimer.running
+    	local t = game.waveTimer.time - game.waveTimer.running
         love.graphics.print(math.ceil(t), love.graphics.getWidth()/2 - love.graphics.getFont():getWidth(math.ceil(t))/2, 150)
 
         if game.waves[game.wave+1] ~= nil then
             if game.waves[game.wave+1].boss ~= nil then
-                love.graphics.print("BOSS INCOMING", love.graphics.getWidth()/2 - love.graphics.getFont():getWidth("BOSS INCOMING")/2, 100)
+            	love.graphics.print("BOSS INCOMING", love.graphics.getWidth()/2 - love.graphics.getFont():getWidth("BOSS INCOMING")/2, 100)
             end
         end
 

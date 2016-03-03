@@ -62,7 +62,7 @@ function Entity:draw()
 end
 
 function Entity:checkCollision(callback)
-		local collidableObjects = quadtree:getCollidableObjects(self, true)
+	local collidableObjects = quadtree:getCollidableObjects(self, true)
     for i, obj in pairs(collidableObjects) do
 
     	local aabbOverlapping = self.x + self.radius + obj.radius > obj.x
