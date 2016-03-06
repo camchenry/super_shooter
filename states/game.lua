@@ -7,9 +7,9 @@ DEBUG = false
 
 -- Debug tools
 PRESS_KEY_TO_PAUSE = "space" -- stops game updates with a single keypress
-DRAW_COLLISION_BODIES = false -- draws collision bodies around all entities
+DRAW_COLLISION_BODIES = true -- draws collision bodies around all entities
 DRAW_PHYSICS_VECTORS = false -- draws acceleration and velocity headers
-TRACK_ENTITIES = false -- enables entity inspector (right click on entity)
+TRACK_ENTITIES = true -- enables entity inspector (right click on entity)
 TIME_MULTIPLIER = 1.0
 
 function game:add(obj, tabl)
@@ -21,8 +21,7 @@ function game:add(obj, tabl)
     end
     table.insert(tabl, obj)
 
-    -- Do not add the object to the quadtree on the first frame
-    -- This avoids an error where they aren't placed correctly
+    self.world:add(obj, obj.position.x, obj.position.y, obj.width, obj.height)
 
     return obj
 end
@@ -40,9 +39,9 @@ function game:remove(obj, tabl)
             break
         end
     end
-    quadtree:removeObject(obj, true)
-    quadtree:removeObject(obj, false) -- this properly deletes enemies when they are on the border between 2 quads. it will check to delete for both the current pos and last pos. this is for a case where an enemy leaves a quad the frame before it dies
+    self.world:remove(obj)    
 end
+
 function game:removeBullet(obj)
     self:remove(obj, bullets)
 end
@@ -66,10 +65,15 @@ function game:reset()
 
     objects = {}
     bullets = {}
+    self.cellSize = 200
+    self.world = bump.newWorld(self.cellSize)
+
+    -- quadtree not actually used for collision, only for drawing (temporary)
     quadtree = QuadTree:new(-self.worldSize.x/2-25, -self.worldSize.y/2-25, self.worldSize.x+50, self.worldSize.y+50)
     quadtree:subdivide()
     quadtree:subdivide()
     quadtree:subdivide()
+
 	-- player will be added later, in character select
 
     self.time = 0
@@ -150,10 +154,21 @@ function game:update(dt)
     local toUpdate = {objects, bullets}
     for i, tabl in ipairs(toUpdate) do
         for j, obj in ipairs(tabl) do
+            -- update object positions
             obj:update(dt)
-            quadtree:updateObject(obj)
+            self.world:update(obj, obj.position.x, obj.position.y, obj.width, obj.height)
+
+            -- check for object collisions
+            local ax, ay, cols, len = self.world:check(obj, obj.position.x, obj.position.y)
+            for i=1, len do
+                obj:handleCollision(cols[i])
+                if obj._handleCollision then
+                    obj:_handleCollision(cols[i])
+                end
+            end
         end
 
+        -- remove objects that are marked to be destroyed
         for j = #tabl, 1, -1 do
             local obj = tabl[j]
             if obj.destroy then

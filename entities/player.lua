@@ -40,7 +40,6 @@ function Player:initialize()
     self.width = self.radius * 2
     self.height = self.radius * 2
     self.x, self.y = self.position:unpack()
-    self.prev_x, self.prev_y = self.position:unpack()
 end
 
 function Player:update(dt)
@@ -146,23 +145,6 @@ function Player:update(dt)
 
     self.maxHealth = math.max(1, self.maxHealth)
 
-    local collidableObjects = quadtree:getCollidableObjects(self, true)
-    for i, obj in pairs(collidableObjects) do
-        if self.position:dist(obj.position) < self.radius + obj.radius then
-            if obj:isInstanceOf(Bullet) then
-                if (obj.source ~= self) then
-                    self.health = self.health - obj.damage * (1 - self.damageResistance)
-                    game:removeBullet(obj)
-                    signal.emit('playerHurt')
-                end
-            elseif obj:isInstanceOf(Enemy) then
-                self.health = self.health - obj.touchDamage * dt * (1 - self.damageResistance)
-                signal.emit('playerHurt')
-            end
-        end
-    end
-
-    self.prev_x, self.prev_y = self.position:unpack()
     -- verlet integration, much more accurate than euler integration for constant acceleration and variable timesteps
     self.acceleration = self.acceleration:normalized() * self.speed
     self.oldVelocity = self.velocity
@@ -170,6 +152,23 @@ function Player:update(dt)
     self.position = self.position + (self.oldVelocity + self.velocity) * 0.5 * dt
 
     self.x, self.y = self.position:unpack()
+end
+
+function Player:handleCollision(collision)
+    local obj = collision.other
+
+    if self.position:dist(obj.position) < self.radius + obj.radius then
+        if obj:isInstanceOf(Bullet) then
+            if (obj.source ~= self) then
+                self.health = self.health - obj.damage * (1 - self.damageResistance)
+                game:removeBullet(obj)
+                signal.emit('playerHurt')
+            end
+        elseif obj:isInstanceOf(Enemy) then
+            self.health = self.health - obj.touchDamage * love.timer.getDelta() * (1 - self.damageResistance)
+            signal.emit('playerHurt')
+        end
+    end
 end
 
 function Player:keypressed(key, isrepeat)

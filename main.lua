@@ -10,6 +10,7 @@ QuadTree = require 'libs.quadtree'
 serialize = require 'libs.ser'
 husl = require 'libs.husl'
 Camera = require 'libs.camera'
+bump = require 'libs.bump'
 require 'libs.util'
 
 -- gamestates

@@ -2,7 +2,7 @@ Enemy = class('Enemy', Entity)
 
 function Enemy:initialize(position)
     Entity.initialize(self, position)
-    self.originalColor = {231, 76, 60, 255}
+    self.originalColor = {255, 76, 60, 255}
     self.radius = 15
     self.sides = 4
 
@@ -12,18 +12,17 @@ function Enemy:initialize(position)
 
     self.health = 100
     self.maxHealth = 100
-	  self.invincible = false
+	self.invincible = false
     self.knockbackResistance = 0.0
     self.damageResistance = 0.0
 
     self.healthRadius = self.radius*self.health/self.maxHealth
 
-	--self.minimumAlpha = 100
-
 	self.hue = 0
 	self.saturation = 100
 	self.lightness = 40
 	self.minLightness = 25
+    self:randomizeAppearance(5, 5, 5, .3)
 
     self.flashTime = 0
 end
@@ -55,12 +54,9 @@ function Enemy:update(dt)
         self.health = self.maxHealth
     end
 
-    -- enemy fades away as it loses health
     self.color = self.originalColor
 	-- switch to HSL for enemy color degredation
-    --self.color[4] = math.floor((255-self.minimumAlpha)*(self.health/self.maxHealth) + self.minimumAlpha)
-	--local saturation = self.saturation * self.health/self.maxHealth
-  local saturation = self.saturation
+    local saturation = self.saturation
 	local lightness = (self.lightness - self.minLightness) * self.health/self.maxHealth + self.minLightness
 
 	local r, g, b = husl.husl_to_rgb(self.hue, saturation, lightness)
@@ -70,18 +66,17 @@ function Enemy:update(dt)
         self.color = {255, 255, 255, 255}
         self.flashTime = self.flashTime - dt
     end
-
-    self:checkCollision(self._handleCollision)
-
 end
 
 -- this is a private collision function specifically for common enemy effects that aren't supposed
 -- to be overridden
-function Enemy:_handleCollision(obj)
+function Enemy:_handleCollision(collision)
+    local obj = collision.other
+
     if obj:isInstanceOf(Enemy) then
         if self.position:dist(obj.position) < self.radius + obj.radius then
-            v = vector(self.x - obj.x, self.y - obj.y)
-            self.moveAway = self.moveAway + v:normalized()
+            local actualX, actualY = game.world:move(self, self.velocity.x, self.velocity.y)
+            self.acceleration = self.acceleration + vector(actualX, actualY)
         end
     end
 
@@ -94,17 +89,17 @@ function Enemy:_handleCollision(obj)
 		-- check for proximity and invincible
         if self.position:dist(obj.position) < self.radius + obj.radius then
             game:removeBullet(obj)
-			      if not self.invincible and not obj.destroy then
+			if not self.invincible and not obj.destroy then
                 local dmg = obj.damage * (1 - self.damageResistance)
-				        self.health = self.health - dmg
+				self.health = self.health - dmg
                 local death = self.health <= 0
-				        signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
-				        self.flashTime = 20/1000
+				signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
+				self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
-				        obj.destroy = true
+				obj.destroy = true
 
                 self.healthTween = tween(.4, self, {healthRadius = self.radius*self.health/self.maxHealth}, "inOutCubic")
-			      end
+			end
         end
     end
 end
@@ -116,18 +111,15 @@ function Blob:initialize(position)
     self.originalColor = {231, 76, 60, 255}
     self.sides = 4
 
-	  self.hue = 10
-	  self.saturation = 80
-	  self.lightness = 50
+	self.hue = 10
+	self.saturation = 80
+	self.lightness = 50
 
     local radiusOrig = 15
     self.radius = radiusOrig
 
-    self:randomizeAppearance(15, 15, 10, .3)
-
     self.speed = math.sqrt(750 * 1/(self.radius/radiusOrig)) * 20
     self.touchDamage = 25 * (self.radius/radiusOrig)
-
 
     self.position = position
     self.health = 100
@@ -137,12 +129,12 @@ end
 
 function Blob:update(dt)
     Enemy.update(self, dt)
-    self.moveTowardsPlayer = (player.position - self.position):normalized()
+    self.moveTowardsPlayer = player.position - self.position
 
-    self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
+    self.acceleration = (self.acceleration + self.moveTowardsPlayer):normalized() * self.speed
 end
 
-function Blob:handleCollision(obj)
+function Blob:handleCollision(collision)
 
 end
 
@@ -159,8 +151,6 @@ function Sweeper:initialize(start, percent, num, radius)
 
     local radiusOrig = 18
     self.radius = radiusOrig
-
-    self:randomizeAppearance(5, 10, 5, .3)
 
     self.speed = 400 * 1/(self.radius/radiusOrig)
     self.touchDamage = 125 * (self.radius/radiusOrig)
@@ -181,7 +171,7 @@ function Sweeper:initialize(start, percent, num, radius)
     self.maxHealth = 75
     self.healthRadius = self.radius*self.health/self.maxHealth
 
-	  signal.register('enemyDeath', function(enemy)
+	signal.register('enemyDeath', function(enemy)
       if enemy.class == Sweeper then
 		      self.countSimilar = self.countSimilar - 1
 		  end
@@ -203,7 +193,7 @@ function Sweeper:update(dt)
   	self.angle = self.angle + dt * self.rotateSpeed
 end
 
-function Sweeper:handleCollision(obj)
+function Sweeper:handleCollision(collision)
 
 end
 
@@ -231,8 +221,6 @@ function Healer:initialize(position)
     local radiusOrig = 11
     self.radius = radiusOrig
 
-    self:randomizeAppearance(15, 15, 10, .2)
-
     self.speed = 325 * 1/(self.radius/radiusOrig)
     self.touchDamage = 12 * (self.radius/radiusOrig)
 
@@ -253,8 +241,8 @@ function Healer:update(dt)
     self.moveTowardsPlayer = (player.position - self.position):normalized()
     self.moveTowardsEnemy = vector(0, 0)
 
-    for i, o in pairs(quadtree:getCollidableObjects(self, true)) do
-        if o:isInstanceOf(Enemy) then
+    for i, o in pairs(objects) do
+        if o:isInstanceOf(Enemy) and o ~= self then
             if o.position:dist(self.position) <= self.healRadius and o ~= self then
                 if o.health >= 0 then
                     o.health = o.health + self.healRate * dt
@@ -270,10 +258,8 @@ function Healer:update(dt)
     self.acceleration = (self.moveTowardsPlayer + self.moveAway + self.moveTowardsEnemy*0.1):normalized() * self.speed
 end
 
-function Healer:handleCollision(obj)
-    if obj:isInstanceOf(Enemy) then
+function Healer:handleCollision(collision)
 
-    end
 end
 
 function Healer:draw()
@@ -281,7 +267,7 @@ function Healer:draw()
 
     love.graphics.setColor(77, 214, 79, 70)
 
-    for i, o in pairs(quadtree:getCollidableObjects(self, true)) do
+    for i, o in pairs(objects) do
         if o:isInstanceOf(Enemy) then
             if o.position:dist(self.position) <= self.healRadius and o ~= self then
                 love.graphics.line(self.position.x, self.position.y, o.position.x, o.position.y)
@@ -306,8 +292,6 @@ function Tank:initialize(position)
     local radiusOrig = 20
     self.radius = radiusOrig
 
-    self:randomizeAppearance(20, 15, 10, .2)
-
     self.speed = 350 * 1/(self.radius/radiusOrig)
     self.touchDamage = 65 * (self.radius/radiusOrig)
 
@@ -328,7 +312,9 @@ function Tank:update(dt)
     self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
 end
 
-function Tank:handleCollision(obj)
+function Tank:handleCollision(collision)
+    local obj = collision.other
+
     if obj:isInstanceOf(Bullet) then
         if obj.source == self then return end
         if obj.source:isInstanceOf(Tank) then return end
@@ -375,8 +361,6 @@ function Ninja:initialize(position)
     local radiusOrig = 15
     self.radius = radiusOrig
 
-    self:randomizeAppearance(10, 15, 10, .3)
-
     self.speed = 800 * 1/(self.radius/radiusOrig)
     self.touchDamage = 45 * (self.radius/radiusOrig)
 
@@ -409,14 +393,6 @@ function Ninja:update(dt)
         self.doTeleport = false
     end
 
-    for i, o in pairs(quadtree:getCollidableObjects(self, true)) do
-        if o:isInstanceOf(Bullet) then
-            if not self.sprinting then
-                self.velocity = self.velocity - (o.position - self.position):perpendicular():normalized()
-            end
-        end
-    end
-
     self.drawTeleportLineTime = self.drawTeleportLineTime - dt
     self.sprintCooldown = self.sprintCooldown - dt
 
@@ -447,7 +423,9 @@ function Ninja:update(dt)
     end
 end
 
-function Ninja:handleCollision(obj)
+function Ninja:handleCollision(collision)
+    local obj = collision.other
+
     if obj:isInstanceOf(Bullet) then
         if obj.source ~= nil and obj.source:isInstanceOf(self.class) then return end
         if self.boss ~= nil then

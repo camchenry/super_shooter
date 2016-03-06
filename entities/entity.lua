@@ -25,8 +25,6 @@ end
 function Entity:physicsUpdate(dt)
 	self.width, self.height = self.radius*2, self.radius * 2
 
-	self.prev_x, self.prev_y = self.position:unpack()
-
 	-- verlet integration, much more accurate than euler integration for constant acceleration and variable timesteps
     self.acceleration = self.acceleration:normalized() * self.speed
     self.oldVelocity = self.velocity
@@ -34,10 +32,6 @@ function Entity:physicsUpdate(dt)
     self.position = self.position + (self.oldVelocity + self.velocity) * 0.5 * dt
 
 	self.x, self.y = self.position:unpack()
-
-	if self.handleCollision then
-		self:checkCollision(self.handleCollision)
-	end
 end
 
 function Entity:update(dt)
@@ -53,7 +47,7 @@ function Entity:draw()
 	love.graphics.circle("line", self.position.x, self.position.y, self.radius, self.sides)
 
 	if self.healthRadius then
-			love.graphics.circle("fill", self.position.x, self.position.y, self.healthRadius, self.sides)
+		love.graphics.circle("fill", self.position.x, self.position.y, self.healthRadius, self.sides)
 	end
 
 	love.graphics.setColor(rgba)
@@ -61,22 +55,7 @@ function Entity:draw()
 	love.graphics.setLineWidth(1)
 end
 
-function Entity:checkCollision(callback)
-		local collidableObjects = quadtree:getCollidableObjects(self, true)
-    for i, obj in pairs(collidableObjects) do
-
-    	local aabbOverlapping = self.x + self.radius + obj.radius > obj.x
-			and self.x < obj.x + self.radius + obj.radius
-			and self.y + self.radius + obj.radius > obj.y
-			and self.y < obj.y + self.radius + obj.radius
-
-    	if (aabbOverlapping) then
-        	callback(self, obj)
-        end
-    end
-end
-
-function Entity:handleCollision(obj)
+function Entity:handleCollision(collision)
 
 end
 

@@ -61,6 +61,10 @@ function Bullet:update(dt)
     end
 end
 
+function Bullet:handleCollision(collision)
+
+end
+
 function Bullet:draw()
     love.graphics.circle("fill", self.position.x, self.position.y, self.radius)
 end
