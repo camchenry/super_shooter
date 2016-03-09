@@ -16,10 +16,9 @@ function Particles:initialize()
     self.particleSmallSystem = self.particleSystem:clone()
     self.particleSmallSystem:setTexture(self.particleSmallImage)
 
-    self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
-    self.enemyHitObserver = signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
-
-
+    signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
+    signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
+    signal.register('healing', function(enemy, healer) self:onHealing(enemy, healer) end)
     signal.register('newGame', function()
 		self.particleSystem:reset()
 		self.particleSmallSystem:reset()
@@ -52,6 +51,16 @@ function Particles:onEnemyHit(enemy)
 		system:setSpeed(50, 250)
 		system:setPosition(enemy.position.x, enemy.position.y)
 		system:emit(5)
+	end
+end
+
+function Particles:onHealing(enemy, healer)
+	for i, system in pairs({self.particleSmallSystem}) do
+		system:setColors(healer.originalColor[1], healer.originalColor[2], healer.originalColor[3], 150, 0, 0, 0, 0)
+
+		system:setSpeed(10, 50)
+		system:setPosition(enemy.position.x, enemy.position.y)
+		system:emit(1)
 	end
 end
 

@@ -30,25 +30,36 @@ require 'states.modeselect'
 require 'entities.entity'
 require 'entities.bullet'
 require 'entities.player'
-require 'entities.enemy'
+require 'entities.enemy.enemy'
+require 'entities.enemy.blob'
+require 'entities.enemy.healer'
+require 'entities.enemy.tank'
+require 'entities.enemy.sweeper'
+require 'entities.enemy.ninja'
+
 -- bosses
 require 'entities.boss.megabyte'
+
 -- visual effects
 require 'entities.fx.particle'
 require 'entities.fx.shake'
 require 'entities.fx.hurt'
 require 'entities.fx.background'
 require 'entities.fx.floating'
+
 -- sound effects
 require 'entities.sound.sound'
+
 -- high score
 require 'entities.highscore.highscore'
+
 -- ui elements
 require 'entities.ui.button'
 require 'entities.ui.checkbox'
 require 'entities.ui.input'
 require 'entities.ui.list'
 require 'entities.ui.slider'
+
 -- game modes
 require 'entities.mode.gamemode'
 require 'entities.mode.survival'

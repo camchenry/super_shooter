@@ -46,10 +46,6 @@ function Entity:draw()
 
 	love.graphics.circle("line", self.position.x, self.position.y, self.radius, self.sides)
 
-	if self.healthRadius then
-		love.graphics.circle("fill", self.position.x, self.position.y, self.healthRadius, self.sides)
-	end
-
 	love.graphics.setColor(rgba)
 	love.graphics.pop()
 	love.graphics.setLineWidth(1)
