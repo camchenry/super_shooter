@@ -53,7 +53,6 @@ function game:init()
     self.hurt = Hurt:new()
     self.floatingMessages = FloatingMessages:new()
     self.highScore = HighScore:new()
-    highscoreList:init()
 
 	self.camera = Camera(0, 0)
 	self.camera.scale = self.cameraZoom
@@ -178,7 +177,7 @@ function game:update(dt)
             end
         end
     end
-    
+
     self.mode:update(dt)
     self:updateCamera(dt)
 
