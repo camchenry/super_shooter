@@ -151,32 +151,34 @@ function game:update(dt)
         state.switch(restart)
     end
 
-    local toUpdate = {objects, bullets}
-    for i, tabl in ipairs(toUpdate) do
-        for j, obj in ipairs(tabl) do
-            -- update object positions
-            obj:update(dt)
-            self.world:update(obj, obj.position.x, obj.position.y, obj.width, obj.height)
+    if player.health >= 0 then
+        local toUpdate = {objects, bullets}
+        for i, tabl in ipairs(toUpdate) do
+            for j, obj in ipairs(tabl) do
+                -- update object positions
+                obj:update(dt)
+                self.world:update(obj, obj.position.x, obj.position.y, obj.width, obj.height)
 
-            -- check for object collisions
-            local ax, ay, cols, len = self.world:check(obj, obj.position.x, obj.position.y)
-            for i=1, len do
-                obj:handleCollision(cols[i])
-                if obj._handleCollision then
-                    obj:_handleCollision(cols[i])
+                -- check for object collisions
+                local ax, ay, cols, len = self.world:check(obj, obj.position.x, obj.position.y)
+                for i=1, len do
+                    obj:handleCollision(cols[i])
+                    if obj._handleCollision then
+                        obj:_handleCollision(cols[i])
+                    end
+                end
+            end
+
+            -- remove objects that are marked to be destroyed
+            for j = #tabl, 1, -1 do
+                local obj = tabl[j]
+                if obj.destroy then
+                  self:remove(obj, tabl)
                 end
             end
         end
-
-        -- remove objects that are marked to be destroyed
-        for j = #tabl, 1, -1 do
-            local obj = tabl[j]
-            if obj.destroy then
-              self:remove(obj, tabl)
-            end
-        end
     end
-
+    
     self.mode:update(dt)
     self:updateCamera(dt)
 
