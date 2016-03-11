@@ -68,12 +68,6 @@ function game:reset()
     self.cellSize = 200
     self.world = bump.newWorld(self.cellSize)
 
-    -- quadtree not actually used for collision, only for drawing (temporary)
-    quadtree = QuadTree:new(-self.worldSize.x/2-25, -self.worldSize.y/2-25, self.worldSize.x+50, self.worldSize.y+50)
-    quadtree:subdivide()
-    quadtree:subdivide()
-    quadtree:subdivide()
-
 	-- player will be added later, in character select
 
     self.time = 0
