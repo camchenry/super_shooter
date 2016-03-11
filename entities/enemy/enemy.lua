@@ -2,7 +2,6 @@ Enemy = class('Enemy', Entity)
 
 function Enemy:initialize(position)
     Entity.initialize(self, position)
-    self.originalColor = {255, 76, 60, 255}
     self.radius = 15
     self.sides = 4
 
@@ -21,22 +20,26 @@ function Enemy:initialize(position)
 	self.saturation = 100
 	self.lightness = 40
 	self.minLightness = 25
-    self:randomizeAppearance(5, 5, 5, .3)
 
     self.flashTime = 0
 end
 
 function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiusDiff)
-    local hueVariance = hueDiff or 5
-    local saturationVariance = saturationDiff or 5
-    local lightnessVariance = lightnessDiff or 5
-    local radiusVariance = radiusDiff or 0.1
+    hueDiff = hueDiff or 2
+    saturationDiff = saturationDiff or 5
+    lightnessDiff = lightnessDiff or 5
+    radiusDiff = radiusDiff or 5
+	self.hue = self.hue + math.random(-hueDiff, hueDiff)
+	self.saturation = self.saturation + math.random(-saturationDiff, saturationDiff)
+	self.lightness = self.lightness + math.random(-lightnessDiff, lightnessDiff)
+    
+    -- color bounds checking
+    self.hue = math.min(360, self.hue)
+    self.saturation = math.min(100, self.saturation)
+    self.lightness = math.min(100, self.lightness)
 
-	self.hue = self.hue + math.random(-hueVariance, hueVariance)
-	self.saturation = self.saturation + math.random(-saturationVariance, saturationVariance)
-	self.lightness = self.lightness + math.random(-lightnessVariance, lightnessVariance)
-
-    self.radius = self.radius + math.random(-self.radius*radiusVariance, self.radius*radiusVariance)
+    self.radius = self.radius + math.random(-self.radius*radiusDiff, self.radius*radiusDiff)
+    self.radius = math.max(1, self.radius)
 end
 
 function Enemy:update(dt)
@@ -47,7 +50,6 @@ function Enemy:update(dt)
 
     if self.health <= 0 then
         self.destroy = true
-        self.color = self.originalColor
         signal.emit('enemyDeath', self)
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
@@ -58,12 +60,11 @@ function Enemy:update(dt)
         self.healthRadius = self.radius*self.health/self.maxHealth
     end
 
-    self.color = self.originalColor
 	-- switch to HSL for enemy color degredation
-    local saturation = self.saturation
-	local lightness = (self.lightness - self.minLightness) * self.health/self.maxHealth + self.minLightness
+--    local saturation = self.saturation
+--	local lightness = (self.lightness - self.minLightness) * self.health/self.maxHealth + self.minLightness
 
-	local r, g, b = husl.husl_to_rgb(self.hue, saturation, lightness)
+	local r, g, b = husl.husl_to_rgb(self.hue, self.saturation, self.lightness)
 	self.color = {r*255, g*255, b*255, self.color[4]}
 
     if self.flashTime > 0 then
@@ -80,6 +81,7 @@ function Enemy:_handleCollision(collision)
     if obj:isInstanceOf(Enemy) then
         if self.position:dist(obj.position) < self.radius + obj.radius then
             local actualX, actualY = game.world:move(self, self.velocity.x, self.velocity.y)
+
             self.acceleration = self.acceleration + vector(actualX, actualY)
         end
     end

@@ -16,6 +16,8 @@ function Particles:initialize()
     self.particleSmallSystem = self.particleSystem:clone()
     self.particleSmallSystem:setTexture(self.particleSmallImage)
 
+    self.healingParticleSystem = self.particleSmallSystem:clone()
+
     signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
     signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
     signal.register('healing', function(enemy, healer) self:onHealing(enemy, healer) end)
@@ -28,6 +30,7 @@ end
 function Particles:update(dt)
 	self.particleSystem:update(dt)
 	self.particleSmallSystem:update(dt)
+	self.healingParticleSystem:update(dt)
 
 	self.particleSystem:setSpeed(250)
 	self.particleSmallSystem:setSpeed(250)
@@ -55,8 +58,8 @@ function Particles:onEnemyHit(enemy)
 end
 
 function Particles:onHealing(enemy, healer)
-	for i, system in pairs({self.particleSmallSystem}) do
-		system:setColors(healer.originalColor[1], healer.originalColor[2], healer.originalColor[3], 150, 0, 0, 0, 0)
+	for i, system in pairs({self.healingParticleSystem}) do
+		system:setColors(healer.color[1], healer.color[2], healer.color[3], 150, 0, 0, 0, 0)
 
 		system:setSpeed(10, 50)
 		system:setPosition(enemy.position.x, enemy.position.y)
@@ -65,6 +68,8 @@ function Particles:onHealing(enemy, healer)
 end
 
 function Particles:draw()
+    love.graphics.setColor(255, 255, 255)
 	love.graphics.draw(self.particleSystem)
 	love.graphics.draw(self.particleSmallSystem)
+	love.graphics.draw(self.healingParticleSystem)
 end

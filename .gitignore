@@ -15,6 +15,9 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+# Vim files
+*.swp
+
 # Windows shortcuts
 *.lnk
 

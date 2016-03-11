@@ -2,12 +2,12 @@ Healer = class('Healer', Enemy)
 
 function Healer:initialize(position)
     Enemy.initialize(self, position)
-    self.originalColor = {77, 214, 79, 255}
     self.sides = 5
 
     self.hue = 125
-    self.saturation = 80
+    self.saturation = 90
     self.lightness = 50
+    self:randomizeAppearance(1, 3, 5, 0.1)
 
     local radiusOrig = 11
     self.radius = radiusOrig

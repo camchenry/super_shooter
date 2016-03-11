@@ -32,7 +32,6 @@ function Bullet:initialize(position, target, velocity)
 end
 
 function Bullet:update(dt)
-    self.prev_x, self.prev_y = self.position:unpack()
     local oldVelocity = self.velocity
     self.position = self.position + (oldVelocity + self.velocity) * 0.5 * dt
     self.x, self.y = self.position:unpack()
@@ -66,6 +65,7 @@ function Bullet:handleCollision(collision)
 end
 
 function Bullet:draw()
+    love.graphics.setColor(255, 255, 255, 255)
     love.graphics.circle("fill", self.position.x, self.position.y, self.radius)
 end
 
