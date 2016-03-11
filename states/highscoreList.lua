@@ -4,7 +4,6 @@ highscoreList.file = 'highscores.txt'
 
 function highscoreList:init()
 	self.leftAlign = 75
-	self.scores = {}
 	
 	self.initialsInput = {' ', ' ', ' '}
 	self.selectorPos = 1
@@ -12,23 +11,21 @@ function highscoreList:init()
 	self.fromGame = false
 	self.scoreEntered = false
 	self.initialChar = true
-	
-	self.maxScores = 10 -- how many high scores are stored
+end
+
+function highscoreList:initializeScores()
+	self.scores = {}
 
 	if not love.filesystem.exists(self.file) then
 		self.scores = self:getDefaultScores()
 	else
 		self.scores = self:getScores()
 	end
+
+	self.maxScores = 10 -- how many high scores are stored
 end
 
 function highscoreList:enter(prev)
-	if not love.filesystem.exists(self.file) then
-		self.scores = self:getDefaultScores()
-	else
-		self.scores = self:getScores()
-	end
-	
 	if prev == menu then -- hides the score enter
 		self.fromGame = false
 	else -- the menu would have no player data stored
@@ -101,11 +98,11 @@ end
 
 function highscoreList:textinput(t)
 	if self.fromGame and not self.scoreEntered then
-			self.initialsInput [self.selectorPos] = t
+		self.initialsInput [self.selectorPos] = t
 			
-			if self.selectorPos < 3 then
-				self.selectorPos = self.selectorPos + 1
-			end
+		if self.selectorPos < 3 then
+			self.selectorPos = self.selectorPos + 1
+		end
 	end
 end
 

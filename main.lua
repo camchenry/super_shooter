@@ -85,6 +85,8 @@ function love.load()
         options:load()
     end
 
+    highscoreList:initializeScores()
+
     state.registerEvents()
     state.switch(menu)
 end
