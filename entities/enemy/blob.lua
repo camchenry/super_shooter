@@ -23,7 +23,6 @@ function Blob:initialize(position)
 end
 
 function Blob:update(dt)
-    print(self.hue .. ", " .. self.saturation .. ", " .. self.lightness)
     Enemy.update(self, dt)
     self.moveTowardsPlayer = player.position - self.position
 

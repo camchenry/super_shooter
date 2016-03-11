@@ -7,8 +7,8 @@ DEBUG = true
 
 -- Debug tools
 PRESS_KEY_TO_PAUSE = "space" -- stops game updates with a single keypress
-DRAW_COLLISION_BODIES = true -- draws collision bodies around all entities
-DRAW_PHYSICS_VECTORS = true -- draws acceleration and velocity headers
+DRAW_COLLISION_BODIES = false -- draws collision bodies around all entities
+DRAW_PHYSICS_VECTORS = false -- draws acceleration and velocity headers
 TRACK_ENTITIES = true -- enables entity inspector (right click on entity)
 TIME_MULTIPLIER = 1.0
 
@@ -477,13 +477,15 @@ function game:drawEntityInspectorInfo()
 end
 
 function game:drawCollisionBodies()
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(255, 255, 255, 200)
     love.graphics.setLineWidth(1)
     for i, object in ipairs(objects) do
         love.graphics.circle("line", object.position.x, object.position.y, object.radius)
+        love.graphics.rectangle("line", object.position.x - object.width/2, object.position.y - object.height/2, object.width, object.height)
     end
     for i, object in ipairs(bullets) do
         love.graphics.circle("line", object.position.x, object.position.y, object.radius)
+        love.graphics.rectangle("line", object.position.x - object.width/2, object.position.y - object.height/2, object.width, object.height)
     end
 end
 
