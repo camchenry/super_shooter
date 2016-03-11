@@ -26,7 +26,7 @@ function modeselect:init()
         table.insert(self.buttons, Button:new(item.title, 75, buttonHeight*(i-1) + 250, nil, buttonHeight, font[30], item.action))
     end
 
-    self.back = Button:new("< BACK", 75, love.graphics.getHeight() - 80)
+    self.back = Button:new("< BACK", 75, love.graphics.getHeight() - 60)
     self.back.activated = function()
         state.switch(menu)
     end
