@@ -9,6 +9,7 @@ DEBUG = true
 PRESS_KEY_TO_PAUSE = "space" -- stops game updates with a single keypress
 DRAW_COLLISION_BODIES = false -- draws collision bodies around all entities
 DRAW_PHYSICS_VECTORS = false -- draws acceleration and velocity headers
+DRAW_WORLD_BORDER = false
 TRACK_ENTITIES = true -- enables entity inspector (right click on entity)
 TIME_MULTIPLIER = 1.0
 
@@ -337,7 +338,10 @@ function game:draw()
 
 
         self.floatingMessages:drawDynamic()
-        self:drawWorldBorders()
+        
+        if DEBUG and DRAW_WORLD_BORDER then
+            self:drawWorldBorders()
+        end
 
     	self.camera:detach()
 
