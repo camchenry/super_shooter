@@ -7,8 +7,8 @@ DEBUG = true
 
 -- Debug tools
 PRESS_KEY_TO_PAUSE = "space" -- stops game updates with a single keypress
-DRAW_COLLISION_BODIES = false -- draws collision bodies around all entities
-DRAW_PHYSICS_VECTORS = false -- draws acceleration and velocity headers
+DRAW_COLLISION_BODIES = true -- draws collision bodies around all entities
+DRAW_PHYSICS_VECTORS = true -- draws acceleration and velocity headers
 TRACK_ENTITIES = true -- enables entity inspector (right click on entity)
 TIME_MULTIPLIER = 1.0
 
@@ -160,6 +160,7 @@ function game:update(dt)
 
                 -- check for object collisions
                 local ax, ay, cols, len = self.world:check(obj, obj.position.x, obj.position.y)
+                obj.moveAway = vector(0, 0)
                 for i=1, len do
                     obj:handleCollision(cols[i])
                     if obj._handleCollision then
@@ -514,4 +515,15 @@ function game:drawVectors(object)
                            object.position.x + object.acceleration.x,
                            object.position.y + object.acceleration.y)
     end
+
+    --[[
+    -- draws the heading for collision resolution vector moveAway, but it's too much of a headache to leave in. only use if needed.
+    if object.moveAway then
+        love.graphics.setColor(18, 255, 40, 200)
+        love.graphics.line(object.position.x,
+                           object.position.y,
+                           object.position.x + object.moveAway.x,
+                           object.position.y + object.moveAway.y)
+    end
+    ]]
 end

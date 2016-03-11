@@ -24,6 +24,9 @@ function Enemy:initialize(position)
     self:randomizeAppearance(5, 5, 5, .3)
 
     self.flashTime = 0
+
+    self.collisionPush = 15
+    self.moveAway = vector(0, 0)
 end
 
 function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiusDiff)
@@ -40,7 +43,6 @@ function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiu
 end
 
 function Enemy:update(dt)
-    self.moveAway = vector(0, 0)
     self.moveTowardsPlayer = (player.position - self.position):normalized()
 
     Entity.physicsUpdate(self, dt)
@@ -79,8 +81,8 @@ function Enemy:_handleCollision(collision)
 
     if obj:isInstanceOf(Enemy) then
         if self.position:dist(obj.position) < self.radius + obj.radius then
-            local actualX, actualY = game.world:move(self, self.velocity.x, self.velocity.y)
-            self.acceleration = self.acceleration + vector(actualX, actualY)
+            v = vector(self.x - obj.x, self.y - obj.y)
+            self.moveAway = self.moveAway + v*self.collisionPush
         end
     end
 

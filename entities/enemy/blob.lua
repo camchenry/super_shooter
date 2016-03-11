@@ -25,7 +25,7 @@ function Blob:update(dt)
     Enemy.update(self, dt)
     self.moveTowardsPlayer = player.position - self.position
 
-    self.acceleration = (self.acceleration + self.moveTowardsPlayer):normalized() * self.speed
+    self.acceleration = (self.moveTowardsPlayer + self.moveAway):normalized() * self.speed
 end
 
 function Blob:handleCollision(collision)
