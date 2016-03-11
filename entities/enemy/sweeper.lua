@@ -17,9 +17,8 @@ function Sweeper:initialize(start, percent, num, radius)
 
     self.angle = percent * 2 * math.pi
     self.orbitRadius = radius or math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))
-  	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
-  	self.countSimilar = num
 
+  	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
     self.rotateSpeed = 50*self.rotateSpeed/math.sqrt(self.orbitRadius) -- temporary decrease
 
     self.start = start
@@ -29,12 +28,6 @@ function Sweeper:initialize(start, percent, num, radius)
 
     self.health = 75
     self.maxHealth = 75
-
-	signal.register('enemyDeath', function(enemy)
-      if enemy.class == Sweeper then
-		      self.countSimilar = self.countSimilar - 1
-		  end
-    end)
 end
 
 function Sweeper:update(dt)
@@ -45,11 +38,13 @@ function Sweeper:update(dt)
         math.sin(self.angle) * self.orbitRadius
     )
 
-    self.moveTowardsPosition = (self.start - self.position + position):normalized()
-    local speed = math.atan2(self.position.y-self.moveTowardsPosition.y, self.position.x-self.moveTowardsPosition.x) + 5
-    self.acceleration = (self.moveTowardsPosition):normalized()*speed
+    --self.moveTowardsPosition = (self.start - self.position + position):normalized()
+    --local speed = math.atan2(self.position.y-self.moveTowardsPosition.y, self.position.x-self.moveTowardsPosition.x) + 5
+    --self.acceleration = (self.moveTowardsPosition):normalized()*speed
 
-  	self.angle = self.angle + dt * self.rotateSpeed
+    self.position = self.start + position
+
+    self.angle = self.angle + dt * self.rotateSpeed
 end
 
 function Sweeper:handleCollision(collision)
