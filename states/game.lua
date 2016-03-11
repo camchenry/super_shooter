@@ -86,7 +86,6 @@ function game:reset()
 
     self:compileShaders()
     self:toggleEffects()
-    self.background = GridBackground:new()
 
 	self.camera.scale = self.cameraZoom
 	self.camera.smoother = function (dx, dy)

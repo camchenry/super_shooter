@@ -179,6 +179,7 @@ function charSelect:update(dt)
 	end
 
 	self.back:update(dt)
+    game.background:update(dt)
 end
 
 function charSelect:keypressed(key)
@@ -206,7 +207,7 @@ function charSelect:mousepressed(x, y, mbutton)
 end
 
 function charSelect:draw()
-	game:draw()
+    game.background:draw()
 	love.graphics.setColor(255, 255, 255)
 	local text = "CHOOSE A CHARACTER"
 

@@ -50,6 +50,8 @@ end
 function modeselect:update(dt)
 	self.time = self.time+dt
 
+    game.background:update(dt)
+
     for i, button in pairs(self.buttons) do
         button:update(dt)
     end
@@ -87,6 +89,8 @@ end
 
 function modeselect:draw()
     love.graphics.setColor(255, 255, 255)
+    
+    game.background:draw()
 
     for i, button in pairs(self.buttons) do
         button:draw()

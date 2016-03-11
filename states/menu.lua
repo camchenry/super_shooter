@@ -58,11 +58,15 @@ function menu:init()
     self.title = 'SUPER SHOOTER'
     self.titleFont = fontBold[72]
     self.titleX = love.graphics.getWidth()/2 - self.titleFont:getWidth(self.title)/2
-    self.titleTween = tween(1.2, self, {titleX = 75}, "inOutCubic")
+    self.titleTweenTime = 1.0
+    self.titleTween = tween(self.titleTweenTime, self, {titleX = 75}, "inOutCubic")
 	
 	-- reveal the menu on game launch
+    self.headerTweenTime = 1.4
 	self.headerTweenAmount = love.graphics.getHeight() - (120+55)
-	self.headerTween = tween(2, self, {headerTweenAmount = 0}, "inOutCubic", function() end)
+	self.headerTween = tween(self.headerTweenTime, self, {headerTweenAmount = 0}, "inOutCubic", function() end)
+ 
+    game.background = GridBackground:new()
 end
 
 function menu:enter()
@@ -80,6 +84,8 @@ end
 
 function menu:update(dt)
 	self.time = self.time+dt
+
+    game.background:update(dt)
 
     for i, button in pairs(self.buttons) do
         button:update(dt)
@@ -115,6 +121,8 @@ end
 
 function menu:draw()
     love.graphics.setColor(255, 255, 255)
+
+    game.background:draw()
 
     for i, button in pairs(self.buttons) do
         button:draw()
