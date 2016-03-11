@@ -18,10 +18,9 @@ function Sweeper:initialize(start, percent, num, radius)
 
     self.angle = percent * 2 * math.pi
     self.orbitRadius = radius or math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))
+
   	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
-
-    self.rotateSpeed = 50*self.rotateSpeed/math.sqrt(self.orbitRadius) -- temporary decrease
-
+    self.rotateSpeed = 50*self.rotateSpeed/math.sqrt(self.orbitRadius)
     self.start = start
     self.target = finish
     self.friction = 3
@@ -39,9 +38,11 @@ function Sweeper:update(dt)
         math.sin(self.angle) * self.orbitRadius
     )
 
-    self.moveTowardsPosition = (self.start - self.position + position):normalized()
-    local speed = math.atan2(self.position.y-self.moveTowardsPosition.y, self.position.x-self.moveTowardsPosition.x) + 5
-    self.acceleration = (self.moveTowardsPosition):normalized()*speed
+    --self.moveTowardsPosition = (self.start - self.position + position):normalized()
+    --local speed = math.atan2(self.position.y-self.moveTowardsPosition.y, self.position.x-self.moveTowardsPosition.x) + 5
+    --self.acceleration = (self.moveTowardsPosition):normalized()*speed
+
+    self.position = self.start + position
 
     self.angle = self.angle + dt * self.rotateSpeed
 end

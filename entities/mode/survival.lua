@@ -90,9 +90,9 @@ function Survival:setupWaves()
     game.waves = {}
     game.waves[1] = {
         blobs = 15,
-        sweepers = 0,
+        sweepers = 10,
 		healers = 3,
-		tanks = 0,
+		tanks = 2,
     }
     game.waves[2] = {
         blobs = 0, -- 25,
@@ -180,34 +180,9 @@ function Survival:spawnEnemies()
         -- number of line enemies to spawn
         local num = currentWave.sweepers
         -- margin from the sides of the screen
-        local margin = 25
-        local w = (game.worldSize.x)
-        local h = (game.worldSize.y-margin*2)/num
-        local leftEdge = margin
-        local rightEdge = w - margin
+		local margin = 600
 
-		local margin = math.min(game.worldSize.x/2, game.worldSize.y/2)
-
-		for i = 1, num do
-			local circleCount = math.random(1, num-i)
-			i = i + circleCount
-
-			local position = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
-									math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
-			local radius = math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))
-
-			for j = 1, circleCount do
-				radius = radius*.9
-				local percent = j / (circleCount) -- used for circular movement
-
-            	game:add(Sweeper:new(
-               		position,
-					percent,
-					num,
-					radius
-            	))
-        	end
-		end
+        self:spawnSweepers(num, margin)
     end
 
 	if currentWave.healers ~= nil then
@@ -243,6 +218,37 @@ function Survival:spawnEnemies()
     if currentWave.boss ~= nil then
         local b = currentWave.boss:new()
         game.boss = game:add(b)
+    end
+end
+
+-- spawns sets of sweepers
+function Survival:spawnSweepers(count, margin)
+    local minimumCount = math.min(2, count) -- minimum count will be 2, unless count is only 1
+    local circleCount = math.random(minimumCount, count/3) -- pick a random number of sweepers
+    if count - circleCount == 1 then -- ensure that after this, there won't be only one more sweeper to allocate. if there is, then add one more to this set instead
+        circleCount = circleCount + 1
+    end
+
+    local position = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
+                                    math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
+    local radius = math.random(100, 500)
+
+    for i = 1, circleCount do
+        radius = radius*.9 -- makes the circles for each sweeper get a bit smaller
+        local percent = i / (circleCount) -- used for circular movement
+
+        game:add(Sweeper:new(
+            position,
+            percent,
+            num,
+            radius
+        ))
+    end
+
+    local newMargin = margin * 1.2 -- increase the margin with each iteration, so that it tends towards the center more
+    local newCount = count - circleCount
+    if newCount > 0 then
+        self:spawnSweepers(count - circleCount, newMargin)
     end
 end
 

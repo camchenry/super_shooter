@@ -70,8 +70,10 @@ function options:enter()
 	-- Takes all available resolutions
 	local resTable = love.window.getFullscreenModes(1)
 	local resolutions = {}
+	--local screenWidth, screenHeight = love.graphics.getDesktopDimensions() -- finish this
 	for k, res in pairs(resTable) do
 		--if res.width > 800 then -- cuts off any resolutions with a width under 800
+		--if res.width <= screenWidth and res.height <= screenHeight then
 			table.insert(resolutions, {res.width, res.height})
 		--end
 	end

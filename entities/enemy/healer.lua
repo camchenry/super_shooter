@@ -37,11 +37,18 @@ function Healer:update(dt)
                     signal.emit('healing', o, self)
                 end
             end
-            self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)
+
+            if not o:isInstanceOf(Healer) then -- healers will not move towards other healers
+                if o.health < o.maxHealth then -- favor moving towards injured enemies
+                    self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)*1.2
+                else
+                    self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)
+                end
+            end
         end
     end
 
-    self.acceleration = (self.moveTowardsPlayer*0.5 + self.moveTowardsEnemy):normalized() * self.speed
+    self.acceleration = (self.moveTowardsPlayer*0.5 + self.moveTowardsEnemy + self.moveAway):normalized() * self.speed
 end
 
 function Healer:handleCollision(collision)
