@@ -171,12 +171,74 @@ function options:enter()
 	self.apply = Button:new('APPLY CHANGES', self.leftAlign+170, love.graphics.getHeight()-bottomMargin)
 	self.apply.activated = function ()
 		self:applyChanges()
+
 		self.back.y = love.graphics.getHeight()-bottomMargin
 		self.apply.y = love.graphics.getHeight()-bottomMargin
+		--self.default.y = love.graphics.getHeight()-bottomMargin
+		--self:setDefaultX(self.default.text)
 	end
+
+--[[
+	local text = 'RESET DEFAULT (F2)'
+	self.default = Button:new(text, 0, love.graphics.getHeight()-bottomMargin)
+	self.default.activated = function ()
+		local conf = self:getDefaultConfig()
+		self:load(conf)
+
+		self.back.y = love.graphics.getHeight()-bottomMargin
+		self.apply.y = love.graphics.getHeight()-bottomMargin
+		self.default.y = love.graphics.getHeight()-bottomMargin
+		self:setDefaultX(text)
+
+		self:setVisibleValues(conf)
+		self:save()
+	end
+	self:setDefaultX(text)
+]]
 
 	self:save()
 end
+
+function options:resetToDefault()
+	local bottomMargin = 60
+
+	local conf = self:getDefaultConfig()
+	self:load(conf)
+
+	self.back.y = love.graphics.getHeight()-bottomMargin
+	self.apply.y = love.graphics.getHeight()-bottomMargin
+	--self.default.y = love.graphics.getHeight()-bottomMargin
+	--self:setDefaultX(text)
+
+	self:setVisibleValues(conf)
+	self:save()
+end
+
+function options:setVisibleValues(conf)
+	self.vsync.selected = conf.display.flags.vsync
+	self.fullscreen.selected = conf.display.flags.fullscreen
+	self.borderless.selected = conf.display.flags.borderless
+	self.highdpi.selected = conf.display.flags.highdpi
+	self.shaderEffects.selected = conf.graphics.shaderEffects
+	self.azerty.selected = conf.graphics.azerty
+	self.particles.selected = conf.graphics.particles
+	self.displayFPS.selected = conf.graphics.displayFPS
+	self.trackpad.selected = conf.input.trackpadMode
+	self.resolution:selectTable({conf.display.width, conf.display.height})
+	self.msaa:selectValue(conf.display.flags.msaa)
+	self.fullscreenMode:selectValue(conf.display.flags.fullscreentype)
+	self.monitorSelect:selectValue(conf.display.flags.display)
+	
+	-- add for volumes and zoom
+end
+
+--[[
+function options:setDefaultX(text)
+	local textWidth = self.default.font:getWidth(text)
+	local rightMargin = 40
+	self.default.x = love.graphics.getWidth() - rightMargin - textWidth
+end
+]]
 
 function options:leave()
 	self:load()
@@ -213,11 +275,16 @@ function options:mousepressed(x, y, button)
 	
 	self.back:mousepressed(x, y, button)
 	self.apply:mousepressed(x, y, button)
+	--self.default:mousepressed(x, y, button)
 end
 
 function options:keypressed(key)
-	if key == "escape" then
+	if key == 'escape' then
 		state.pop()
+	end
+
+	if key == 'f2' then
+		self:resetToDefault()
 	end
 end
 
@@ -243,6 +310,7 @@ function options:update(dt)
 
 	self.back:update(dt)
 	self.apply:update(dt)
+	--self.default:update(dt)
 	
 	
 	-- update volumes without applying changes
@@ -279,6 +347,7 @@ function options:draw()
 
 	self.back:draw()
 	self.apply:draw()
+	--self.default:draw()
 end
 
 function options:getDefaultConfig()
@@ -353,8 +422,8 @@ function options:save()
 	love.filesystem.write(self.file, serialize(o))
 end
 
-function options:load()
-	local config = self:getConfig()
+function options:load(conf)
+	local config = conf or self:getConfig()
 
 	-- old config file
 	if (config.version == nil) or (self.version > config.version) then
