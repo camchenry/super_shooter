@@ -43,6 +43,8 @@ function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiu
 
     self.radius = self.radius + math.random(-self.radius*radiusDiff, self.radius*radiusDiff)
     self.radius = math.max(1, self.radius)
+    
+    self.ricochetDamageMultiplier = 25
 end
 
 function Enemy:update(dt)
@@ -97,7 +99,11 @@ function Enemy:_handleCollision(collision)
         if self.position:dist(obj.position) < self.radius + obj.radius then
             game:removeBullet(obj)
 			if not self.invincible and not obj.destroy then
-                local dmg = obj.damage * (1 - self.damageResistance)
+                local dmgBase = obj.damage
+                if obj.source:isInstanceOf(Tank) then
+                    dmgBase = dmgBase * self.ricochetDamageMultiplier
+                end
+                local dmg = dmgBase * (1 - self.damageResistance)
 				self.health = self.health - dmg
                 local death = self.health <= 0
 				signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
