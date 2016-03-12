@@ -6,7 +6,7 @@ end
 
 function Survival:reset()
 	game.firstWave = false
-	game.startingWave = 9
+	game.startingWave = 0
 	game.wave = game.startingWave
 	game.timeToNextWave = 3
 	game.waveTime = 0
