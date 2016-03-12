@@ -15,6 +15,7 @@ function Sound:initialize()
 	self.music = {
 		menuMusic = "sound/music/menu_music.mp3",
 		bossMusic = "sound/music/boss_music.mp3",
+        victoryMusic = "sound/music/victory_music.mp3",
 	}
 	self.sounds = {
 		uiClick = "sound/click4-2.wav",
@@ -37,6 +38,8 @@ function Sound:initialize()
 		self.sounds[i] = love.audio.newSource(sound)
 		self.sounds[i]:setVolume(self.soundVolume)
 	end
+    
+    self.music.victoryMusic:setLooping(false)
 
     self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
     self.enemyHitObserver = signal.register('enemyHit', function(enemy, damage, crit) self:onEnemyHit(enemy, damage, crit) end)
@@ -51,6 +54,7 @@ function Sound:initialize()
     self.newGame = signal.register('newGame', function() self:onNewGame() end)
     self.playerDeath = signal.register('playerDeath', function() self:onPlayerDeath() end)
     self.waveCountdown = signal.register('waveCountdown', function() self:onWaveCountdown() end)
+    signal.register('survivalVictory', function() self:onVictory() end)
 end
 
 function Sound:update(dt)
@@ -59,6 +63,11 @@ function Sound:update(dt)
 	else
 		self.currentMusic:setVolume(self.musicVolume)
 	end
+
+    if self.currentMusic == self.music.victoryMusic and self.currentMusic:isStopped() then
+        self.currentMusic = self.music.menuMusic
+        self.currentMusic:play()
+    end
 end
 
 function Sound:onSoundVolumeChanged(volume)
@@ -114,6 +123,7 @@ end
 
 function Sound:onNewGame()
 	if self.currentMusic == self.music.menuMusic then return end
+    if self.currentMusic == self.music.victoryMusic then return end
 
 	self.musicTween = tween(1, self, {currentMusicVolume=0}, nil, function()
 		self.currentMusic:stop()
@@ -146,6 +156,15 @@ function Sound:onBossIncoming()
 		self.musicTween = nil
 	end)
 	self.sounds.bossIncoming:play()
+end
+
+function Sound:onVictory()
+	self.musicTween = tween(1, self, {currentMusicVolume=0}, nil, function()
+		self.currentMusic:stop()
+		self.currentMusic = self.music.victoryMusic
+		self.currentMusic:play()
+		self.musicTween = nil
+	end)
 end
 
 function Sound:draw()

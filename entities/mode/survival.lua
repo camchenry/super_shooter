@@ -6,7 +6,7 @@ end
 
 function Survival:reset()
 	game.firstWave = false
-	game.startingWave = 0
+	game.startingWave = 9
 	game.wave = game.startingWave
 	game.timeToNextWave = 3
 	game.waveTime = 0
@@ -36,6 +36,7 @@ function Survival:update(dt)
 
 	if #objects == 1 and game.waves[game.wave+1] == nil and not (player.health <= 0) then
 		state.switch(gameover)
+        signal.emit('survivalVictory')
 	end
 
 	if #objects == 1 and not game.waveTimer and game.boss == nil then

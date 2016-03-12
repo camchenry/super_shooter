@@ -3,7 +3,6 @@ Megabyte = class('Megabyte', Enemy)
 function Megabyte:initialize(position)
     Enemy.initialize(self, vector(0, 0))
     self.name = "Megabyte"
-    self.originalColor = {52, 152, 219}
     self.radius = 0
     self.sides = 6
 
@@ -12,6 +11,10 @@ function Megabyte:initialize(position)
     self.fireAngle = 3*math.pi/4 + .33
     self.fireAngleMultiplier = 1
     self.speed = 200
+
+	self.hue = 200
+	self.saturation = 100
+	self.lightness = 60
 
     self.touchDamage = 150
     self.health = 2500
@@ -119,9 +122,12 @@ MegabyteEnemy = class('MegabyteEnemy', Enemy)
 
 function MegabyteEnemy:initialize(offset, angle, angleIncrease, boss)
     Enemy.initialize(self, vector(0, 0))
-    self.color = {231, 76, 60}
     self.radius = 15
     self.sides = 4
+
+	self.hue = 200
+	self.saturation = 100
+	self.lightness = 50
 
     self.health = 100
     self.maxHealth = 100

@@ -7,7 +7,7 @@ DEBUG = true
 
 -- Debug tools
 PRESS_KEY_TO_PAUSE = "space" -- stops game updates with a single keypress
-DRAW_COLLISION_BODIES = false -- draws collision bodies around all entities
+DRAW_COLLISION_BODIES = true -- draws collision bodies around all entities
 DRAW_PHYSICS_VECTORS = false -- draws acceleration and velocity headers
 DRAW_WORLD_BORDER = false
 TRACK_ENTITIES = true -- enables entity inspector (right click on entity)
