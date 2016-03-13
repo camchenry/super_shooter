@@ -13,7 +13,7 @@ function Sweeper:initialize(start, percent, num, radius)
     local radiusOrig = 18
     self.radius = radiusOrig
 
-    self.speed = 400 * 1/(self.radius/radiusOrig)
+    self.speed = 800 * 1/(self.radius/radiusOrig)
     self.touchDamage = 125 * (self.radius/radiusOrig)
 
     self.angle = percent * 2 * math.pi
@@ -21,6 +21,7 @@ function Sweeper:initialize(start, percent, num, radius)
 
   	self.rotateSpeed = math.min(0.25, math.max(1.2, 1 - math.random() * math.random() + math.random())) -- revolutions per second
     self.rotateSpeed = 50*self.rotateSpeed/math.sqrt(self.orbitRadius)
+    self.rotateDirection = (math.random() > 0.5) and -1 or 1
     self.start = start
     self.target = finish
     self.friction = 3
@@ -44,7 +45,7 @@ function Sweeper:update(dt)
 
     self.position = self.start + position
 
-    self.angle = self.angle + dt * self.rotateSpeed
+    self.angle = self.angle + dt * self.rotateSpeed * self.rotateDirection
 end
 
 function Sweeper:handleCollision(collision)

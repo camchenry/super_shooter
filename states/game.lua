@@ -61,7 +61,7 @@ end
 
 function game:reset()
     options:load()
-    self.worldSize = vector(3000, 2000)
+    self.worldSize = vector(2500, 1500)
 
     objects = {}
     bullets = {}

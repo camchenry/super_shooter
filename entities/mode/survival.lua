@@ -90,16 +90,16 @@ end
 function Survival:setupWaves()
     game.waves = {}
     game.waves[1] = {
-        blobs = 15,
-        sweepers = 10,
-		healers = 3,
-		tanks = 2,
+        blobs = 25,
+        sweepers = 8,
+		healers = 0,
+		tanks = 0,
     }
     game.waves[2] = {
         blobs = 0, -- 25,
         sweepers = 10,
 		tanks = 0, -- 1,
-        ninjas = 2,
+        ninjas = 0,
     }
     game.waves[3] = {
         blobs = 18,
@@ -232,7 +232,7 @@ function Survival:spawnSweepers(count, margin)
 
     local position = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
                                     math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
-    local radius = math.random(100, 500)
+    local radius = math.random(200, 700)
 
     for i = 1, circleCount do
         radius = radius*.9 -- makes the circles for each sweeper get a bit smaller
