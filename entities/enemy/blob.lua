@@ -13,13 +13,15 @@ function Blob:initialize(position)
 
     local radiusOrig = 15
 
-    self.speed = math.sqrt(750 * 1/(self.radius/radiusOrig)) * 20
+    self.speed = math.sqrt(760 * 1/(self.radius/radiusOrig)) * 20
     self.touchDamage = 25 * (self.radius/radiusOrig)
 
     self.position = position
     self.health = 100
     self.maxHealth = 100
     self.healthRadius = self.radius*self.health/self.maxHealth
+
+    self.knockbackResistance = -.1
 end
 
 function Blob:update(dt)
