@@ -127,10 +127,6 @@ function Player:update(dt)
 
     self.rateOfFire = (1/self.shotsPerSecond)
 
-	if math.abs(self.x) >= game.worldSize.x/2 or math.abs(self.y) >= game.worldSize.y/2 then
-		self.health = self.health - self.offScreenDamage * dt
-	end
-
     self.regenTimer = self.regenTimer - dt
     if self.regenTimer <= 0 then
         self.health = self.health + self.healthRegen * dt
@@ -144,6 +140,11 @@ function Player:update(dt)
     end
 
     self.maxHealth = math.max(1, self.maxHealth)
+
+    if math.abs(self.x) >= game.worldSize.x/2 or math.abs(self.y) >= game.worldSize.y/2 then
+        self.health = self.health - self.offScreenDamage * dt * (1 - self.damageResistance)
+        signal.emit('playerHurt')
+    end
 
     -- verlet integration, much more accurate than euler integration for constant acceleration and variable timesteps
     self.acceleration = self.acceleration:normalized() * self.speed
