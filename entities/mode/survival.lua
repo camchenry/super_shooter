@@ -90,49 +90,53 @@ end
 function Survival:setupWaves()
     game.waves = {}
     game.waves[1] = {
-        blobs = 25,
+        blobs = 10,
         sweepers = 0,
 		healers = 0,
 		tanks = 0,
     }
     game.waves[2] = {
-        blobs = 0, -- 25,
-        sweepers = 10,
-		tanks = 0, -- 1,
+        blobs = 0,
+        sweepers = 7,
+		tanks = 0,
         ninjas = 0,
     }
     game.waves[3] = {
-        blobs = 18,
-        sweepers = 3,
-    }
-    game.waves[4] = {
-        blobs = 25,
+        blobs = 20,
         sweepers = 0,
         healers = 2,
     }
-    game.waves[5] = {
+    game.waves[4] = {
         blobs = 25,
-        tanks = 3,
+        sweepers = 12,
         healers = 2,
+    }
+    game.waves[5] = {
+        blobs = 0,
+        tanks = 1,
+        healers = 0,
     }
     game.waves[6] = {
         blobs = 35,
-		sweepers = 6,
+		sweepers = 0,
+        tanks = 2,
     }
     game.waves[7] = {
-        tanks = 5,
+        blobs = 25,
+        tanks = 3,
         healers = 3,
     }
     game.waves[8] = {
-        blobs = 30,
+        blobs = 0,
+        sweepers = 12,
         healers = 3,
         tanks = 4,
     }
     game.waves[9] = {
-        blobs = 25,
-        healers = 3,
-        tanks = 3,
-        sweepers = 8,
+        blobs = 40,
+        healers = 4,
+        tanks = 5,
+        sweepers = 15,
     }
     game.waves[10] = {
         boss = Megabyte,

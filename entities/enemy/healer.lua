@@ -12,7 +12,7 @@ function Healer:initialize(position)
     local radiusOrig = 11
     self.radius = radiusOrig
 
-    self.speed = 325 * 1/(self.radius/radiusOrig)
+    self.speed = 400 * 1/(self.radius/radiusOrig)
     self.touchDamage = 12 * (self.radius/radiusOrig)
     self.position = position
 
