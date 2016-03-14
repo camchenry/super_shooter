@@ -264,6 +264,10 @@ function game:keypressed(key, isrepeat)
     if key == "p" or key == "escape" then
         state.switch(pause)
     end
+
+    if self.mode.keypressed then
+        self.mode:keypressed(key, isrepeat)
+    end
 end
 
 function game:mousepressed(x, y, mbutton)

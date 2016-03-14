@@ -62,6 +62,7 @@ require 'entities.ui.slider'
 -- game modes
 require 'entities.mode.gamemode'
 require 'entities.mode.survival'
+require 'entities.mode.testmode'
 
 function love.load()
 	love.window.setTitle(config.windowTitle)

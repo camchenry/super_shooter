@@ -235,7 +235,7 @@ function Survival:spawnSweepers(count, margin)
     end
 
     local position = vector(math.random(-game.worldSize.x/2 + margin, game.worldSize.x/2 - margin),
-                                    math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
+                            math.random(-game.worldSize.y/2 + margin, game.worldSize.y/2 - margin))
     local radius = math.random(200, 700)
 
     for i = 1, circleCount do

@@ -77,7 +77,9 @@ function modeselect:update(dt)
 end
 
 function modeselect:keyreleased(key, code)
-
+    if key == 'f1' then
+        state.push(game, Testmode)
+    end
 end
 
 function modeselect:mousepressed(x, y, mbutton)

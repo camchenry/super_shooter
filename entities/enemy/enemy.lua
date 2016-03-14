@@ -25,6 +25,8 @@ function Enemy:initialize(position)
 
     self.collisionPush = 15
     self.moveAway = vector(0, 0)
+
+    self.ricochetDamageMultiplier = 25
 end
 
 function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiusDiff)
@@ -43,8 +45,6 @@ function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiu
 
     self.radius = self.radius + math.random(-self.radius*radiusDiff, self.radius*radiusDiff)
     self.radius = math.max(1, self.radius)
-    
-    self.ricochetDamageMultiplier = 25
 end
 
 function Enemy:update(dt)
@@ -96,7 +96,7 @@ function Enemy:_handleCollision(collision)
         end
 
 		-- check for proximity and invincible
-        if self.position:dist(obj.position) < self.radius + obj.radius then
+        if self.position:dist(obj.position) <= self.radius + obj.radius then
             game:removeBullet(obj)
 			if not self.invincible and not obj.destroy then
                 local dmgBase = obj.damage
