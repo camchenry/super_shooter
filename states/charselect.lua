@@ -184,7 +184,7 @@ end
 
 function charSelect:keypressed(key)
 	if key == "escape" then
-		state.switch(menu)
+		state.switch(modeselect)
 	end
 
 	for i, e in pairs(self.elements) do

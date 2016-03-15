@@ -77,6 +77,14 @@ function modeselect:update(dt)
 end
 
 function modeselect:keyreleased(key, code)
+    
+end
+
+function modeselect:keypressed(key)
+    if key == "escape" then
+        state.switch(menu)
+    end
+
     if key == 'f1' then
         state.push(game, Testmode)
     end
