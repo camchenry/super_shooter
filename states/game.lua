@@ -22,7 +22,9 @@ function game:add(obj, tabl)
     end
     table.insert(tabl, obj)
 
-    self.world:add(obj, obj.position.x, obj.position.y, obj.width, obj.height)
+    local tol = self.collideTolerance
+    local dubTol = tol * 2
+    self.world:add(obj, obj.position.x - tol, obj.position.y - tol, obj.width + dubTol, obj.height + dubTol)
 
     return obj
 end
@@ -57,6 +59,8 @@ function game:init()
 
 	self.camera = Camera(0, 0)
 	self.camera.scale = self.cameraZoom
+
+    self.collideTolerance = 5 -- extra tollerance for AABB collision checking. Does not effect circular collision checking (which is more accurate)
 end
 
 function game:reset()
@@ -145,12 +149,16 @@ function game:update(dt)
     end
 
     if player.health >= 0 then
+        local tol = self.collideTolerance
+        local dubTol = tol * 2
+
         local toUpdate = {objects, bullets}
         for i, tabl in ipairs(toUpdate) do
             for j, obj in ipairs(tabl) do
                 -- update object positions
                 obj:update(dt)
-                self.world:update(obj, obj.position.x, obj.position.y, obj.width, obj.height)
+
+                self.world:update(obj, obj.position.x - tol, obj.position.y - tol, obj.width + dubTol, obj.height + dubTol)
 
                 -- check for object collisions
                 local ax, ay, cols, len = self.world:check(obj, obj.position.x, obj.position.y)
@@ -480,13 +488,16 @@ end
 function game:drawCollisionBodies()
     love.graphics.setColor(255, 255, 255, 200)
     love.graphics.setLineWidth(1)
+    local tol = self.collideTolerance
+    local dubTol = tol * 2
+
     for i, object in ipairs(objects) do
         love.graphics.circle("line", object.position.x, object.position.y, object.radius)
-        love.graphics.rectangle("line", object.position.x - object.width/2, object.position.y - object.height/2, object.width, object.height)
+        love.graphics.rectangle("line", object.position.x - object.width/2 - tol, object.position.y - object.height/2 - tol, object.width + dubTol, object.height + dubTol)
     end
     for i, object in ipairs(bullets) do
         love.graphics.circle("line", object.position.x, object.position.y, object.radius)
-        love.graphics.rectangle("line", object.position.x - object.width/2, object.position.y - object.height/2, object.width, object.height)
+        love.graphics.rectangle("line", object.position.x - object.width/2 - tol, object.position.y - object.height/2 - tol, object.width + dubTol, object.height + dubTol)
     end
 end
 
