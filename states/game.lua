@@ -62,7 +62,7 @@ end
 
 function game:reset()
     options:load()
-    self.worldSize = vector(2500, 1500)
+    self.worldSize = vector(3000, 2000)
 
     objects = {}
     bullets = {}
@@ -358,6 +358,7 @@ function game:draw()
 
         if DEBUG then
             love.graphics.setColor(255, 255, 255, 255)
+            love.graphics.setFont(font[16])
             love.graphics.print("Memory usage: " .. math.floor(collectgarbage("count")/1000) .. "MB", 5, 25)
         end
 
@@ -403,6 +404,7 @@ function game:drawEntityInspectorInfo()
                        entityX + radius,
                        entityY + radius*2)
     local text = entity.width
+    love.graphics.setFont(font[20])
     love.graphics.print(text, entityX - f:getWidth(text)/2, entityY + radius*2 - f:getHeight(text)/2 + padding )
 
     -- height
@@ -483,7 +485,6 @@ end
 function game:drawCollisionBodies()
     love.graphics.setColor(255, 255, 255, 200)
     love.graphics.setLineWidth(1)
-
     for i, object in ipairs(objects) do
         love.graphics.circle("line", object.position.x, object.position.y, object.radius)
         love.graphics.rectangle("line", object.position.x - object.width/2, object.position.y - object.height/2, object.width, object.height)
