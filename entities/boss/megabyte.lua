@@ -25,10 +25,12 @@ function Megabyte:initialize(position)
 
     self.lineWidth = 1
 
+    self.maxRadius = 70
+
     self.spawnTimer = cron.after(2.5, function()
         self:spawnMinions(4, 8)
     end)
-    self.spawnTween = tween(2.5, self, {radius = 70}, "inOutCubic", function() self.spawnTween = nil end)
+    self.spawnTween = tween(2.5, self, {radius = self.maxRadius}, "inOutCubic", function() self.spawnTween = nil end)
 
     self.minions = {}
 end
