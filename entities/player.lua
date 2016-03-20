@@ -38,11 +38,12 @@ function Player:initialize()
     end)
 
     signal.register('waveEnded', function(wave)
-        if wave == 10 then -- on the boss wave, reset to full health
+        if wave == 9 then -- on the boss wave, reset to full health
             self.health = self.maxHealth
         else -- every other wave, get some health back
             self.health = self.health + self.waveEndRegen
         end
+        error(wave)
     end)
 
     self.width = self.radius * 2
