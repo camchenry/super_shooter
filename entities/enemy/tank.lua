@@ -21,6 +21,8 @@ function Tank:initialize(position)
 
     self.position = position
 
+    self.ricochetBulletDamage = 5
+
     self.maxHealth = 750
     self.health = self.maxHealth
 end
@@ -59,7 +61,7 @@ function Tank:handleCollision(collision)
             )
 
             b:setSource(self)
-            b:setDamage(obj.damage*0.08)
+            b:setDamage(self.ricochetBulletDamage)
             b:setSpeed(obj.velocity:len()*1.4)
             b:setRadius(math.random(3, 4))
             obj.alreadyCollided = true

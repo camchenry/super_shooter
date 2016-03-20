@@ -14,7 +14,7 @@ function Sweeper:initialize(start, percent, num, radius)
     self.radius = radiusOrig
 
     self.speed = 800 * 1/(self.radius/radiusOrig)
-    self.touchDamage = 115 * (self.radius/radiusOrig)
+    self.touchDamage = 80 * (self.radius/radiusOrig)
 
     self.angle = percent * 2 * math.pi
     self.orbitRadius = radius or math.random(100, math.min(game.worldSize.x/2, game.worldSize.y/2))

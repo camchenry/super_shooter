@@ -38,7 +38,7 @@ function Healer:update(dt)
                 end
             end
 
-            if not o:isInstanceOf(Healer) then -- healers will not move towards other healers
+            if not o:isInstanceOf(Healer) and not o:isInstanceOf(Sweeper) then -- healers will not move towards other healers or sweepers
                 if o.health < o.maxHealth then -- favor moving towards injured enemies
                     self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)*1.2
                 else

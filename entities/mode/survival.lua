@@ -68,9 +68,7 @@ function Survival:onWaveEnd()
     if game._postWaveCalled then return end
 
     signal.emit('waveEnded', game.wave, game.time - game.waveStartTime)
-
-    player.health = player.health + player.health * 0.1 + 1
-
+    
 	if game.waves[game.wave+1] ~= nil then
 		if game.waves[game.wave+1].boss ~= nil then
 			signal.emit('bossIncoming')

@@ -26,6 +26,7 @@ function Player:initialize()
     self.regenWaitAfterHurt = 5
     self.maxHealth = 125
     self.health = self.maxHealth
+    self.waveEndRegen = 20
     self.damageResistance = 0.0
     self.criticalChance = 0.01
     self.criticalMultiplier = 2.0
@@ -34,6 +35,14 @@ function Player:initialize()
     self.regenTimer = 0
     signal.register('playerHurt', function()
         self.regenTimer = self.regenWaitAfterHurt
+    end)
+
+    signal.register('waveEnded', function(wave)
+        if wave == 10 then -- on the boss wave, reset to full health
+            self.health = self.maxHealth
+        else -- every other wave, get some health back
+            self.health = self.health + self.waveEndRegen
+        end
     end)
 
     self.width = self.radius * 2
