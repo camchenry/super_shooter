@@ -43,7 +43,6 @@ function Player:initialize()
         else -- every other wave, get some health back
             self.health = self.health + self.waveEndRegen
         end
-        error(wave)
     end)
 
     self.width = self.radius * 2
