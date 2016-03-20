@@ -23,33 +23,31 @@ charSelect.characters = {
 
 	[2] = {
 		name = "Pathfinder",
-		description = "Moves quickly to avoid contact with enemies.",
+		description = "Fragile, but able to kill enemies with ease.",
 		entity = function()
-			Spectre = class('Spectre', Player)
+			Pathfinder = class('Pathfinder', Player)
 
-			function Spectre:initialize()
+			function Pathfinder:initialize()
 				Player.initialize(self)
 
 				self.shotsPerSecond = 2
-				self.speed = 1450
+				self.speed = 1400
 				self.maxHealth = 60
 				self.health = 60
-				self.bulletDamage = 120
-				self.bulletVelocity = 475
-				self.criticalChance = 0.03
-				self.criticalMultiplier = 3.0
-				self.healthRegen = 1
-			    self.regenWaitAfterHurt = 10
+				self.bulletDamage = 110
+				self.bulletVelocity = 425
+				self.criticalChance = 0.00
+                self.waveEndRegen = 10
 				self.color = {127, 127, 127}
 			end
 
-			return Spectre
+			return Pathfinder
 		end
 	},
 
 	[3] = {
 		name = "Berserker",
-		description = "Kills enemies, quickly.",
+		description = "Kills enemies, quickly, but only effective at close range.",
 		entity = function()
 			Berserker = class('Berserker', Player)
 
@@ -58,14 +56,15 @@ charSelect.characters = {
 
 				self.shotsPerSecond = 10
 				self.bulletDamage = 30
-				self.bulletDropoffDistance = 50
-				self.bulletDropoffAmount = 5
+                self.bulletVelocity = 275
+				self.bulletDropoffDistance = 40
+				self.bulletDropoffAmount = 27
 				self.damageResistance = -0.25
 				self.healthRegen = -1
 				self.maxHealth = 175
 				self.health = 175
 
-				self.color = {255, 255, 255}
+				self.color = {255, 127, 127}
 
 				signal.register('enemyDeath', function(enemy)
 					self.health = self.health + 1

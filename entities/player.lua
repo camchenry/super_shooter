@@ -22,8 +22,8 @@ function Player:initialize()
     self.touchDamage = 0
     self.bulletLife = 1.5
     self.bulletRadius = 5
-    self.healthRegen = 0
-    self.regenWaitAfterHurt = 5
+    self.healthRegen = 1
+    self.regenWaitAfterHurt = 10
     self.maxHealth = 125
     self.health = self.maxHealth
     self.waveEndRegen = 20
