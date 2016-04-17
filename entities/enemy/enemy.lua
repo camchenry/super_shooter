@@ -97,7 +97,8 @@ function Enemy:_handleCollision(collision)
 
 		-- check for proximity and invincible
         if self.position:dist(obj.position) <= self.radius + obj.radius then
-            game:removeBullet(obj)
+            local priorHealth = self.health
+
 			if not self.invincible and not obj.destroy then
                 local dmgBase = obj.damage
                 if obj.source:isInstanceOf(Tank) then
@@ -109,12 +110,13 @@ function Enemy:_handleCollision(collision)
 				signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
 				self.flashTime = 20/1000
                 self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
-				obj.destroy = true
 
                 self.healthTween = tween(.4, self, {healthRadius = self.radius*self.health/self.maxHealth}, "inOutCubic", function()
                     self.healthTween = nil
                 end)
 			end
+            
+            obj:hitTarget(self.health <= 0, priorHealth)
         end
     end
 end

@@ -1,6 +1,6 @@
 Bullet = class('Bullet')
 
-function Bullet:initialize(position, target, velocity)
+function Bullet:initialize(position, target, velocity, pierce)
     self.destroy = false
 
     self.color = {255, 255, 255}
@@ -23,6 +23,8 @@ function Bullet:initialize(position, target, velocity)
     self.distanceTraveled = 0
     self.dropoffAmount = 0
     self.dropoffDistance = 0
+
+    self.pierce = true
 
     self.velocity = (self.target - self.position):normalized() * self.speed
     self.width = self.radius * 2
@@ -112,4 +114,21 @@ end
 
 function Bullet:isUnder(x, y, margin)
     return vector(x, y):dist(self.position) <= self.radius + (margin or 0)
+end
+
+function Bullet:hitTarget(targetDead, damageDone)
+    -- if the enemy is still alive, remove the bullet. Otherwise, the bullet pierces with less damage
+    if not targetDead then
+        game:removeBullet(self)
+        self.destroy = true
+    elseif not self.pierce then
+        game:removeBullet(self)
+        self.destroy = true
+    else
+        self.damage = self.damage - damageDone
+        if self.damage <= 0 then
+            game:removeBullet(self)
+            self.destroy = true
+        end
+    end
 end
