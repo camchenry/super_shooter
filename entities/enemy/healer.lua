@@ -26,29 +26,32 @@ end
 
 function Healer:update(dt)
     Enemy.update(self, dt)
-    self.moveTowardsPlayer = (player.position - self.position):normalized()
-    self.moveTowardsEnemy = vector(0, 0)
+    
+    if not self.isDead then -- stop it from healing during the death tween
+        self.moveTowardsPlayer = (player.position - self.position):normalized()
+        self.moveTowardsEnemy = vector(0, 0)
 
-    for i, o in pairs(objects) do
-        if o:isInstanceOf(Enemy) and o ~= self then
-            if o.position:dist(self.position) <= self.healRadius then
-                if o.health > 0 and o.health < o.maxHealth then
-                    o.health = o.health + self.healRate * dt
-                    signal.emit('healing', o, self)
+        for i, o in pairs(objects) do
+            if o:isInstanceOf(Enemy) and o ~= self and not o.isDead then -- I'm not sure why the isDead check doesn't work
+                if o.position:dist(self.position) <= self.healRadius then
+                    if o.health > 0 and o.health < o.maxHealth then
+                        o.health = o.health + self.healRate * dt
+                        signal.emit('healing', o, self)
+                    end
                 end
-            end
 
-            if not o:isInstanceOf(Healer) and not o:isInstanceOf(Sweeper) then -- healers will not move towards other healers or sweepers
-                if o.health < o.maxHealth then -- favor moving towards injured enemies
-                    self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)*1.2
-                else
-                    self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)
+                if not o:isInstanceOf(Healer) and not o:isInstanceOf(Sweeper) then -- healers will not move towards other healers or sweepers
+                    if o.health < o.maxHealth then -- favor moving towards injured enemies
+                        self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)*1.2
+                    else
+                        self.moveTowardsEnemy = self.moveTowardsEnemy + (o.position - self.position)
+                    end
                 end
             end
         end
-    end
 
-    self.acceleration = (self.moveTowardsPlayer*0.5 + self.moveTowardsEnemy + self.moveAway):normalized() * self.speed
+        self.acceleration = (self.moveTowardsPlayer*0.5 + self.moveTowardsEnemy + self.moveAway):normalized() * self.speed
+    end
 end
 
 function Healer:handleCollision(collision)

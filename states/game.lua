@@ -152,7 +152,7 @@ function game:update(dt)
                 -- update object positions
                 obj:update(dt)
 
-                local r = obj.radius
+                local r = math.max(1, obj.radius) -- bump requires the radius to be at least 1
                 self.world:update(obj, obj.position.x - r, obj.position.y - r, r*2, r*2)
 
                 -- check for object collisions

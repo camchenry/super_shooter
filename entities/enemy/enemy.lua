@@ -27,6 +27,8 @@ function Enemy:initialize(position)
     self.moveAway = vector(0, 0)
 
     self.ricochetDamageMultiplier = 25
+
+    self.isDead = false
 end
 
 function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiusDiff)
@@ -53,8 +55,14 @@ function Enemy:update(dt)
     Entity.physicsUpdate(self, dt)
 
     if self.health <= 0 then
-        self.destroy = true
-        signal.emit('enemyDeath', self)
+        if not self.isDead then
+            --self.destroy = true
+            self.isDead = true
+            self.deathTween = tween(.5, self, {radius = .1}, "inElastic", function()
+                self.destroy = true
+            end)
+            signal.emit('enemyDeath', self)
+        end
     elseif self.health > self.maxHealth then
         self.health = self.maxHealth
     end
@@ -80,43 +88,46 @@ end
 -- this is a private collision function specifically for common enemy effects that aren't supposed
 -- to be overridden
 function Enemy:_handleCollision(collision)
-    local obj = collision.other
+    if not self.isDead then -- don't collide during the death tween
+        local obj = collision.other
 
-    if obj:isInstanceOf(Enemy) then
-        if self.position:dist(obj.position) < self.radius + obj.radius then
-            v = vector(self.x - obj.x, self.y - obj.y)
-            self.moveAway = self.moveAway + v*self.collisionPush
-        end
-    end
-
-    if obj:isInstanceOf(Bullet) then
-        if obj.source ~= nil and obj.source:isInstanceOf(self.class) then return end
-        if self.boss ~= nil then
-            if obj.source == self.boss then return end
+        if obj:isInstanceOf(Enemy) then
+            if self.position:dist(obj.position) < self.radius + obj.radius then
+                v = vector(self.x - obj.x, self.y - obj.y)
+                self.moveAway = self.moveAway + v*self.collisionPush
+            end
         end
 
-		-- check for proximity and invincible
-        if self.position:dist(obj.position) <= self.radius + obj.radius then
-            local priorHealth = self.health
+        if obj:isInstanceOf(Bullet) then
+            if obj.source ~= nil and obj.source:isInstanceOf(self.class) then return end
+            if self.boss ~= nil then
+                if obj.source == self.boss then return end
+            end
+            if self.isDead then return end
 
-			if not self.invincible and not obj.destroy then
-                local dmgBase = obj.damage
-                if obj.source:isInstanceOf(Tank) then
-                    dmgBase = dmgBase * self.ricochetDamageMultiplier
-                end
-                local dmg = dmgBase * (1 - self.damageResistance)
-				self.health = self.health - dmg
-                local death = self.health <= 0
-				signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
-				self.flashTime = 20/1000
-                self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
+    		-- check for proximity and invincible
+            if self.position:dist(obj.position) <= self.radius + obj.radius then
+                local priorHealth = self.health
 
-                self.healthTween = tween(.4, self, {healthRadius = self.radius*self.health/self.maxHealth}, "inOutCubic", function()
-                    self.healthTween = nil
-                end)
-			end
-            
-            obj:hitTarget(self.health <= 0, priorHealth)
+    			if not self.invincible and not obj.destroy then
+                    local dmgBase = obj.damage
+                    if obj.source:isInstanceOf(Tank) then
+                        dmgBase = dmgBase * self.ricochetDamageMultiplier
+                    end
+                    local dmg = dmgBase * (1 - self.damageResistance)
+    				self.health = self.health - dmg
+                    local death = self.health <= 0
+    				signal.emit('enemyHit', self, dmg, obj.critical, obj.source, death)
+    				self.flashTime = 20/1000
+                    self.velocity = self.velocity + 0.5 * obj.velocity * (1 - self.knockbackResistance)
+
+                    self.healthTween = tween(.4, self, {healthRadius = self.radius*self.health/self.maxHealth}, "inOutCubic", function()
+                        self.healthTween = nil
+                    end)
+    			end
+                
+                obj:hitTarget(self.health <= 0, priorHealth)
+            end
         end
     end
 end

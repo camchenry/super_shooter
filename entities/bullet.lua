@@ -24,7 +24,7 @@ function Bullet:initialize(position, target, velocity, pierce)
     self.dropoffAmount = 0
     self.dropoffDistance = 0
 
-    self.pierce = true
+    self.pierce = false -- if enemy is killed buy a bullet, the bullet will continue to travel with reduced damage
 
     self.velocity = (self.target - self.position):normalized() * self.speed
     self.width = self.radius * 2

@@ -25,6 +25,11 @@ function HighScore:initialize()
 	signal.register('newGame', function() self:reset() end)
 	
 	self:reset()
+
+	self.defaultFontSize = 64
+	self.fontSize = self.defaultFontSize
+	self.fontSizeModifier = 3
+	self.maxFontSize = 120
 end
 
 function HighScore:reset()
@@ -54,6 +59,16 @@ function HighScore:update(dt)
 		self.displayScore = self.currentScore
 	end
 
+	if diff ~= 0 then
+		self.fontSize = math.min(self.defaultFontSize + self.fontSizeModifier * diff, self.maxFontSize)
+		--self.fontSizeTween = tween(.5, self, {fontSize = 80}, "inOutCubic", function()
+        --    self.fontSizeTween2 = tween(.5, self, {fontSize = self.defaultFontSize}, "inOutCubic", function()
+       	--	end)
+       		--self.fontSize = self.defaultFontSize
+        --end)
+    else
+    	self.fontSize = self.defaultFontSize
+	end
 end
 
 function HighScore:changeScore(amount)
@@ -118,7 +133,7 @@ function HighScore:draw()
 		return 
 	end
 
-	local font = font[64]
+	local font = font[self.fontSize]
 	local text = math.floor(self.displayScore)
 	love.graphics.setFont(font)
 	local w = font:getWidth(text)
