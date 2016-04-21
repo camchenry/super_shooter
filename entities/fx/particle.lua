@@ -17,10 +17,12 @@ function Particles:initialize()
     self.particleSmallSystem:setTexture(self.particleSmallImage)
 
     self.healingParticleSystem = self.particleSmallSystem:clone()
+    self.bulletParticleSystem = self.particleSystem:clone()
 
     signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
     signal.register('enemyHit', function(enemy) self:onEnemyHit(enemy) end)
     signal.register('healing', function(enemy, healer) self:onHealing(enemy, healer) end)
+	signal.register('playerShot', function(player, bullet) self:onPlayerShoot(player, bullet) end)
     signal.register('newGame', function()
 		self.particleSystem:reset()
 		self.particleSmallSystem:reset()
@@ -31,6 +33,7 @@ function Particles:update(dt)
 	self.particleSystem:update(dt)
 	self.particleSmallSystem:update(dt)
 	self.healingParticleSystem:update(dt)
+	self.bulletParticleSystem:update(dt)
 
 	self.particleSystem:setSpeed(250)
 	self.particleSmallSystem:setSpeed(250)
@@ -67,9 +70,24 @@ function Particles:onHealing(enemy, healer)
 	end
 end
 
+function Particles:onPlayerShoot(player, bullet)
+	for i, system in pairs({self.bulletParticleSystem}) do
+		system:setColors(255, 255, 255, 150, 0, 0, 0, 0)
+
+		system:setSpeed(bullet.speed/4)
+		system:setPosition(player.position.x, player.position.y)
+		system:setLinearAcceleration(bullet.velocity.x, bullet.velocity.y, bullet.velocity.x, bullet.velocity.y)
+		system:setDirection(math.atan2(bullet.target.y - bullet.position.y, bullet.target.x - bullet.position.x))
+		system:setSpread(math.pi/2)
+		system:setParticleLifetime(.2)
+		system:emit(30)
+	end
+end
+
 function Particles:draw()
     love.graphics.setColor(255, 255, 255)
 	love.graphics.draw(self.particleSystem)
 	love.graphics.draw(self.particleSmallSystem)
 	love.graphics.draw(self.healingParticleSystem)
+	love.graphics.draw(self.bulletParticleSystem)
 end

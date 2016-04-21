@@ -58,7 +58,7 @@ function Enemy:update(dt)
         if not self.isDead then
             --self.destroy = true
             self.isDead = true
-            self.deathTween = tween(.5, self, {radius = .1}, "inElastic", function()
+            self.deathTween = tween(.3, self, {radius = .1}, "linear", function()
                 self.destroy = true
             end)
             signal.emit('enemyDeath', self)

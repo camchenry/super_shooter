@@ -93,8 +93,6 @@ function Player:update(dt)
     if love.mouse.isDown(1) and self.canShoot then
 		if game.time > .25 then -- prevents a bullet from being shot when the game starts
 			if self.heat <= 0 then
-				signal.emit('playerShot')
-
                 local target = nil
                 -- trackpad shooting mode
                 if game.trackpadMode and self.closestEnemy ~= player and self.closestEnemy ~= nil then
@@ -125,6 +123,8 @@ function Player:update(dt)
                 bullet.dropoffAmount = self.bulletDropoffAmount
 
 				self.heat = self.rateOfFire
+
+                signal.emit('playerShot', self, bullet)
 			end
 		end
 	end
