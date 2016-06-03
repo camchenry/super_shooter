@@ -85,7 +85,7 @@ function modeselect:keypressed(key)
         state.switch(menu)
     end
 
-    if key == 'f1' then
+    if DEBUG and key == 'f1' then
         state.push(game, Testmode)
     end
 end
