@@ -9,6 +9,13 @@ modeselect.items = {
     },
 
     {
+        title = "ENDLESS",
+        action = function()
+            state.push(game, Endless)
+        end,
+    },
+
+    {
         title = "OTHER",
         action = function()
             state.push(game, Gamemode)

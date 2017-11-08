@@ -38,6 +38,7 @@ require 'entities.enemy.ninja'
 
 -- bosses
 require 'entities.boss.megabyte'
+require 'entities.boss.tanker'
 
 -- visual effects
 require 'entities.fx.particle'
@@ -63,6 +64,7 @@ require 'entities.ui.slider'
 require 'entities.mode.gamemode'
 require 'entities.mode.survival'
 require 'entities.mode.testmode'
+require 'entities.mode.endless'
 
 function love.load()
 	love.window.setTitle(config.windowTitle)

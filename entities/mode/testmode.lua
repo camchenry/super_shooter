@@ -43,6 +43,7 @@ function Testmode:keypressed(key)
 	if key == '4' then self:spawn('tank') end
 	if key == '5' then self:spawn('ninja') end
 	if key == '6' then self:spawn('megabyte') end
+	if key == '7' then self:spawn('tanker') end
 end
 
 function Testmode:spawn(name)
@@ -103,6 +104,11 @@ function Testmode:spawn(name)
 
     if name == 'megabyte' then
     	local b = Megabyte:new()
+        game.boss = game:add(b)
+    end
+
+    if name == 'tanker' then
+    	local b = Tanker:new()
         game.boss = game:add(b)
     end
 end

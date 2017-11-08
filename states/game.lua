@@ -176,7 +176,7 @@ function game:update(dt)
         end
     end
 
-    self.mode:update(dt)
+    self.mode:update(dt, self.time)
     self:updateCamera(dt)
 
     if self.particlesEnabled then

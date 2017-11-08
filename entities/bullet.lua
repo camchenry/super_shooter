@@ -31,6 +31,8 @@ function Bullet:initialize(position, target, velocity, pierce)
     self.height = self.radius * 2
     self.x, self.y = self.position:unpack()
     self.prev_x, self.prev_y = self.position:unpack()
+
+    self.deathAction = function() end
 end
 
 function Bullet:update(dt)
@@ -45,6 +47,8 @@ function Bullet:update(dt)
 
     if self.life <= 0 then
         self.destroy = true
+
+        self.deathAction(self.position, self.source)
     end
 
     if self.position.x > game.worldSize.x/2 or self.position.x < -game.worldSize.x/2 then
@@ -101,6 +105,11 @@ end
 function Bullet:setDamage(damage)
     self.damage = damage
     self.originalDamage = damage
+    return self
+end
+
+function Bullet:setDeathAction(deathAction)
+    self.deathAction = deathAction
     return self
 end
 
