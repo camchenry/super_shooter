@@ -18,7 +18,7 @@ modeselect.items = {
     {
         title = "OTHER",
         action = function()
-            state.push(game, Gamemode)
+            state.push(game, Testmode)
         end,
     },
 }
@@ -44,9 +44,9 @@ end
 
 function modeselect:enter()
     love.mouse.setCursor(cursor)
-	
+
 	self.time = 0
-	
+
 	love.graphics.setLineWidth(1)
 	-- default value for the line
 	self.lineX = self.buttons[1].x - 10
@@ -64,7 +64,7 @@ function modeselect:update(dt)
     end
 
     self.back:update(dt)
-	
+
 	-- moving selector
 	if not self.lineTween then
 		local index1 = 1
@@ -78,13 +78,13 @@ function modeselect:update(dt)
 		end
 		local y1 = self.buttons[index1].y
 		local y2 = self.buttons[index2].y + self.buttons[index2].height
-		
+
 		self.lineTween = tween(.25, self, {lineY1 = y1, lineY2 = y2}, "inOutCirc", function() self.lineTween = false end)
 	end
 end
 
 function modeselect:keyreleased(key, code)
-    
+
 end
 
 function modeselect:keypressed(key)
@@ -106,7 +106,7 @@ end
 
 function modeselect:draw()
     love.graphics.setColor(255, 255, 255)
-    
+
     game.background:draw()
 
     for i, button in pairs(self.buttons) do
@@ -114,10 +114,10 @@ function modeselect:draw()
     end
 
     self.back:draw()
-	
+
 	local lineOffset = self.lineLengthOffset
 	love.graphics.line(self.lineX, self.lineY1+lineOffset, self.lineX, self.lineY2-lineOffset)
-	
+
 	love.graphics.setColor(255, 255, 255)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 175)
 

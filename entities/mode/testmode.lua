@@ -17,7 +17,7 @@ function Testmode:update(dt)
 end
 
 function Testmode:draw()
-	
+
 end
 
 function Testmode:keypressed(key)
@@ -29,7 +29,7 @@ function Testmode:keypressed(key)
 	if key == 'f5' then TRACK_ENTITIES = not TRACK_ENTITIES end
 	if key == 'f6' then
 		self.isSlowed = not self.isSlowed
-		if self.isSlowed then 
+		if self.isSlowed then
 			TIME_MULTIPLIER = self.slowTime
 		else
 			TIME_MULTIPLIER = self.standardTime

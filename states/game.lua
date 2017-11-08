@@ -41,7 +41,7 @@ function game:remove(obj, tabl)
             break
         end
     end
-    self.world:remove(obj)    
+    self.world:remove(obj)
 end
 
 function game:removeBullet(obj)
@@ -338,7 +338,7 @@ function game:draw()
 
 
         self.floatingMessages:drawDynamic()
-        
+
         if DEBUG and DRAW_WORLD_BORDER then
             self:drawWorldBorders()
         end
