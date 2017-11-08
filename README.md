@@ -1,3 +1,5 @@
+![Super Shooter](http://i.imgur.com/QFUr7RD.gif)
+
 # super_shooter
 Super Shooter is a retro style arcade shooter made in Love2D.
 
