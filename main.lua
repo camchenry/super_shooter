@@ -74,10 +74,10 @@ function love.load()
 
     math.randomseed(os.time()/10)
 
-    crosshairImage = love.graphics.newImage("img/crosshair.png")
-    cursorImage = love.graphics.newImage("img/cursor.png")
-    crosshair = love.mouse.newCursor(crosshairImage:getData(), 16, 16)
-    cursor = love.mouse.newCursor(cursorImage:getData(), 0, 0)
+    crosshairImage = love.image.newImageData("img/crosshair.png")
+    cursorImage = love.image.newImageData("img/cursor.png")
+    crosshair = love.mouse.newCursor(crosshairImage, 16, 16)
+    cursor = love.mouse.newCursor(cursorImage, 0, 0)
     love.mouse.setCursor(cursor)
 
     -- Sound is instantiated before the game because it observes things beyond the game scope

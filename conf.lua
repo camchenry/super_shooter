@@ -1,14 +1,14 @@
 function love.conf(t)
 	if love._version_minor <= 9 then
-        error("This game is designed for Love2D 0.10.0 and up, you are running:"..love._version_major.."."..love._version_minor.."."..love._version_revision)
+        --error("This game is designed for Love2D 0.10.0 and up, you are running:"..love._version_major.."."..love._version_minor.."."..love._version_revision)
     end
 
     t.identity = "super_shooter"                    -- The name of the save directory (string)
-    t.version = "0.10.0"                -- The LÖVE version this game was made for (string)
+    t.version = "11.1"                -- The LÖVE version this game was made for (string)
     t.console = true                   -- Attach a console (boolean, Windows only)
     t.accelerometerjoystick = false     -- Enable the accelerometer on iOS and Android by exposing it as a Joystick (boolean)
     t.gammacorrect = false              -- Enable gamma-correct rendering, when supported by the system (boolean)
- 
+
     t.window.title = "Super Shooter"         -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
     t.window.width = 1024               -- The window width (number)
@@ -25,7 +25,7 @@ function love.conf(t)
     t.window.highdpi = false            -- Enable high-dpi mode for the window on a Retina display (boolean)
     t.window.x = nil                    -- The x-coordinate of the window's position in the specified display (number)
     t.window.y = nil                    -- The y-coordinate of the window's position in the specified display (number)
- 
+
     t.modules.audio = true              -- Enable the audio module (boolean)
     t.modules.event = true              -- Enable the event module (boolean)
     t.modules.graphics = true           -- Enable the graphics module (boolean)
@@ -64,7 +64,7 @@ font = setmetatable({}, {
         local f = love.graphics.newFont(config.font, k)
         rawset(t, k, f)
         return f
-    end 
+    end
 })
 
 fontBold = setmetatable({}, {
@@ -80,5 +80,5 @@ fontLight = setmetatable({}, {
         local f = love.graphics.newFont(config.fontLight, k)
         rawset(t, k, f)
         return f
-    end 
+    end
 })

@@ -3,7 +3,7 @@ GridBackground = class("GridBackground")
 function GridBackground:initialize()
 	self.time = math.random(0, 10)
 
-    self.columns = 32 
+    self.columns = 32
     self.rows = 32
     self.width = 3000
     self.height = 2000
@@ -26,12 +26,12 @@ function GridBackground:draw()
 	local zoom = math.abs(math.cos(self.time/16))*(1/2) + 2
 	local rotation = math.sin(self.time/100)*math.pi
 	local r, g, b = husl.husl_to_rgb(self.hue, self.saturation, self.lightness)
-	local alpha = math.abs(math.cos(self.time/2.5))*255
+	local alpha = math.abs(math.cos(self.time/2.5))*1
 	alpha = math.max(math.min(alpha, 200), 64)
-    
+
     love.graphics.push()
 	love.graphics.setLineWidth(1)
-    love.graphics.setColor(r*255, g*255, b*255, alpha)
+    love.graphics.setColor(r*1, g*1, b*1, alpha)
     love.graphics.scale(zoom)
     love.graphics.rotate(rotation)
     love.graphics.translate(-self.width/2, -self.height/2)
@@ -46,5 +46,5 @@ function GridBackground:draw()
     end
 
     love.graphics.pop()
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
 end

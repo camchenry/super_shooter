@@ -2,7 +2,7 @@ Ninja = class('Ninja', Enemy)
 
 function Ninja:initialize(position)
     Enemy.initialize(self, position)
-    self.originalColor = {255, 255, 255, 200}
+    self.originalColor = {1, 1, 1, 200/255}
     self.sides = 4
 
   	self.hue = 280

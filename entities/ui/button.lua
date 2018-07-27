@@ -8,9 +8,9 @@ function Button:initialize(text, x, y, w, h, fontSize, activated)
     self.width = w or self.font:getWidth(text)
     self.height = h or self.font:getHeight(text)
 
-    self.active = {127, 127, 127}
-    self.bg = {255, 255, 255, 0}
-    self.fg = {255, 255, 255, 255}
+    self.active = {127/255, 127/255, 127/255}
+    self.bg = {1, 1, 1, 0}
+    self.fg = {1, 1, 1, 1}
 
     self.translateX = 0
 

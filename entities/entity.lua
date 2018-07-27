@@ -2,7 +2,7 @@ Entity = class('Entity')
 
 function Entity:initialize()
 	-- general properties
-	self.color = {255, 255, 255, 255}
+	self.color = {1, 1, 1, 1}
 	self.radius = 25
 	self.sides = 250
 	self.lineWidth = 1

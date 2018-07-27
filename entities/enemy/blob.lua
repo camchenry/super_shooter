@@ -2,7 +2,7 @@ Blob = class('Blob', Enemy)
 
 function Blob:initialize(position)
     Enemy.initialize(self, position)
-    self.originalColor = {231, 76, 60, 255}
+    self.originalColor = {231/255, 76/255, 60/255, 255/255}
     self.sides = 4
     self.radius = 15
 

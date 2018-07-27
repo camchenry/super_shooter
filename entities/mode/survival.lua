@@ -68,7 +68,7 @@ function Survival:onWaveEnd()
     if game._postWaveCalled then return end
 
     signal.emit('waveEnded', game.wave, game.time - game.waveStartTime)
-    
+
 	if game.waves[game.wave+1] ~= nil then
 		if game.waves[game.wave+1].boss ~= nil then
 			signal.emit('bossIncoming')
@@ -290,14 +290,14 @@ function Survival:drawPlayerHealthBar()
     local multiplier = player.health / player.maxHealth
     local width = love.graphics.getWidth() * multiplier
 
-    love.graphics.setColor(204, 15, 10, 255)
+    love.graphics.setColor(204/255, 15/255, 10/255, 1)
     love.graphics.rectangle("fill", love.graphics.getWidth()/2 - width/2, love.graphics.getHeight()-height, width/2, height)
     love.graphics.rectangle("fill", love.graphics.getWidth()/2, love.graphics.getHeight()-height, width/2, height)
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
 end
 
 function Survival:drawBossHealthBar()
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
     local multiplier = game.boss.health/game.boss.maxHealth
     love.graphics.rectangle("fill", 50, 50, (love.graphics.getWidth()-100)*multiplier, 25)
 
@@ -317,6 +317,6 @@ function Survival:drawPrimaryText()
 
     love.graphics.setLineWidth(1)
     love.graphics.setFont(font[48])
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(game.waveText, love.graphics.getWidth()/2 - love.graphics.getFont():getWidth(game.waveText)/2, 100)
 end

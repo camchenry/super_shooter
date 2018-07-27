@@ -69,7 +69,7 @@ function Input:draw()
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 
     -- bottom border line
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
     love.graphics.setLineWidth(3)
     love.graphics.line(self.x, self.y+self.height, self.x+self.width, self.y+self.height)
 
@@ -94,12 +94,12 @@ function Input:draw()
         local alpha = 0
 
         if self.caretTimer > 1 then
-            alpha = 255
+            alpha = 1
         else
             alpha = 0
         end
 
-        love.graphics.setColor(255, 255, 255, alpha)
+        love.graphics.setColor(1, 1, 1, alpha)
         love.graphics.line(
             x + self.font:getWidth(self.text)+10, y+5,
             x + self.font:getWidth(self.text)+10, y+self.font:getHeight(self.text)-5

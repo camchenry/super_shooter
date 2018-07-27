@@ -26,7 +26,7 @@ end
 
 function Healer:update(dt)
     Enemy.update(self, dt)
-    
+
     if not self.isDead then -- stop it from healing during the death tween
         self.moveTowardsPlayer = (player.position - self.position):normalized()
         self.moveTowardsEnemy = vector(0, 0)
@@ -61,7 +61,7 @@ end
 function Healer:draw()
     Enemy.draw(self)
 
-    love.graphics.setColor(77, 214, 79, 70)
+    love.graphics.setColor(77/255, 214/255, 79/255, 70/255)
 
     for i, o in pairs(objects) do
         if o:isInstanceOf(Enemy) and o ~= self then
@@ -71,5 +71,5 @@ function Healer:draw()
         end
     end
 
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
 end

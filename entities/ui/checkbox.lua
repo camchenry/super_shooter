@@ -7,17 +7,17 @@ function Checkbox:initialize(text, x, y, w, h, fontSize, activated, deactivated)
 	self.y = y -- This centers it on the line
 	self.width = w or 32
 	self.height = h or 32
-	
+
 	self.textHeight = self.font:getHeight(self.text)
-	
-	self.color = {255, 255, 255}
-	self.active = {255, 255, 255}
-	self.hoverColor = {127, 127, 127}
-	
-	self.textColor = {255, 255, 255}
-	
+
+	self.color = {1, 1, 1}
+	self.active = {1, 1, 1}
+	self.hoverColor = {127/255, 127/255, 127/255}
+
+	self.textColor = {1, 1, 1}
+
 	self.selected = false
-	
+
 	self.activated = activated or function() end
 	self.deactivated = deactivated or function() end
 end
@@ -29,19 +29,19 @@ end
 function Checkbox:draw()
 	local r, g, b, a = love.graphics.getColor()
     local oldColor = {r, g, b, a}
-	
+
 	local oldFont = love.graphics.getFont()
 	love.graphics.setFont(self.font)
-	
+
 	local x = self.x
 	local y = self.y - self.height/2
-	
+
 	if self.selected then
 		love.graphics.setColor(self.active)
 	else
 		love.graphics.setColor(self.color)
 	end
-	
+
 	love.graphics.rectangle("line", x, y, self.width, self.height)
 
 	if self.selected then
@@ -54,15 +54,15 @@ function Checkbox:draw()
 	else
 		love.graphics.setColor(self.textColor)
     end
-	
+
 	local textWidth = self.font:getWidth(self.text)
 	local textX = x + self.width + 10
 	local textY = self.y - self.textHeight/2
 	love.graphics.setFont(self.font)
-	
+
 	textX, textY = math.floor(textX), math.floor(textY)
 	love.graphics.print(self.text, textX, textY)
-	
+
 	love.graphics.setColor(oldColor)
 	love.graphics.setFont(oldFont)
 end

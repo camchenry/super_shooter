@@ -1,7 +1,7 @@
 Player = class('Player')
 
 function Player:initialize()
-    self.color = {255, 255, 255}
+    self.color = {1, 1, 1}
     self.radius = 15
 
     self.position = vector(-100, 100)

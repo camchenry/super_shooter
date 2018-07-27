@@ -38,7 +38,7 @@ charSelect.characters = {
 				self.bulletVelocity = 425
 				self.criticalChance = 0.00
                 self.waveEndRegen = 10
-				self.color = {127, 127, 127}
+				self.color = {127/255, 127/255, 127/255}
 			end
 
 			return Pathfinder
@@ -64,7 +64,7 @@ charSelect.characters = {
 				self.maxHealth = 175
 				self.health = 175
 
-				self.color = {255, 127, 127}
+				self.color = {1, 127/255, 127/255}
 
 				signal.register('enemyDeath', function(enemy)
 					self.health = self.health + 1
@@ -101,9 +101,9 @@ function charSelect:enter()
 			font[36]
 		))
 
-		b:setBG(255, 255, 255, 32)
-		b:setFG(0, 0, 0, 255)
-	
+		b:setBG(1, 1, 1, 32/255)
+		b:setFG(0, 0, 0, 1)
+
 		b.activated = function()
 			for i, b in pairs(self.elements) do
 				if b:isInstanceOf(Button) then b.selected = false end
@@ -118,17 +118,17 @@ function charSelect:enter()
 			Button.update(b)
 
 			if b.selected then
-				b.bg = {255, 255, 255}
+				b.bg = {255/255, 255/255, 255/255}
 			else
-				b.bg = {33, 33, 33, 255}
+				b.bg = {33/255, 33/255, 33/255, 255/255}
 			end
 
 			if b.selected then
 				b.fg = {0, 0, 0}
 				b.active = {0, 0, 0}
 			else
-				b.fg = {255, 255, 255, 255}
-				b.active = {255, 255, 255, 255}
+				b.fg = {1, 1, 1, 1}
+				b.active = {1, 1, 1, 1}
 			end
 
 			if b.selected then
@@ -138,9 +138,9 @@ function charSelect:enter()
 			end
 
 			if b.selected and b:hover() then
-				b.bg = {225, 225, 225, 255}
+				b.bg = {1, 1, 1, 1}
 			elseif not b.selected and b:hover() then
-				b.bg = {55, 55, 55, 255}
+				b.bg = {55/255, 55/255, 55/255, 255/255}
 			end
 		end
 	end
@@ -156,7 +156,7 @@ function charSelect:enter()
 	end
 
 	local bottomMargin = 60
-	
+
 	self.back = Button:new("< BACK", 75, love.graphics.getHeight() - bottomMargin)
 	self.back.activated = function()
 		state.switch(modeselect)
@@ -196,7 +196,7 @@ end
 function charSelect:mousepressed(x, y, mbutton)
 	for i, e in pairs(self.elements) do
 		e:mousepressed(x, y, mbutton)
-	end	
+	end
 
 	if self.selectedCharacter then
 		self.continueButton:mousepressed(x, y, mbutton)
@@ -207,7 +207,7 @@ end
 
 function charSelect:draw()
     game.background:draw()
-	love.graphics.setColor(255, 255, 255)
+	love.graphics.setColor(1, 1, 1)
 	local text = "CHOOSE A CHARACTER"
 
 	love.graphics.setFont(fontLight[48])
@@ -240,13 +240,13 @@ function charSelect:draw()
 				diff = math.abs(diff)
 
 				if referenceValue > playerValue then
-					love.graphics.setColor(255, 200, 200)
+					love.graphics.setColor(1, 200/255, 200/255)
 				else
-					love.graphics.setColor(200, 255, 200)
+					love.graphics.setColor(200/255, 255/255, 200/255)
 				end
 
 				if key == "regenWaitAfterHurt" then
-					love.graphics.setColor(255, 200, 200)
+					love.graphics.setColor(255/255, 200/255, 200/255)
 				end
 
 				love.graphics.print(key .. " -> " .. playerValue .. ' (' .. sign .. diff .. ')', 475, 245+i*35)

@@ -30,15 +30,15 @@ function Sound:initialize()
 		waveCountdown = "sound/sfx_tink.wav",
 	}
 	for i, sound in pairs(self.music) do
-		self.music[i] = love.audio.newSource(sound)
+		self.music[i] = love.audio.newSource(sound, "stream")
 		self.music[i]:setVolume(self.musicVolume)
 		self.music[i]:setLooping(true)
 	end
 	for i, sound in pairs(self.sounds) do
-		self.sounds[i] = love.audio.newSource(sound)
+		self.sounds[i] = love.audio.newSource(sound, "static")
 		self.sounds[i]:setVolume(self.soundVolume)
 	end
-    
+
     self.music.victoryMusic:setLooping(false)
 
     self.enemyDeathObserver = signal.register('enemyDeath', function(enemy) self:onEnemyDeath(enemy) end)
@@ -75,7 +75,7 @@ function Sound:onSoundVolumeChanged(volume)
 	if volume < .01 then
 		volume = 0
 	end
-	
+
 	for i, sound in pairs(self.sounds) do
 		sound:setVolume(volume)
 	end
@@ -145,7 +145,7 @@ function Sound:onWaveCountdown()
 end
 
 function Sound:onBossSpawn()
-	
+
 end
 
 function Sound:onBossIncoming()

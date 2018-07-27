@@ -22,11 +22,11 @@ function credits:mousepressed(x, y, mbutton)
 end
 
 function credits:keypressed(key, isrepeat)
-	
+
 end
 
 function credits:draw()
-	love.graphics.setColor(255, 255, 255)
+	love.graphics.setColor(1, 1, 1)
 	love.graphics.setFont(font[30])
 	love.graphics.printf(self.text, 75, 100, love.graphics.getWidth()-200)
 	love.graphics.setFont(font[36])

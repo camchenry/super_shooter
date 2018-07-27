@@ -16,7 +16,7 @@ function Slider:initialize(text, min, max, value, x, y, w, h, fontSize)
     self.active = {127, 127, 127}
     self.bg = {255, 255, 255, 0}
     self.fg = {255, 255, 255, 255}
-	
+
 	self.sliderWidth = 8
 
     self.translateX = 0
@@ -24,7 +24,7 @@ function Slider:initialize(text, min, max, value, x, y, w, h, fontSize)
     self.click = Slider.click
     self.selected = false
 	self.roundTo = 0
-	
+
 	-- lines up the box based on the width of the slider
 	self.x = self.x - self.sliderWidth/2+1
 	self.width = self.width + self.sliderWidth-2
@@ -60,7 +60,7 @@ function Slider:update(dt)
             self:changed()
         end
     end
-	
+
 	self:setValue()
 end
 
@@ -69,25 +69,25 @@ function Slider:draw()
     local oldColor = {r, g, b, a}
 
 	local sliderWidth = self.sliderWidth
-	
+
     love.graphics.setColor(self.bg)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
 
     if self.dragging then
         love.graphics.setColor(self.active)
     else
-        love.graphics.setColor(200, 200, 200)
+        love.graphics.setColor(200/255, 200/255, 200/255)
     end
 
 	-- negate earlier changes to width and height
 	local x = self.x + self.sliderWidth/2-1
 	local width = self.width - self.sliderWidth+2
-	
+
     love.graphics.setLineWidth(sliderWidth)
-    love.graphics.line(x+width*self.ratio, self.y+1, 
+    love.graphics.line(x+width*self.ratio, self.y+1,
                        x+width*self.ratio, self.y+self.height-1)
     love.graphics.setLineWidth(1)
 
@@ -103,17 +103,17 @@ function Slider:draw()
 end
 
 function Slider:setActive(r, g, b, a)
-    self.active = {r, g, b, a or 255}
+    self.active = {r, g, b, a or 1}
     return self
 end
 
 function Slider:setBG(r, g, b, a)
-    self.bg = {r, g, b, a or 255}
+    self.bg = {r, g, b, a or 1}
     return self
 end
 
 function Slider:setFG(r, g, b, a)
-    self.fg = {r, g, b, a or 255}
+    self.fg = {r, g, b, a or 1}
     return self
 end
 

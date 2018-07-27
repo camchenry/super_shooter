@@ -2,7 +2,7 @@ Sweeper = class('Sweeper', Enemy)
 
 function Sweeper:initialize(start, percent, num, radius)
     Enemy.initialize(self, start)
-    self.originalColor = {241, 196, 0, 255}
+    self.originalColor = {241/255, 196/255, 0, 255/255}
     self.sides = 3
 
     self.hue = 65
@@ -55,9 +55,9 @@ end
 function Sweeper:draw()
     Enemy.draw(self)
 
-    love.graphics.setColor(255, 255, 255, 64)
+    love.graphics.setColor(1, 1, 1, 64/255)
     love.graphics.setLineWidth(1)
     love.graphics.circle("line", self.start.x, self.start.y, self.orbitRadius)
 
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
 end

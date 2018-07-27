@@ -32,7 +32,7 @@ function FloatingMessages:initialize()
 		local width, height = love.graphics.getWidth(), love.graphics.getHeight()
 		local x = love.graphics.getWidth() - 40 - width/2
 		local y = love.graphics.getHeight() - 100 - height/2
-		
+
 		local size = 24
 		local w = font[size]:getWidth(score) - 14
 
@@ -59,11 +59,11 @@ function FloatingMessages:update(dt)
 	self.queueTimer = self.queueTimer + dt
 	if self.queueTimer >= self.queueDiff then -- remove from queue, add to messages
 		self.queueTimer = 0
-		
+
 		if #self.messageQueue > 0 then
 			-- release message from queue spot 1
 			local static = self.messageQueue[1].static or false
-			
+
 			-- messages are sorted into either static or dynamic
 			table.insert(static and self.staticMessages or self.dynamicMessages, {
 				x = self.messageQueue[1].x,
@@ -81,7 +81,7 @@ function FloatingMessages:update(dt)
 		msg.time = msg.time - dt
 		msg.y = msg.y - msg.speed*dt
 	end
-	
+
 	for i, msg in pairs(self.dynamicMessages) do
 		msg.time = msg.time - dt
 		msg.y = msg.y - msg.speed*dt
@@ -92,7 +92,7 @@ function FloatingMessages:update(dt)
 			table.remove(self.staticMessages, i)
 		end
 	end
-	
+
 	for i=#self.dynamicMessages, 1, -1 do
 		if self.dynamicMessages[i].time <= 0 then
 			table.remove(self.dynamicMessages, i)
@@ -102,7 +102,7 @@ function FloatingMessages:update(dt)
 	while #self.staticMessages > 10 do
 		table.remove(self.staticMessages, 1)
 	end
-	
+
 	while #self.dynamicMessages > 10 do
 		table.remove(self.dynamicMessages, 1)
 	end
@@ -111,7 +111,7 @@ end
 function FloatingMessages:drawStatic()
 	for i, msg in pairs(self.staticMessages) do
 		love.graphics.setFont(font[msg.size])
-		love.graphics.setColor(255, 255, 255, 200 * msg.time)
+		love.graphics.setColor(1, 1, 1, 200/255 * msg.time)
 		local x, y = msg.x, msg.y
 		local width, height = love.graphics.getWidth(), love.graphics.getHeight()
 		x, y = x + width/2, y + height/2
@@ -121,10 +121,10 @@ function FloatingMessages:drawStatic()
 end
 
 function FloatingMessages:drawDynamic() -- contains many workarounds
-	for i, msg in pairs(self.dynamicMessages) do 
+	for i, msg in pairs(self.dynamicMessages) do
 		local fontSize = msg.size*game.camera.scale
 		love.graphics.setFont(font[fontSize])
-		love.graphics.setColor(255, 255, 255, 200 * msg.time)
+		love.graphics.setColor(1, 1, 1, 200/255 * msg.time)
 		local x, y = msg.x, msg.y
 		x, y = math.floor(x), math.floor(y)
 		love.graphics.print(msg.text, x, y, 0, 1/game.camera.scale, 1/game.camera.scale)

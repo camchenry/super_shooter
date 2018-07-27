@@ -14,16 +14,16 @@ end
 function info:enter()
     signal.emit('infoEntered')
 	local bottomMargin = 60
-	
+
 	self.back = Button:new("< BACK", 75, love.graphics.getHeight() - bottomMargin)
 	self.back.activated = function()
 		state.switch(menu)
 	end
-	
+
 	local x, y = self.font:getWidth("You can find our LOVE forum post "), self.font:getHeight()*10
 	x = x + self.leftAlign + 2
 	y = y + self.textY - 2
-	
+
 	self.link = Button:new("here", x, y)
 	self.link.activated = function()
 		love.system.openURL("https://love2d.org/forums/viewtopic.php?f=5&t=81156")
@@ -31,11 +31,11 @@ function info:enter()
 	self.link.fg = {116, 192, 242}
 	self.link.active = {62, 131, 222}
 	self.link.font = font[28]
-	
+
 	local x, y = self.font:getWidth("\tof this project and future endeavors, donate at our "), self.font:getHeight()*13
 	x = x + self.leftAlign - 8
 	y = y + self.textY - 2
-	
+
 	self.store = Button:new("itch.io page", x, y)
 	self.store.activated = function()
 		love.system.openURL("http://ikroth.itch.io/super-shooter")
@@ -62,18 +62,18 @@ function info:mousepressed(x, y, mbutton)
 end
 
 function info:draw()
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 120+55)
 
     love.graphics.setFont(fontBold[72])
     love.graphics.setColor(0, 0, 0)
     love.graphics.print(self.title, 75, 70)
 
-    love.graphics.setColor(255, 255, 255)
-	
+    love.graphics.setColor(1, 1, 1)
+
     love.graphics.setFont(self.font)
     love.graphics.print(self.text, self.leftAlign, self.textY)
-	
+
     self.back:draw()
 	self.link:draw()
 	self.store:draw()

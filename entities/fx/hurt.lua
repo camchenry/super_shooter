@@ -3,7 +3,7 @@ Hurt = class("Hurt")
 function Hurt:initialize()
     self.playerHurtObserver = signal.register('playerHurt', function() self:onPlayerHurt() end)
 
-    self.overlayColor = {172, 13, 8}
+    self.overlayColor = {172/255, 13/255, 8/255}
     self.overlayAlpha = 150
     self.overlayTimeMax = 1
     self.time = 0
@@ -30,7 +30,7 @@ function Hurt:draw()
 
 	if self.time > 0 then
 		local color = self.overlayColor
-		color[4] = self.overlayAlpha*(self.overlayTimeMax - (self.overlayTimeMax - self.time))
+		color[4] = self.overlayAlpha*(self.overlayTimeMax - (self.overlayTimeMax - self.time)) / 255
 		love.graphics.setLineWidth(18)
 		love.graphics.setColor(color)
 		local padding = 10

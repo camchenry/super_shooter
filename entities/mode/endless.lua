@@ -64,7 +64,7 @@ function Endless:keypressed(key)
 	if key == 'f5' then TRACK_ENTITIES = not TRACK_ENTITIES end
 	if key == 'f6' then
 		self.isSlowed = not self.isSlowed
-		if self.isSlowed then 
+		if self.isSlowed then
 			TIME_MULTIPLIER = self.slowTime
 		else
 			TIME_MULTIPLIER = self.standardTime
@@ -150,8 +150,8 @@ function Endless:drawPlayerHealthBar()
     local multiplier = player.health / player.maxHealth
     local width = love.graphics.getWidth() * multiplier
 
-    love.graphics.setColor(204, 15, 10, 255)
+    love.graphics.setColor(204/255, 15/255, 10/255, 1)
     love.graphics.rectangle("fill", love.graphics.getWidth()/2 - width/2, love.graphics.getHeight()-height, width/2, height)
     love.graphics.rectangle("fill", love.graphics.getWidth()/2, love.graphics.getHeight()-height, width/2, height)
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
 end

@@ -11,7 +11,7 @@ function Particles:initialize()
     self.particleSystem:setSpread(2*math.pi)
     self.particleSystem:setSizeVariation(0.5)
     self.particleSystem:setRelativeRotation(true)
-    self.particleSystem:setColors(255, 0, 0, 255, 0, 0, 0, 0)
+    self.particleSystem:setColors(255/255, 0, 0, 255/255, 0, 0, 0, 0)
 
     self.particleSmallSystem = self.particleSystem:clone()
     self.particleSmallSystem:setTexture(self.particleSmallImage)
@@ -41,7 +41,7 @@ end
 
 function Particles:onEnemyDeath(enemy)
 	for i, system in pairs({self.particleSystem, self.particleSmallSystem}) do
-		system:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 128, 0, 0, 0, 0)
+		system:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 128/255, 0, 0, 0, 0)
 
 		system:setSpeed(300, 550)
 		system:setPosition(enemy.position.x, enemy.position.y)
@@ -52,7 +52,7 @@ end
 
 function Particles:onEnemyHit(enemy)
 	for i, system in pairs({self.particleSystem, self.particleSmallSystem}) do
-		system:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 128, 0, 0, 0, 0)
+		system:setColors(enemy.color[1], enemy.color[2], enemy.color[3], 128/255, 0, 0, 0, 0)
 
 		system:setSpeed(50, 250)
 		system:setPosition(enemy.position.x, enemy.position.y)
@@ -62,7 +62,7 @@ end
 
 function Particles:onHealing(enemy, healer)
 	for i, system in pairs({self.healingParticleSystem}) do
-		system:setColors(healer.color[1], healer.color[2], healer.color[3], 150, 0, 0, 0, 0)
+		system:setColors(healer.color[1], healer.color[2], healer.color[3], 150/255, 0, 0, 0, 0)
 
 		system:setSpeed(10, 50)
 		system:setPosition(enemy.position.x, enemy.position.y)
@@ -72,7 +72,7 @@ end
 
 function Particles:onPlayerShoot(player, bullet)
 	for i, system in pairs({self.bulletParticleSystem}) do
-		system:setColors(255, 255, 255, 150, 0, 0, 0, 0)
+		system:setColors(1, 1, 1, 150/255, 0, 0, 0, 0)
 
 		system:setSpeed(bullet.speed/4)
 		system:setPosition(player.position.x, player.position.y)
@@ -85,7 +85,7 @@ function Particles:onPlayerShoot(player, bullet)
 end
 
 function Particles:draw()
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
 	love.graphics.draw(self.particleSystem)
 	love.graphics.draw(self.particleSmallSystem)
 	love.graphics.draw(self.healingParticleSystem)

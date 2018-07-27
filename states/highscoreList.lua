@@ -4,7 +4,7 @@ highscoreList.file = 'highscores.txt'
 
 function highscoreList:init()
 	self.leftAlign = 75
-	
+
 	self.initialsInput = {' ', ' ', ' '}
 	self.selectorPos = 1
 	self.playerScore = 0
@@ -33,13 +33,13 @@ function highscoreList:enter(prev)
 		self.scoreEntered = false
 		self.initialChar = true
 		self.playerScore = game.highScore.currentScore
-		
+
 		self.initialsInput = {' ', ' ', ' '}
 		self.selectorPos = 1
 	end
 
 	local bottomMargin = 60
-	
+
 	self.back = Button:new("< BACK", self.leftAlign, love.graphics.getHeight() - bottomMargin)
 	self.back.activated = function()
 		if prev == restart then
@@ -52,7 +52,7 @@ function highscoreList:enter(prev)
 end
 
 function highscoreList:leave()
-	
+
 end
 
 function highscoreList:mousepressed(x, y, button)
@@ -63,7 +63,7 @@ function highscoreList:keypressed(key)
 	if key == "escape" then
 		self.back.activated()
 	end
-	
+
 	if self.fromGame then
 		if key == "return" then
 			if not self.scoreEntered then
@@ -72,7 +72,7 @@ function highscoreList:keypressed(key)
 				self:checkScore()
 			end
 		end
-		
+
 		if key == "left" then
 			if self.selectorPos > 1 then
 				self.selectorPos = self.selectorPos - 1
@@ -99,7 +99,7 @@ end
 function highscoreList:textinput(t)
 	if self.fromGame and not self.scoreEntered then
 		self.initialsInput [self.selectorPos] = t
-			
+
 		if self.selectorPos < 3 then
 			self.selectorPos = self.selectorPos + 1
 		end
@@ -112,28 +112,28 @@ end
 
 function highscoreList:draw()
     love.graphics.setFont(font[72])
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
 	local x, y = love.graphics.getWidth()/2 - fontBold[72]:getWidth("HIGH SCORES")/2, 70
 	x, y = math.floor(x), math.floor(y)
     love.graphics.print('HIGH SCORES', x, y)
-	
+
     love.graphics.setFont(font[32])
-	love.graphics.setColor(255, 255, 255)
+	love.graphics.setColor(1, 1, 1)
 	local sep = 45
 
 	for i, scoreData in ipairs(self.scores) do
 		if i == 1 then
 			love.graphics.setFont(fontBold[36])
-			love.graphics.setColor(255, 225, 0)
+			love.graphics.setColor(1, 1, 0)
 		elseif i == 2 then
 			love.graphics.setFont(fontBold[32])
-			love.graphics.setColor(192, 192, 192)
+			love.graphics.setColor(192/255, 192/255, 192/255)
 		elseif i == 3 then
 			love.graphics.setFont(fontBold[32])
-			love.graphics.setColor(205, 127, 50)
+			love.graphics.setColor(205/255, 127/255, 50/255)
 		else
 			love.graphics.setFont(fontLight[30])
-			love.graphics.setColor(255, 255, 255)
+			love.graphics.setColor(255/255, 255/255, 255/255)
 		end
 
 		local line = scoreData.score
@@ -146,19 +146,19 @@ function highscoreList:draw()
 		line = string.upper(scoreData.initials)
 		x = love.graphics.getWidth()/2 - love.graphics.getFont():getWidth(line) - 15
 		x = math.floor(x)
-		
+
 		love.graphics.print(line, x, y)
 	end
-	
+
 	-- optimize! polish!
 	-- initials input
 	if self.fromGame then
 		local y = love.graphics.getHeight()/2
 
-		love.graphics.setColor(0, 0, 0, 96)
+		love.graphics.setColor(0, 0, 0, 96/255)
     	love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
 
-		love.graphics.setColor(255, 255, 255)
+		love.graphics.setColor(255/255, 255/255, 255/255)
     	love.graphics.rectangle("fill", 0, y-150, love.graphics.getWidth(), 300)
     	love.graphics.setColor(0, 0, 0)
 
@@ -167,21 +167,21 @@ function highscoreList:draw()
 		local textX, textY = love.graphics.getWidth()/2-font[24]:getWidth(text)/2, y - 100
 		textX, textY = math.floor(textX), math.floor(textY)
 		love.graphics.print(text, textX, textY)
-		
-		
+
+
 		local f = fontBold[72]
 		love.graphics.setFont(f)
-		
+
 		local spacing = 20
 		local width = f:getWidth('W')
 		local height = f:getHeight() + 10
 		local x = love.graphics.getWidth()/2 - (spacing*3)/2 - (width*3)/2
-		
+
 		for i = 1, 3 do
 			love.graphics.setLineWidth(2)
-			
+
 			if i == self.selectorPos then
-				love.graphics.setColor(255, 0, 0)
+				love.graphics.setColor(255/255, 0, 0)
 			else
 				love.graphics.setColor(0, 0, 0)
 			end
@@ -191,7 +191,7 @@ function highscoreList:draw()
 			local char = self.initialsInput[i]
 			char = string.upper(char)
 			local charWidth = f:getWidth(char)
-			
+
 			love.graphics.setColor(0, 0, 0)
 
 			local x, y = x + dx + width/2 - charWidth/2, y - height/2
@@ -216,7 +216,7 @@ function highscoreList:checkScore()
 	-- check if the score actually belongs in the scoreboard (top 10)
 	local playerInitials = self.initialsInput[1]..self.initialsInput[2]..self.initialsInput[3]
 	local playerScore = self.playerScore
-	
+
 	if self:scoreIsValid(playerScore) then -- check if it belongs on the scoreboard
 		-- find where the score belongs
 		local pos = 1
@@ -229,12 +229,12 @@ function highscoreList:checkScore()
 			end
 		end
 		table.insert(self.scores, pos, {initials = playerInitials, score = playerScore})
-		
+
 		if #self.scores > self.maxScores then -- if it's more than the max, it will only be one greater. so cut off the last score
 			table.remove(self.scores)
 		end
 	end
-	
+
 	self:save()
 end
 
@@ -279,7 +279,7 @@ function highscoreList:save()
 	for i, scoreData in ipairs(self.scores) do
 		string = string..scoreData.initials..' '..scoreData.score..'\n'
 	end
-	
+
 	love.filesystem.write(self.file, string)
 end
 
@@ -293,6 +293,6 @@ function highscoreList:getScores()
 			table.insert(highscores, {initials = name, score = number})
 		end
 	end
-	
+
 	return highscores
 end

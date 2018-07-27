@@ -14,59 +14,59 @@ function options:enter()
 	else
 		config = self:getConfig()
 	end
-	
+
 	local y = 365 -- starting point
 	local sep = 40 -- how much to seperate each item by
-	
+
 	-- basic screen settings
     self.vsync = Checkbox:new('VERTICAL SYNC', self.leftAlign, y)
 	self.vsync.selected = config.display.flags.vsync
-	
+
 	y = y+sep
-	
+
 	self.fullscreen = Checkbox:new('FULLSCREEN', self.leftAlign, y)
 	self.fullscreen.selected = config.display.flags.fullscreen
-	
+
 	y = y+sep
-	
+
 	self.borderless = Checkbox:new('BORDERLESS', self.leftAlign, y)
 	self.borderless.selected = config.display.flags.borderless
-	
+
 	y = y+sep
-	
+
 	self.highdpi = Checkbox:new('HIGH-DPI', self.leftAlign, y)
 	self.highdpi.selected = config.display.flags.highdpi
-	
+
 	y = y+sep
 
 	y = y + 20 -- extra space between groups
-	
-	
+
+
 	-- graphics and game settings
 	self.shaderEffects = Checkbox:new('SHADER EFFECTS', self.leftAlign, y)
 	self.shaderEffects.selected = config.graphics.shaderEffects
-	
+
 	self.azerty = Checkbox:new('AZERTY KEYBOARD', self.leftAlign + 300, y)
 	self.azerty.selected = config.graphics.azerty
-	
+
 	y = y+sep
 
 	self.particles = Checkbox:new('PARTICLES', self.leftAlign, y)
 	self.particles.selected = config.graphics.particles
-	
+
 	y = y+sep
-	
+
 	self.displayFPS = Checkbox:new('SHOW FPS', self.leftAlign, y)
 	self.displayFPS.selected = config.graphics.displayFPS
-	
+
 	y = y+sep
 
 	self.trackpad = Checkbox:new('TRACKPAD MODE', self.leftAlign, y)
 	self.trackpad.selected = config.input.trackpadMode
-	
-	
+
+
 	-- list items
-	
+
 	-- Takes all available resolutions
 	local resTable = love.window.getFullscreenModes(1)
 	local resolutions = {}
@@ -77,7 +77,7 @@ function options:enter()
 			table.insert(resolutions, {res.width, res.height})
 		--end
 	end
-	
+
 	-- add a resolution for an experimental feature to play across multiple monitors
 	local windowCount = love.window.getDisplayCount()
 	--[[
@@ -97,36 +97,36 @@ function options:enter()
 		table.insert(resolutions, {multiWidth, multiHeight})
 	end
 	]]
-	
+
 	--self.multiHeight = multiHeight
 
 	-- sort resolutions from smallest to biggest
 	table.sort(resolutions, function(a, b) return a[1]*a[2] < b[1]*b[2] end)
-	
+
 	local optionWidth = 120
 	y = 225
-	
+
 	self.resolution = List:new('RESOLUTION: ', resolutions, self.leftAlign, y, 400)
 	self.resolution:selectTable({config.display.width, config.display.height})
 	self.resolution:setText('{1}x{2}')
 	self.resolution:setOptionWidth(optionWidth)
-	
+
 	y = y+sep
-	
+
 	local msaaOptions = {0, 2, 4, 8, 16}
 	self.msaa = List:new('ANTIALIASING: ', msaaOptions, self.leftAlign, y, 400)
 	self.msaa:selectValue(config.display.flags.msaa)
 	self.msaa:setText('{}x')
 	self.msaa:setOptionWidth(optionWidth)
-	
+
 	y = y+sep
-	
+
 	local fullscreenOptions = {"desktop", "exclusive"}
 	self.fullscreenMode = List:new("FULLSCREEN TYPE: ", fullscreenOptions, self.leftAlign, y, 400)
 	self.fullscreenMode:selectValue(config.display.flags.fullscreentype)
 	self.fullscreenMode:setText('{}')
 	self.fullscreenMode:setOptionWidth(optionWidth)
-	
+
 	local monitorOptions = {}
 	for i = 1, windowCount do
 		table.insert(monitorOptions, i)
@@ -135,33 +135,33 @@ function options:enter()
 	self.monitorSelect:selectValue(config.display.flags.display)
 	self.monitorSelect:setText('{}')
 	self.monitorSelect:setOptionWidth(optionWidth)
-	
+
 	y = y+sep
-	
-	
+
+
 	local x = self.leftAlign+450
 	y = 225
 	sep = 100
-	
+
 	-- SLIDER ITEMS
 	self.musicVolume = Slider:new("MUSIC VOLUME: %d", 0, 100, config.audio.musicVolume, x, y, 275, 50, font[24])
 	self.musicVolume.changed = function() signal.emit('musicChanged', self.musicVolume.ratio) end
-	
+
 	y = y + sep
-	
+
 	self.soundVolume = Slider:new("SOUND VOLUME: %d", 0, 100, config.audio.soundVolume, x, y, 275, 50, font[24])
 	self.soundVolume.changed = function() signal.emit('soundChanged', self.soundVolume.ratio) end
-	
+
 	y = y + sep
-	
+
 	self.cameraZoom = Slider:new("CAMERA ZOOM: %.1f", .7, 2, config.graphics.cameraZoom, x, y, 275, 50, font[24])
 	--self.cameraZoom.changed = function() signal.emit('zoomChanged', self.cameraZoom.ratio) end
 	-- not ideal
 	self.cameraZoom.roundTo = 1
 	--self.cameraZoom.changed = function() game.cameraZoom = self.cameraZoom.value end
-	
+
 	local bottomMargin = 60
-	
+
 	-- applies current config settings
 	self.back = Button:new("< BACK", self.leftAlign, love.graphics.getHeight() - bottomMargin)
 	self.back.activated = function()
@@ -228,7 +228,7 @@ function options:setVisibleValues(conf)
 	self.msaa:selectValue(conf.display.flags.msaa)
 	self.fullscreenMode:selectValue(conf.display.flags.fullscreentype)
 	self.monitorSelect:selectValue(conf.display.flags.display)
-	
+
 	-- add for volumes and zoom
 end
 
@@ -267,12 +267,12 @@ function options:mousepressed(x, y, button)
 	self.musicVolume:mousepressed(x, y, button)
 	self.soundVolume:mousepressed(x, y, button)
 	self.cameraZoom:mousepressed(x, y, button)
-	
+
 	self.resolution:mousepressed(x, y, button)
 	self.msaa:mousepressed(x, y, button)
 	self.fullscreenMode:mousepressed(x, y, button)
 	self.monitorSelect:mousepressed(x, y, button)
-	
+
 	self.back:mousepressed(x, y, button)
 	self.apply:mousepressed(x, y, button)
 	--self.default:mousepressed(x, y, button)
@@ -311,15 +311,15 @@ function options:update(dt)
 	self.back:update(dt)
 	self.apply:update(dt)
 	--self.default:update(dt)
-	
-	
+
+
 	-- update volumes without applying changes
 	soundControl.musicVolume = self.musicVolume.ratio
 	soundControl.soundVolume = self.soundVolume.ratio
 end
 
 function options:draw()
-	love.graphics.setColor(255, 255, 255)
+	love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 120+55)
 
     love.graphics.setFont(fontBold[72])
@@ -470,7 +470,7 @@ function options:load(conf)
 	elseif flags.display ~= config.display.flags.display then
 		reload = true
 	end
-	
+
 	if love.window.getDisplayCount() > 1 then
 		local width, height = love.window.getDesktopDimensions(flags.display)
 		if config.display.width > width then
@@ -480,7 +480,7 @@ function options:load(conf)
 			end
 		end
 	end
-	
+
 	if reload then -- only reloads the window if needed
 		love.window.setMode(config.display.width, config.display.height, config.display.flags)
 	end

@@ -5,20 +5,20 @@ function List:initialize(label, options, x, y, w, h)
 	self.y = y
 
 	self.font = font[22]
-	
+
 	self.label = label
 	self.text = ''
 	self.options = options
 	self.selected = 1
 
 	self.margin = 5
-	
-	self.longestIndex = self:setLongestIndex() -- arrows 
-	
-	self.width = w 
+
+	self.longestIndex = self:setLongestIndex() -- arrows
+
+	self.width = w
 	self.height = h or self.font:getHeight()
 	self.optionWidth = 100
-	
+
 	self.leftButton = Button:new("<", self.x, self.y, nil, nil, fontBold[22])
 	self.leftButton.activated = function()
 		self:prev()
@@ -27,7 +27,7 @@ function List:initialize(label, options, x, y, w, h)
 	self.rightButton.activated = function()
 		self:next()
 	end
-	
+
 	self.textSpacing = 0
 	self:setTextSpacing()
 end
@@ -39,13 +39,13 @@ end
 
 function List:draw()
 	love.graphics.setFont(self.font)
-	
+
 	local x, y = self.x, self.y
 	x, y = math.floor(self.x), math.floor(self.y)
 
-	love.graphics.setColor(255, 255, 255)
+	love.graphics.setColor(1, 1, 1)
 	love.graphics.print(self.text, self.textSpacing, self.y) -- formatted to be centered between arrows
-	
+
 	love.graphics.print(self.label, x, y)
 
 	self.leftButton:draw()
@@ -55,7 +55,7 @@ end
 function List:setOptionWidth(optionWidth)
 	self.rightButton.x = self.x + self.width
 	self.leftButton.x = self.rightButton.x - optionWidth - self.leftButton.font:getWidth(self.leftButton.text) - self.margin*2 -- formatted to be lined up with other list arrows
-	
+
 	self.optionWidth = optionWidth
 	self:setTextSpacing()
 end
@@ -97,14 +97,14 @@ end
 function List:selectTable(tbl1)
 	for i = 1, #self.options do
 		local tbl2 = self.options[i]
-		
+
 		local clear = true
 		for j = 1, #tbl2 do
 			if tbl1[j] ~= tbl2[j] then
 				clear = false
 			end
 		end
-		
+
 		if clear then
 			self.selected = i
 			break
@@ -123,7 +123,7 @@ function List:setText(text)
 
 	-- Use val for simple numbered options
 	if text:find('{}') then
-		text = text:gsub('{}', self.options[self.selected]) 
+		text = text:gsub('{}', self.options[self.selected])
 		longestText = longestText:gsub('{}', self.options[self.longestIndex])
 	end
 
@@ -132,12 +132,12 @@ function List:setText(text)
 		text = text:gsub('{1}', self.options[self.selected][1])
 		longestText = longestText:gsub('{1}', self.options[self.longestIndex][1])
 	end
-	
+
 	if text:find('{2}') then
 		text = text:gsub('{2}', self.options[self.selected][2])
 		longestText = longestText:gsub('{2}', self.options[self.longestIndex][2])
 	end
-	
+
 	self.text = text
 	--self.width = w or self.longestIndex and self.font:getWidth(longestText)  -- sets width to that of the longest possible width of all options in list
 		--or self.font:getWidth(self.text)
@@ -150,7 +150,7 @@ function List:setLongestIndex()
 	local longest = nil
 	for i, option in ipairs(self.options) do
 		local len = 0
-		
+
 		if type(option) == 'number' then
 			len = string.len(tostring(option))
 		elseif type(option) == 'table' then
@@ -160,7 +160,7 @@ function List:setLongestIndex()
 		elseif type(option) == 'string' then
 			len = string.len(option)
 		end
-		
+
 		if not longest then
 			longestIndex = i
 			longest = len
@@ -169,7 +169,7 @@ function List:setLongestIndex()
 			longest = len
 		end
 	end
-	
+
 	if longestIndex and longest then
 		return longestIndex
 	end

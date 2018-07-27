@@ -297,7 +297,7 @@ function game:mousepressed(x, y, mbutton)
 end
 
 function game:draw()
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
     love.graphics.setLineWidth(1)
 
     self:toggleEffects()
@@ -357,7 +357,7 @@ function game:draw()
         end
 
         if DEBUG then
-            love.graphics.setColor(255, 255, 255, 255)
+            love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setFont(font[16])
             love.graphics.print("Memory usage: " .. math.floor(collectgarbage("count")/1000) .. "MB", 5, 25)
         end
@@ -367,12 +367,12 @@ end
 
 function game:drawFPS()
     love.graphics.setFont(font[16])
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(love.timer.getFPS() .. " FPS", 5, 5)
 end
 
 function game:drawWorldBorders()
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
     love.graphics.setLineWidth(4)
     love.graphics.line(-self.worldSize.x/2, -self.worldSize.y/2,
                         self.worldSize.x/2, -self.worldSize.y/2,
@@ -383,7 +383,7 @@ end
 
 function game:drawEntityInspectorInfo()
     local entity = self.activeEntity
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
 
     -- ripped from player.lua
     local sides = math.floor(10*game.camera.scale) + 10 -- doesn't work well at some scales
@@ -420,10 +420,10 @@ function game:drawEntityInspectorInfo()
     self:drawVectors(entity)
     love.graphics.scale(1/self.camera.scale)
 
-    love.graphics.setColor(0, 0, 0, 128)
+    love.graphics.setColor(0, 0, 0, 128/255)
     love.graphics.rectangle("fill", entityX + radius + 25, entityY - 25, 510, 500)
 
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setFont(fontBold[24])
     love.graphics.print(tostring(entity.class), entityX + radius + 35, entityY - 25)
     love.graphics.setFont(font[18])
@@ -443,14 +443,14 @@ function game:drawEntityInspectorInfo()
 
         love.graphics.scale(self.camera.scale)
         -- bullet target
-        love.graphics.setColor(18, 87, 233, 200)
+        love.graphics.setColor(18/255, 87/255, 233/255, 200/255)
         -- ripped from player.lua
         local sides = math.floor(10*game.camera.scale) + 10 -- doesn't work well at some scales
       	sides = math.max(10, sides) -- at least 10 sides
         love.graphics.circle("line", entity.target.x, entity.target.y, 15, sides)
 
         -- bullet source
-        love.graphics.setColor(255, 255, 255, 64)
+        love.graphics.setColor(1, 1, 1, 64/255)
         love.graphics.line(entity.position.x, entity.position.y, entity.source.x, entity.source.y)
 
         love.graphics.scale(1/self.camera.scale)
@@ -476,14 +476,14 @@ function game:drawEntityInspectorInfo()
             "Crit multiplier: " .. tostring(entity.criticalMultiplier) .. "\n"
     end
 
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.printf(debugString, entityX + radius + 35, entityY, 500)
 
     love.graphics.scale(self.camera.scale)
 end
 
 function game:drawCollisionBodies()
-    love.graphics.setColor(255, 255, 255, 200)
+    love.graphics.setColor(1, 1, 1, 200/255)
     love.graphics.setLineWidth(1)
     for i, object in ipairs(objects) do
         love.graphics.circle("line", object.position.x, object.position.y, object.radius)
@@ -496,7 +496,7 @@ function game:drawCollisionBodies()
 end
 
 function game:drawPhysicsVectors()
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setLineWidth(1)
     for i, object in ipairs(objects) do
         self:drawVectors(object)
@@ -508,7 +508,7 @@ end
 
 function game:drawVectors(object)
     if object.velocity then
-        love.graphics.setColor(255, 207, 24, 200)
+        love.graphics.setColor(1, 207/255, 24/255, 200/255)
         love.graphics.line(object.position.x,
                            object.position.y,
                            object.position.x + object.velocity.x,
@@ -517,7 +517,7 @@ function game:drawVectors(object)
 
     -- acceleration heading
     if object.acceleration then
-        love.graphics.setColor(18, 87, 233, 200)
+        love.graphics.setColor(18/255, 87/255, 233/255, 200/255)
         love.graphics.line(object.position.x,
                            object.position.y,
                            object.position.x + object.acceleration.x,

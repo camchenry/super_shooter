@@ -2,7 +2,7 @@ Tank = class('Tank', Enemy)
 
 function Tank:initialize(position)
     Enemy.initialize(self, position)
-    self.originalColor = {122, 214, 210, 255}
+    self.originalColor = {122/255, 214/255, 210/255, 255/255}
     self.sides = 6
     self.radius = 20
 

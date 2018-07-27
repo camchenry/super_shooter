@@ -105,7 +105,7 @@ function modeselect:mousepressed(x, y, mbutton)
 end
 
 function modeselect:draw()
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
 
     game.background:draw()
 
@@ -118,7 +118,7 @@ function modeselect:draw()
 	local lineOffset = self.lineLengthOffset
 	love.graphics.line(self.lineX, self.lineY1+lineOffset, self.lineX, self.lineY2-lineOffset)
 
-	love.graphics.setColor(255, 255, 255)
+	love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 175)
 
     love.graphics.setFont(self.titleFont)

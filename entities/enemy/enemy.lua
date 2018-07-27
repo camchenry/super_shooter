@@ -39,7 +39,7 @@ function Enemy:randomizeAppearance(hueDiff, saturationDiff, lightnessDiff, radiu
 	self.hue = self.hue + math.random(-hueDiff, hueDiff)
 	self.saturation = self.saturation + math.random(-saturationDiff, saturationDiff)
 	self.lightness = self.lightness + math.random(-lightnessDiff, lightnessDiff)
-    
+
     -- color bounds checking
     self.hue = math.min(360, self.hue)
     self.saturation = math.min(100, self.saturation)
@@ -77,10 +77,10 @@ function Enemy:update(dt)
 --	local lightness = (self.lightness - self.minLightness) * self.health/self.maxHealth + self.minLightness
 
 	local r, g, b = husl.husl_to_rgb(self.hue, self.saturation, self.lightness)
-	self.color = {r*255, g*255, b*255, self.color[4]}
+	self.color = {r*1, g*1, b*1, self.color[4]}
 
     if self.flashTime > 0 then
-        self.color = {255, 255, 255, 255}
+        self.color = {1, 1, 1, 1}
         self.flashTime = self.flashTime - dt
     end
 end
@@ -125,7 +125,7 @@ function Enemy:_handleCollision(collision)
                         self.healthTween = nil
                     end)
     			end
-                
+
                 obj:hitTarget(self.health <= 0, priorHealth)
             end
         end

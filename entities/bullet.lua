@@ -3,7 +3,7 @@ Bullet = class('Bullet')
 function Bullet:initialize(position, target, velocity, pierce)
     self.destroy = false
 
-    self.color = {255, 255, 255}
+    self.color = {1, 1, 1}
     self.radius = 5
 
     self.position = position
@@ -71,7 +71,7 @@ function Bullet:handleCollision(collision)
 end
 
 function Bullet:draw()
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.circle("fill", self.position.x, self.position.y, self.radius)
 end
 

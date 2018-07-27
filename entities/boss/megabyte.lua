@@ -114,7 +114,7 @@ end
 function Megabyte:draw()
     Enemy.draw(self)
 
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
     if self.invincible then
         love.graphics.circle("line", self.x, self.y, self.radius+10, self.sides)
     end
